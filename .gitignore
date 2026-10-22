@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+data/*
+!data/.gitkeep
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+*.zip

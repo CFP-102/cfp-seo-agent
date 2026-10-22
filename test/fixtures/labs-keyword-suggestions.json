@@ -1,0 +1,88 @@
+{
+  "_fixture_note": "DERIVED LIVE FIXTURE: retained values from the mapped result of one explicitly approved Keyword Suggestions request on 2026-10-22. Reconstructed minimal DataForSEO task shape, reduced to three items; NOT a raw provider response or sandbox capture. Task 10221210-2869-0399-0000-4f192948b421.",
+  "status_code": 20000,
+  "cost": 0.015,
+  "tasks": [
+    {
+      "id": "10221210-2869-0399-0000-4f192948b421",
+      "status_code": 20000,
+      "status_message": "Ok.",
+      "cost": 0.015,
+      "result_count": 1,
+      "path": [
+        "v3",
+        "dataforseo_labs",
+        "google",
+        "keyword_suggestions",
+        "live"
+      ],
+      "data": {
+        "keyword": "running shoes",
+        "location_code": 2840,
+        "language_code": "en",
+        "limit": 25,
+        "include_serp_info": false,
+        "include_clickstream_data": false
+      },
+      "result": [
+        {
+          "total_count": 87285,
+          "items_count": 3,
+          "items": [
+            {
+              "keyword": "sneaker running shoes",
+              "keyword_info": {
+                "search_volume": 301000,
+                "cpc": 1.09,
+                "competition": 1,
+                "competition_level": "HIGH",
+                "low_top_of_page_bid": 0.47,
+                "high_top_of_page_bid": 2.17
+              },
+              "keyword_properties": {
+                "keyword_difficulty": 43
+              },
+              "search_intent_info": {
+                "main_intent": "transactional"
+              }
+            },
+            {
+              "keyword": "running on shoes",
+              "keyword_info": {
+                "search_volume": 301000,
+                "cpc": 1.09,
+                "competition": 1,
+                "competition_level": "HIGH",
+                "low_top_of_page_bid": 0.48,
+                "high_top_of_page_bid": 2.07
+              },
+              "keyword_properties": {
+                "keyword_difficulty": 43
+              },
+              "search_intent_info": {
+                "main_intent": "informational"
+              }
+            },
+            {
+              "keyword": "shoes running",
+              "keyword_info": {
+                "search_volume": 301000,
+                "cpc": 1.09,
+                "competition": 1,
+                "competition_level": "HIGH",
+                "low_top_of_page_bid": 0.48,
+                "high_top_of_page_bid": 2.07
+              },
+              "keyword_properties": {
+                "keyword_difficulty": 43
+              },
+              "search_intent_info": {
+                "main_intent": "transactional"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

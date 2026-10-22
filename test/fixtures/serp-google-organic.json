@@ -1,0 +1,795 @@
+{
+ "_fixture_note": "SANDBOX RESPONSE captured 2026-10-21 from sandbox.dataforseo.com (structure identical to live; VALUES ARE DATAFORSEO DUMMY DATA, unrelated to the request). Used only as a test fixture.",
+ "version": "0.1.20260917",
+ "status_code": 20000,
+ "status_message": "Ok.",
+ "time": "0 sec.",
+ "cost": 0,
+ "tasks_count": 1,
+ "tasks_error": 0,
+ "tasks": [
+  {
+   "id": "10211758-2869-0139-2000-8bf0aa0dc92e",
+   "status_code": 20000,
+   "status_message": "Ok.",
+   "time": "0 sec.",
+   "cost": 0,
+   "result_count": 1,
+   "path": [
+    "v3",
+    "serp",
+    "google",
+    "organic",
+    "live",
+    "advanced"
+   ],
+   "data": {
+    "api": "serp",
+    "function": "live",
+    "se": "google",
+    "se_type": "organic",
+    "keyword": "seo tools",
+    "location_code": 2840,
+    "language_code": "en",
+    "depth": 10
+   },
+   "result": [
+    {
+     "keyword": "pizza",
+     "type": "organic",
+     "se_domain": "google.com",
+     "location_code": 1006886,
+     "language_code": "en",
+     "check_url": "https://www.google.com/search?q=pizza&hl=en&gl=GB&ie=UTF-8&uule=w+CAIQIFISCXXeIa8LoNhHEZkq1d1aOpZS",
+     "datetime": "2026-10-19 10:17:24 +00:00",
+     "spell": null,
+     "refinement_chips": null,
+     "item_types": [
+      "ai_overview",
+      "find_results_on",
+      "local_pack",
+      "people_also_ask",
+      "organic",
+      "related_searches",
+      "google_reviews",
+      "knowledge_graph"
+     ],
+     "se_results_count": 1120000000,
+     "pages_count": 1,
+     "items_count": 18,
+     "items": [
+      {
+       "type": "find_results_on",
+       "rank_group": 1,
+       "rank_absolute": 1,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]",
+       "items": [
+        {
+         "type": "find_results_on_element",
+         "title": "The Best Pizza Places Delivery in London",
+         "domain": "www.tripadvisor.co.uk",
+         "url": "https://www.tripadvisor.co.uk/Restaurants-g186338-c31-zfp19-London_England.html",
+         "source": "Tripadvisor"
+        },
+        {
+         "type": "find_results_on_element",
+         "title": "Pizza Delivery & Takeaway Near Me in London",
+         "domain": "www.just-eat.co.uk",
+         "url": "https://www.just-eat.co.uk/takeaway/london/pizza",
+         "source": "Just Eat"
+        },
+        {
+         "type": "find_results_on_element",
+         "title": "20 Best Pizza Restaurants in London",
+         "domain": "www.timeout.com",
+         "url": "https://www.timeout.com/london/restaurants/londons-best-restaurants-for-pizza",
+         "source": "Time Out"
+        },
+        {
+         "type": "find_results_on_element",
+         "title": "THE 10 BEST Pizza Takeaway in London 2026 - Order Pizza ...",
+         "domain": "www.ubereats.com",
+         "url": "https://www.ubereats.com/gb/category/london-eng/pizza",
+         "source": "ubereats"
+        },
+        {
+         "type": "find_results_on_element",
+         "title": "Pizza Takeaway and Delivery in London",
+         "domain": "deliveroo.co.uk",
+         "url": "https://deliveroo.co.uk/cuisines/pizza-takeaway/london",
+         "source": "deliveroo"
+        }
+       ],
+       "rectangle": null
+      },
+      {
+       "type": "local_pack",
+       "rank_group": 1,
+       "rank_absolute": 2,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[3]/div[1]/div[1]/div[1]/div[1]/div[3]/div[1]/div[1]/div[1]/div[1]",
+       "title": "Breadstall Pizza",
+       "description": "92 Berwick St \n\"You get a 1/4 of an extra large, thin crust pizza , cooked to perfection.\" \n",
+       "domain": "www.breadstall.com",
+       "phone": null,
+       "booking_url": null,
+       "url": "https://www.breadstall.com/",
+       "is_paid": false,
+       "rating": {
+        "rating_type": "Max5",
+        "value": 4.7,
+        "votes_count": 1500,
+        "rating_max": 5
+       },
+       "cid": "2140288112563615677",
+       "rectangle": null
+      },
+      {
+       "type": "local_pack",
+       "rank_group": 2,
+       "rank_absolute": 3,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[3]/div[1]/div[1]/div[1]/div[1]/div[3]/div[1]/div[3]/div[1]/div[1]",
+       "title": "Bad Boy Pizza Society | Seven Dials",
+       "description": "Seven Dials Market, 35 Earlham St \n\"The pizza was crisp but not too crunchy and the pizza sauce was delicious.\" \n",
+       "domain": "badboypizzasoc.com",
+       "phone": null,
+       "booking_url": null,
+       "url": "https://badboypizzasoc.com/locations/",
+       "is_paid": false,
+       "rating": {
+        "rating_type": "Max5",
+        "value": 4.4,
+        "votes_count": 400,
+        "rating_max": 5
+       },
+       "cid": "13780164891192492779",
+       "rectangle": null
+      },
+      {
+       "type": "local_pack",
+       "rank_group": 3,
+       "rank_absolute": 4,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[3]/div[1]/div[1]/div[1]/div[1]/div[3]/div[1]/div[5]/div[1]/div[1]",
+       "title": "Ecco Pizza",
+       "description": "186 Drury Ln \n\"Perfectly cheesey, perfectly CRISPY, the pepperoni tasted BEAUTIFUL.\" \n",
+       "domain": null,
+       "phone": "020 7404 3555",
+       "booking_url": null,
+       "url": null,
+       "is_paid": false,
+       "rating": {
+        "rating_type": "Max5",
+        "value": 4.5,
+        "votes_count": 1100,
+        "rating_max": 5
+       },
+       "cid": "10876421770465640473",
+       "rectangle": null
+      },
+      {
+       "type": "ai_overview",
+       "rank_group": 1,
+       "rank_absolute": 5,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[5]/div[1]/div[1]/div[1]/div[1]",
+       "asynchronous_ai_overview": true,
+       "markdown": null,
+       "items": null,
+       "references": null,
+       "rectangle": null
+      },
+      {
+       "type": "people_also_ask",
+       "rank_group": 1,
+       "rank_absolute": 6,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[7]/div[1]/div[1]/div[1]",
+       "items": [
+        {
+         "type": "people_also_ask_element",
+         "title": "What is the 2 hour rule for pizza?",
+         "seed_question": null,
+         "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[7]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]",
+         "expanded_element": [
+          {
+           "type": "people_also_ask_ai_overview_expanded_element",
+           "items": null,
+           "references": null,
+           "asynchronous_ai_overview": true
+          }
+         ]
+        },
+        {
+         "type": "people_also_ask_element",
+         "title": "What are the 7 types of Italian pizza?",
+         "seed_question": null,
+         "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[7]/div[1]/div[1]/div[1]/div[1]/div[2]/div[2]",
+         "expanded_element": [
+          {
+           "type": "people_also_ask_ai_overview_expanded_element",
+           "items": null,
+           "references": null,
+           "asynchronous_ai_overview": true
+          }
+         ]
+        },
+        {
+         "type": "people_also_ask_element",
+         "title": "What is the 3/8 pizza rule?",
+         "seed_question": null,
+         "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[7]/div[1]/div[1]/div[1]/div[1]/div[2]/div[3]",
+         "expanded_element": [
+          {
+           "type": "people_also_ask_ai_overview_expanded_element",
+           "items": null,
+           "references": null,
+           "asynchronous_ai_overview": true
+          }
+         ]
+        },
+        {
+         "type": "people_also_ask_element",
+         "title": "What is the number one best pizza?",
+         "seed_question": null,
+         "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[7]/div[1]/div[1]/div[1]/div[1]/div[2]/div[4]",
+         "expanded_element": [
+          {
+           "type": "people_also_ask_ai_overview_expanded_element",
+           "items": null,
+           "references": null,
+           "asynchronous_ai_overview": true
+          }
+         ]
+        }
+       ],
+       "rectangle": null
+      },
+      {
+       "type": "organic",
+       "rank_group": 1,
+       "rank_absolute": 7,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[9]/div[1]/div[1]",
+       "domain": "www.tripadvisor.co.uk",
+       "title": "The Best Pizza Places Delivery in London",
+       "url": "https://www.tripadvisor.co.uk/Restaurants-g186338-c31-zfp19-London_England.html",
+       "cache_url": null,
+       "related_search_url": null,
+       "breadcrumb": "https://www.tripadvisor.co.uk › ... › England › London",
+       "website_name": "Tripadvisor",
+       "is_image": false,
+       "is_video": false,
+       "is_featured_snippet": false,
+       "is_malicious": false,
+       "is_web_story": false,
+       "checks": null,
+       "description": "Best Pizza in London, England : Find Tripadvisor traveller reviews of London Pizza places and search by price, location, and more.",
+       "pre_snippet": null,
+       "extended_snippet": null,
+       "images": null,
+       "amp_version": false,
+       "rating": null,
+       "price": null,
+       "highlighted": [
+        "Best Pizza in London, England"
+       ],
+       "links": null,
+       "faq": null,
+       "extended_people_also_search": null,
+       "about_this_result": null,
+       "related_result": null,
+       "timestamp": null,
+       "rectangle": null
+      },
+      {
+       "type": "organic",
+       "rank_group": 2,
+       "rank_absolute": 8,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[11]/div[1]/div[1]",
+       "domain": "www.pizzapilgrims.co.uk",
+       "title": "Pizza Pilgrims - Pizza Pilgrims",
+       "url": "https://www.pizzapilgrims.co.uk/",
+       "cache_url": null,
+       "related_search_url": null,
+       "breadcrumb": "https://www.pizzapilgrims.co.uk",
+       "website_name": "Pizza Pilgrims",
+       "is_image": false,
+       "is_video": false,
+       "is_featured_snippet": false,
+       "is_malicious": false,
+       "is_web_story": false,
+       "checks": null,
+       "description": "Pizza Pilgrims serve slow proved Neapolitan pizza in our pizzerias, and at events across the UK. All our dough is made fresh, daily, sourcing the best ... Read more",
+       "pre_snippet": null,
+       "extended_snippet": null,
+       "images": null,
+       "amp_version": false,
+       "rating": null,
+       "price": null,
+       "highlighted": [
+        "Pizza Pilgrims serve slow proved Neapolitan pizza"
+       ],
+       "links": [
+        {
+         "type": "link_element",
+         "title": "Read more",
+         "description": null,
+         "url": "https://www.pizzapilgrims.co.uk/#:~:text=Pizza%20Pilgrims%20serve%20slow%20proved,best%20possible%20pizza%20base%20going.",
+         "domain": "www.pizzapilgrims.co.uk"
+        }
+       ],
+       "faq": null,
+       "extended_people_also_search": null,
+       "about_this_result": null,
+       "related_result": null,
+       "timestamp": null,
+       "rectangle": null
+      },
+      {
+       "type": "organic",
+       "rank_group": 3,
+       "rank_absolute": 9,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[13]/div[1]/div[1]",
+       "domain": "en.wikipedia.org",
+       "title": "Pizza",
+       "url": "https://en.wikipedia.org/wiki/Pizza",
+       "cache_url": null,
+       "related_search_url": null,
+       "breadcrumb": "https://en.wikipedia.org › wiki › Pizza",
+       "website_name": "Wikipedia",
+       "is_image": false,
+       "is_video": false,
+       "is_featured_snippet": false,
+       "is_malicious": false,
+       "is_web_story": false,
+       "checks": null,
+       "description": "Pizza is an Italian dish typically consisting of a flat base of leavened wheat-based dough topped with tomato, cheese, and other ingredients, baked at a ... Read more",
+       "pre_snippet": null,
+       "extended_snippet": null,
+       "images": null,
+       "amp_version": false,
+       "rating": null,
+       "price": null,
+       "highlighted": [
+        "an Italian dish typically consisting of a flat base of leavened wheat-based dough"
+       ],
+       "links": [
+        {
+         "type": "link_element",
+         "title": "Read more",
+         "description": null,
+         "url": "https://en.wikipedia.org/wiki/Pizza#:~:text=Pizza%20%5Ba%5D%20is%20an%20Italian,traditionally%20in%20a%20wood-fired%20oven.",
+         "domain": "en.wikipedia.org"
+        }
+       ],
+       "faq": null,
+       "extended_people_also_search": null,
+       "about_this_result": null,
+       "related_result": null,
+       "timestamp": null,
+       "rectangle": null
+      },
+      {
+       "type": "organic",
+       "rank_group": 4,
+       "rank_absolute": 10,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[15]/div[1]/div[1]",
+       "domain": "www.just-eat.co.uk",
+       "title": "Pizza Delivery & Takeaway Near Me in London",
+       "url": "https://www.just-eat.co.uk/takeaway/london/pizza",
+       "cache_url": null,
+       "related_search_url": null,
+       "breadcrumb": "https://www.just-eat.co.uk › Locations › London",
+       "website_name": "Just Eat",
+       "is_image": false,
+       "is_video": false,
+       "is_featured_snippet": false,
+       "is_malicious": false,
+       "is_web_story": false,
+       "checks": null,
+       "description": "Order Pizza for delivery near me in London from takeaways and restaurants. Whether you adore classics like Mushroom, Pepperoni, Ham or Margherita. Or modern ...",
+       "pre_snippet": null,
+       "extended_snippet": null,
+       "images": null,
+       "amp_version": false,
+       "rating": null,
+       "price": null,
+       "highlighted": [
+        "Order Pizza for delivery near me in London"
+       ],
+       "links": null,
+       "faq": null,
+       "extended_people_also_search": null,
+       "about_this_result": null,
+       "related_result": null,
+       "timestamp": null,
+       "rectangle": null
+      },
+      {
+       "type": "organic",
+       "rank_group": 5,
+       "rank_absolute": 11,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[17]/div[1]/div[1]",
+       "domain": "www.bbcgoodfood.com",
+       "title": "30 best pizza restaurants in London 2026",
+       "url": "https://www.bbcgoodfood.com/travel/the-best-pizza-in-london",
+       "cache_url": null,
+       "related_search_url": null,
+       "breadcrumb": "https://www.bbcgoodfood.com › Travel",
+       "website_name": "Good Food",
+       "is_image": false,
+       "is_video": false,
+       "is_featured_snippet": false,
+       "is_malicious": false,
+       "is_web_story": false,
+       "checks": null,
+       "description": "12 Apr 2026 — From crispy, thin crusts to gooey deep-dish delights, we've tracked down London's best pizzas – just follow the trail of cheese pulls!",
+       "pre_snippet": "04/12/2026 00:00:00",
+       "extended_snippet": null,
+       "images": null,
+       "amp_version": false,
+       "rating": null,
+       "price": null,
+       "highlighted": [
+        "London's best pizzas"
+       ],
+       "links": null,
+       "faq": null,
+       "extended_people_also_search": null,
+       "about_this_result": null,
+       "related_result": null,
+       "timestamp": "2026-04-12 00:00:00 +00:00",
+       "rectangle": null
+      },
+      {
+       "type": "organic",
+       "rank_group": 6,
+       "rank_absolute": 12,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[19]/div[1]/div[1]",
+       "domain": "www.pizzahut.co.uk",
+       "title": "Pizza Hut | Pizza Delivery",
+       "url": "https://www.pizzahut.co.uk/",
+       "cache_url": null,
+       "related_search_url": null,
+       "breadcrumb": "https://www.pizzahut.co.uk",
+       "website_name": "Pizza Hut",
+       "is_image": false,
+       "is_video": false,
+       "is_featured_snippet": false,
+       "is_malicious": false,
+       "is_web_story": false,
+       "checks": null,
+       "description": "Our food is prepared in store, in one kitchen, Start your order Deliver Collect Dine-in Delivery",
+       "pre_snippet": null,
+       "extended_snippet": null,
+       "images": null,
+       "amp_version": false,
+       "rating": null,
+       "price": null,
+       "highlighted": [
+        "Start your order Deliver Collect"
+       ],
+       "links": null,
+       "faq": null,
+       "extended_people_also_search": null,
+       "about_this_result": null,
+       "related_result": null,
+       "timestamp": null,
+       "rectangle": null
+      },
+      {
+       "type": "organic",
+       "rank_group": 7,
+       "rank_absolute": 13,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[21]/div[1]/div[1]",
+       "domain": "www.dominos.co.uk",
+       "title": "Domino's Pizza: Order Pizza Delivery & Takeaway Near You",
+       "url": "https://www.dominos.co.uk/",
+       "cache_url": null,
+       "related_search_url": null,
+       "breadcrumb": "https://www.dominos.co.uk",
+       "website_name": "Domino's",
+       "is_image": false,
+       "is_video": false,
+       "is_featured_snippet": false,
+       "is_malicious": false,
+       "is_web_story": false,
+       "checks": null,
+       "description": "Order delicious Domino's Pizza near you for speedy delivery or collection. Find your best deal online for hot, fresh pizza and sides.",
+       "pre_snippet": null,
+       "extended_snippet": null,
+       "images": null,
+       "amp_version": false,
+       "rating": null,
+       "price": null,
+       "highlighted": [
+        "Order delicious Domino's Pizza near you"
+       ],
+       "links": null,
+       "faq": null,
+       "extended_people_also_search": null,
+       "about_this_result": null,
+       "related_result": null,
+       "timestamp": null,
+       "rectangle": null
+      },
+      {
+       "type": "organic",
+       "rank_group": 8,
+       "rank_absolute": 14,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[23]/div[1]/div[1]",
+       "domain": "london.eater.com",
+       "title": "The Best Pizza in London",
+       "url": "https://london.eater.com/maps/best-pizza-london",
+       "cache_url": null,
+       "related_search_url": null,
+       "breadcrumb": "https://london.eater.com › maps › best-pizza-london",
+       "website_name": "Eater London",
+       "is_image": false,
+       "is_video": false,
+       "is_featured_snippet": false,
+       "is_malicious": false,
+       "is_web_story": false,
+       "checks": null,
+       "description": "The 18 Essential London Pizzerias From Neapolitan and NYC-style to somewhere-in-betweens by Daniel Young, James Hansen, and Feroz Gajia",
+       "pre_snippet": null,
+       "extended_snippet": null,
+       "images": null,
+       "amp_version": false,
+       "rating": null,
+       "price": null,
+       "highlighted": [
+        "The 18 Essential London Pizzerias"
+       ],
+       "links": null,
+       "faq": null,
+       "extended_people_also_search": null,
+       "about_this_result": null,
+       "related_result": null,
+       "timestamp": null,
+       "rectangle": null
+      },
+      {
+       "type": "organic",
+       "rank_group": 9,
+       "rank_absolute": 15,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[2]/div[2]/div[1]/div[1]/div[24]/div[1]/div[1]/div[1]",
+       "domain": "www.facebook.com",
+       "title": "Eating London's Biggest Pizza! | Mattdoesfitness",
+       "url": "https://www.facebook.com/Mattdoesfitness/videos/eating-londons-biggest-pizza/2584222618723888/",
+       "cache_url": null,
+       "related_search_url": null,
+       "breadcrumb": "440+ reactions  ·  3 days ago",
+       "website_name": "Facebook · Mattdoesfitness",
+       "is_image": false,
+       "is_video": true,
+       "is_featured_snippet": false,
+       "is_malicious": false,
+       "is_web_story": false,
+       "checks": [
+        "is_video"
+       ],
+       "description": "Matt and Ben attempt a 26-inch pizza challenge at Ray's Pizza in London, which contains approximately 8,200 calories.",
+       "pre_snippet": null,
+       "extended_snippet": null,
+       "images": null,
+       "amp_version": false,
+       "rating": null,
+       "price": null,
+       "highlighted": [
+        "Ray's Pizza in London"
+       ],
+       "links": null,
+       "faq": null,
+       "extended_people_also_search": null,
+       "about_this_result": null,
+       "related_result": null,
+       "timestamp": "2026-10-16 10:17:24 +00:00",
+       "rectangle": null
+      },
+      {
+       "type": "related_searches",
+       "rank_group": 1,
+       "rank_absolute": 16,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[1]/div[3]/div[1]/div[3]/div[1]/div[1]/div[1]/div[1]/div[2]",
+       "items": [
+        "Pizza near London",
+        "Pizza - tesco",
+        "Pizza near me takeaway",
+        "Pizza Wiki",
+        "Pizza Holloway",
+        "Pizza recipe",
+        "Pizza Pilgrims menu",
+        "Pizza picture"
+       ],
+       "rectangle": null
+      },
+      {
+       "type": "knowledge_graph",
+       "rank_group": 1,
+       "rank_absolute": 1,
+       "page": 1,
+       "position": "right",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[2]",
+       "title": "Pizza",
+       "subtitle": "Dish",
+       "description": "Pizza is an Italian dish typically consisting of a flat base of leavened wheat-based dough topped with tomato, cheese, and other ingredients, baked at a high temperature, traditionally in a wood-fired oven. Source: More Less Description",
+       "card_id": null,
+       "url": null,
+       "image_url": null,
+       "logo_url": null,
+       "cid": "2140288112563615677",
+       "items": [
+        {
+         "type": "knowledge_graph_images_item",
+         "rank_group": 0,
+         "rank_absolute": 0,
+         "page": 1,
+         "position": "left",
+         "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]",
+         "link": null,
+         "items": [
+          {
+           "type": "knowledge_graph_images_element",
+           "url": null,
+           "domain": null,
+           "alt": "Image of Pizza - Wikipedia",
+           "image_url": "https://api.dataforseo.com/cdn/i/10191017-0001-0139-0000-a2dc47f7723a:0",
+           "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]"
+          },
+          {
+           "type": "knowledge_graph_images_element",
+           "url": null,
+           "domain": null,
+           "alt": "Image of Margherita Pizza Recipe: Classic Neapolitan-Style | Ooni UK",
+           "image_url": "https://api.dataforseo.com/cdn/i/10191017-0001-0139-0000-a2dc47f7723a:1",
+           "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]"
+          },
+          {
+           "type": "knowledge_graph_images_element",
+           "url": null,
+           "domain": null,
+           "alt": "Image of Chicken Parmesan Pizza - Olives & Lamb",
+           "image_url": "https://api.dataforseo.com/cdn/i/10191017-0001-0139-0000-a2dc47f7723a:2",
+           "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[3]"
+          },
+          {
+           "type": "knowledge_graph_images_element",
+           "url": null,
+           "domain": null,
+           "alt": "Image of Sicilian Pizza – Gozney",
+           "image_url": "https://api.dataforseo.com/cdn/i/10191017-0001-0139-0000-a2dc47f7723a:3",
+           "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]"
+          }
+         ],
+         "rectangle": null
+        },
+        {
+         "type": "knowledge_graph_description_item",
+         "rank_group": 0,
+         "rank_absolute": 0,
+         "page": 1,
+         "position": "left",
+         "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]",
+         "text": "Pizza is an Italian dish typically consisting of a flat base of leavened wheat-based dough topped with tomato, cheese, and other ingredients, baked at a high temperature, traditionally in a wood-fired oven. Source: Wikipedia Wikipedia More Less Description",
+         "links": [
+          {
+           "type": "link_element",
+           "title": "Wikipedia",
+           "url": "https://en.wikipedia.org/wiki/Pizza",
+           "domain": "en.wikipedia.org",
+           "description": null,
+           "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/visd-inline-description[1]/div[1]/div[1]/a[1]"
+          },
+          {
+           "type": "link_element",
+           "title": "Wikipedia",
+           "url": "https://en.wikipedia.org/wiki/Pizza",
+           "domain": "en.wikipedia.org",
+           "description": null,
+           "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/visd-inline-description[1]/div[1]/span[2]/span[1]/span[1]/a[1]"
+          }
+         ],
+         "rectangle": null
+        },
+        {
+         "type": "knowledge_graph_carousel_item",
+         "rank_group": 0,
+         "rank_absolute": 0,
+         "page": 1,
+         "position": "left",
+         "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[2]/div[1]/div[4]/div[1]/div[1]",
+         "title": "People also search for",
+         "data_attrid": null,
+         "link": null,
+         "items": [
+          {
+           "type": "knowledge_graph_carousel_element",
+           "title": "Vegetable",
+           "subtitle": null,
+           "url": "https://www.google.com/search?sca_esv=25c28507a6789148&hl=en&gl=GB&sxsrf=APpeQns9CCTQd2XbZ_G7GmYYQROJKGONWQ:1792405043491&si=APenkKlisoOXLiCMwraINHtdqOQii4CK9kOlkQc8Apn-pS60yZTAb30e_pTjEhBh5dNYTD7AlBKfCvurSld0syeotV4pU7C0GoBm2oitgRYs6N89ZqHCOt1oaqzyfAL9PNYMWH1ox-bVfB2AmX8RYI-yLuOXG34Xj7kPPGovbqvSXSS72ZqbQ5CuMDUpCihZUz0l4ZCZif1u&q=Vegetable&sa=X&ved=2ahUKEwjHpKSP7cWXAxU-mWoFHQAXM6oQs9oBKAB6BAgVEAY",
+           "domain": "www.google.com",
+           "image_url": "https://api.dataforseo.com/cdn/i/10191017-0001-0139-0000-a2dc47f7723a:4",
+           "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[2]/div[1]/div[4]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]"
+          },
+          {
+           "type": "knowledge_graph_carousel_element",
+           "title": "Coffee",
+           "subtitle": null,
+           "url": "https://www.google.com/search?sca_esv=25c28507a6789148&hl=en&gl=GB&sxsrf=APpeQns9CCTQd2XbZ_G7GmYYQROJKGONWQ:1792405043491&si=APenkKlisoOXLiCMwraINHtdqOQii4CK9kOlkQc8Apn-pS60yWCQMvO2rF8JdIYXUU195nsFIRU6k-cABt5Un-cy5zXQZEOkjwBj3KdX9arYObeH_IlXGaC2A8m_Rd2t-sHnl3cdziATUOcMOluCIBrbq6zZaNHD9YNxzuwr4IzGfsMmRRisUWe4X2oxwRnz1z-q-jV_pUkM&q=Coffee&sa=X&ved=2ahUKEwjHpKSP7cWXAxU-mWoFHQAXM6oQs9oBKAB6BAgVEAo",
+           "domain": "www.google.com",
+           "image_url": "https://api.dataforseo.com/cdn/i/10191017-0001-0139-0000-a2dc47f7723a:5",
+           "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[2]/div[1]/div[4]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]"
+          },
+          {
+           "type": "knowledge_graph_carousel_element",
+           "title": "Tea",
+           "subtitle": null,
+           "url": "https://www.google.com/search?sca_esv=25c28507a6789148&hl=en&gl=GB&sxsrf=APpeQns9CCTQd2XbZ_G7GmYYQROJKGONWQ:1792405043491&si=APenkKnxxBAKu8uEyVJp5QG7kNERIzt0EhsYdVrbw5Is3icMpoFf8997YfT4-lxQZ3quJhUQJnJuJ3EyTdoo5ofUMtsIJXERO4SxwlKc2wM7s2J96FzXAsaru098iQ4kxD_j_aua22-VtmO2xnqr9Jl-sbW59lzy6BtMc6A88glNri21l3D69Hne0BK1xRPkZreCSs6bp38p&q=Tea&sa=X&ved=2ahUKEwjHpKSP7cWXAxU-mWoFHQAXM6oQs9oBKAB6BAgVEA4",
+           "domain": "www.google.com",
+           "image_url": "https://api.dataforseo.com/cdn/i/10191017-0001-0139-0000-a2dc47f7723a:6",
+           "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[2]/div[1]/div[4]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[3]/div[1]"
+          },
+          {
+           "type": "knowledge_graph_carousel_element",
+           "title": "White pizza",
+           "subtitle": null,
+           "url": "https://www.google.com/search?sca_esv=25c28507a6789148&hl=en&gl=GB&sxsrf=APpeQns9CCTQd2XbZ_G7GmYYQROJKGONWQ:1792405043491&si=APenkKmVGdgpMPDQZoEWS8RIAhsqXAKlNLP0B8DNkkiU9KPI0ZmMrS2FBcK2HDydhKe1izPeBJjVNeIoLQ8WoonmPcgNMAO3dVpTDaC67wFXvMQpz4MFiDfxoj_aWL-IUsAVEyGeeaDDEQznQ7McTl_6G0eAZVw4yqHMCkJLBYqjS_mJyf-4xNbZaF9dxedmW_MiaNQn8QcP3084yv1HXC9kIr8uiB8DtQ%3D%3D&q=White+pizza&sa=X&ved=2ahUKEwjHpKSP7cWXAxU-mWoFHQAXM6oQs9oBKAB6BAgVEBI",
+           "domain": "www.google.com",
+           "image_url": "https://api.dataforseo.com/cdn/i/10191017-0001-0139-0000-a2dc47f7723a:7",
+           "xpath": "/html[1]/body[1]/div[3]/div[1]/div[15]/div[2]/div[1]/div[4]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]/div[1]"
+          }
+         ],
+         "rectangle": null
+        }
+       ],
+       "rectangle": null
+      },
+      {
+       "type": "google_reviews",
+       "rank_group": 1,
+       "rank_absolute": 17,
+       "page": 1,
+       "position": "left",
+       "xpath": "/#document",
+       "reviews_count": 0,
+       "rating": null,
+       "place_id": "ChIJiWMeZeQFdkgRvXdY2rLUsx0",
+       "feature": "0x487605e4651e6389:0x1db3d4b2da5877bd",
+       "cid": "2140288112563615677",
+       "rectangle": null
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

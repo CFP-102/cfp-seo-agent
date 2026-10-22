@@ -1,0 +1,64 @@
+{
+ "_fixture_note": "SANDBOX RESPONSE captured 2026-10-22 from sandbox.dataforseo.com (structure identical to live; VALUES ARE DATAFORSEO DUMMY DATA, unrelated to the request). Used only as a test fixture.",
+ "version": "0.1.20260917",
+ "status_code": 20000,
+ "status_message": "Ok.",
+ "time": "0 sec.",
+ "cost": 0,
+ "tasks_count": 1,
+ "tasks_error": 0,
+ "tasks": [
+  {
+   "id": "10221345-2869-0392-2000-b686b8c48b00",
+   "status_code": 20000,
+   "status_message": "Ok.",
+   "time": "0 sec.",
+   "cost": 0,
+   "result_count": 1,
+   "path": [
+    "v3",
+    "dataforseo_labs",
+    "google",
+    "bulk_keyword_difficulty",
+    "live"
+   ],
+   "data": {
+    "api": "dataforseo_labs",
+    "function": "bulk_keyword_difficulty",
+    "se_type": "google",
+    "keywords": [
+     "seo tools",
+     "running shoes"
+    ],
+    "location_code": 2840,
+    "language_code": "en"
+   },
+   "result": [
+    {
+     "se_type": "google",
+     "location_code": 2840,
+     "language_code": "en",
+     "total_count": 3,
+     "items_count": 3,
+     "items": [
+      {
+       "se_type": "google",
+       "keyword": "dentist new york",
+       "keyword_difficulty": 33
+      },
+      {
+       "se_type": "google",
+       "keyword": "pizza brooklyn",
+       "keyword_difficulty": 23
+      },
+      {
+       "se_type": "google",
+       "keyword": "car dealer los angeles",
+       "keyword_difficulty": 25
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

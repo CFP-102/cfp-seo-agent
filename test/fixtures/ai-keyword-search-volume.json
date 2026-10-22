@@ -1,0 +1,177 @@
+{
+ "_fixture_note": "SANDBOX RESPONSE captured 2026-10-21 from sandbox.dataforseo.com (structure identical to live; VALUES ARE DATAFORSEO DUMMY DATA, unrelated to the request). Used only as a test fixture.",
+ "version": "0.1.20260917",
+ "status_code": 20000,
+ "status_message": "Ok.",
+ "time": "0 sec.",
+ "cost": 0,
+ "tasks_count": 1,
+ "tasks_error": 0,
+ "tasks": [
+  {
+   "id": "10211758-2869-0619-2000-297f9acb8938",
+   "status_code": 20000,
+   "status_message": "Ok.",
+   "time": "0 sec.",
+   "cost": 0,
+   "result_count": 1,
+   "path": [
+    "v3",
+    "ai_optimization",
+    "ai_keyword_data",
+    "keywords_search_volume",
+    "live"
+   ],
+   "data": {
+    "api": "ai_optimization",
+    "function": "keywords_search_volume",
+    "keywords": [
+     "seo tools"
+    ],
+    "location_code": 2840,
+    "language_code": "en"
+   },
+   "result": [
+    {
+     "location_code": 2840,
+     "language_code": "en",
+     "items_count": 2,
+     "items": [
+      {
+       "keyword": "seo",
+       "ai_search_volume": 117209,
+       "ai_monthly_searches": [
+        {
+         "year": 2026,
+         "month": 9,
+         "ai_search_volume": 117209
+        },
+        {
+         "year": 2026,
+         "month": 8,
+         "ai_search_volume": 77880
+        },
+        {
+         "year": 2026,
+         "month": 7,
+         "ai_search_volume": 93165
+        },
+        {
+         "year": 2026,
+         "month": 6,
+         "ai_search_volume": 86786
+        },
+        {
+         "year": 2026,
+         "month": 5,
+         "ai_search_volume": 117383
+        },
+        {
+         "year": 2026,
+         "month": 4,
+         "ai_search_volume": 116836
+        },
+        {
+         "year": 2026,
+         "month": 3,
+         "ai_search_volume": 121773
+        },
+        {
+         "year": 2026,
+         "month": 2,
+         "ai_search_volume": 122182
+        },
+        {
+         "year": 2026,
+         "month": 1,
+         "ai_search_volume": 131483
+        },
+        {
+         "year": 2025,
+         "month": 12,
+         "ai_search_volume": 145809
+        },
+        {
+         "year": 2025,
+         "month": 11,
+         "ai_search_volume": 135137
+        },
+        {
+         "year": 2025,
+         "month": 10,
+         "ai_search_volume": 131758
+        }
+       ]
+      },
+      {
+       "keyword": "seo tools",
+       "ai_search_volume": 5965,
+       "ai_monthly_searches": [
+        {
+         "year": 2026,
+         "month": 9,
+         "ai_search_volume": 5965
+        },
+        {
+         "year": 2026,
+         "month": 8,
+         "ai_search_volume": 2947
+        },
+        {
+         "year": 2026,
+         "month": 7,
+         "ai_search_volume": 2890
+        },
+        {
+         "year": 2026,
+         "month": 6,
+         "ai_search_volume": 2470
+        },
+        {
+         "year": 2026,
+         "month": 5,
+         "ai_search_volume": 3610
+        },
+        {
+         "year": 2026,
+         "month": 4,
+         "ai_search_volume": 3733
+        },
+        {
+         "year": 2026,
+         "month": 3,
+         "ai_search_volume": 4286
+        },
+        {
+         "year": 2026,
+         "month": 2,
+         "ai_search_volume": 4717
+        },
+        {
+         "year": 2026,
+         "month": 1,
+         "ai_search_volume": 5214
+        },
+        {
+         "year": 2025,
+         "month": 12,
+         "ai_search_volume": 5690
+        },
+        {
+         "year": 2025,
+         "month": 11,
+         "ai_search_volume": 5209
+        },
+        {
+         "year": 2025,
+         "month": 10,
+         "ai_search_volume": 5039
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

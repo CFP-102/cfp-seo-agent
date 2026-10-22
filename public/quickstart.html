@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kaufanleitung – {{NAME}}</title><link rel="canonical" href="{{BASE_URL}}/quickstart.html"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css"></head>
+<body><header class="top"><div class="wrap bar"><a class="brand" href="/"><span class="mark" aria-hidden="true"></span>{{NAME}}</a><nav><a href="#rest">REST</a><a href="#mcp">MCP</a><a href="#hilfe">Hilfe</a></nav></div></header>
+<main class="wrap legal"><p class="eyebrow">Erster Abruf</p><h1>Daten kaufen mit REST oder MCP</h1>
+<p class="lead">Erst kostenlos prüfen, dann einen einzelnen Abruf freigeben. Sie benötigen kein Kundenkonto und keinen DataForSEO-Schlüssel.</p>
+{{MODE_NOTE}}<p>Das Beispiel nutzt Google SERP: bis zu 10 organische Google-Ergebnisse zu einem Suchbegriff. Aktueller Preis: <strong>{{SERP_PRICE}} USDC</strong>. Das maßgebliche Netzwerk und der Preis stehen im <a href="/api/v1/services">Live-Katalog</a> und in der Zahlungsanforderung. Das Angebot richtet sich an <strong>Unternehmer (B2B)</strong>; es gelten die <a href="/legal.html#terms">Nutzungsbedingungen</a>.</p>
+<h2>1. Kostenlos ansehen und Eingabe prüfen</h2><p>Diese Befehle enthalten keine Zahlung. Preflight bestätigt gültige Eingaben und den aktuellen Preis. HTTP 402 bei einem unbezahlten Datenabruf ist eine Zahlungsanforderung.</p><pre><code>curl {{BASE_URL}}/api/v1/services
+
+curl -X POST {{BASE_URL}}/api/v1/preflight/google-serp \
+  -H &#x27;content-type: application/json&#x27; \
+  -d &#x27;{&quot;keyword&quot;:&quot;running shoes&quot;,&quot;location_code&quot;:2840,&quot;language_code&quot;:&quot;en&quot;}&#x27; </code></pre>
+<h2 id="rest">2. Beispiel herunterladen und Vorschau starten</h2><p>Voraussetzung: Node.js 24 oder neuer. Alle folgenden Installationsbefehle laufen in einem eigenen Verzeichnis. Das Beispiel unterstützt REST und MCP. Ohne <code>APPROVE_USDC</code> führt es nur Katalog und Preflight aus.</p><pre><code>mkdir agent-api-buyer
+cd agent-api-buyer
+npm init -y
+printf '%s\n' '.env.buyer' 'agent-api-purchase.json' 'node_modules/' &gt;&gt; .gitignore
+npm install @x402/fetch@2.28.0 @x402/evm@2.28.0 @x402/mcp@2.28.0 @modelcontextprotocol/sdk@1.32.1 viem@2.57.7
+curl -fSL {{BASE_URL}}/examples/buyer.mjs -o buyer.mjs
+node buyer.mjs</code></pre>
+<p>Der <a href="/examples/buyer.mjs">vollständige Beispielcode</a> ist lesbar. Er prüft Preis, Empfänger, offiziellen USDC-Vertrag, Base-Netzwerk und angefragte Ressource, bevor er einmal signiert. Eine bestehende Kaufdatei blockiert einen weiteren Kauf im gleichen Verzeichnis.</p>
+<h2>3. Wallet lokal einrichten</h2><p>Für den Kauf benötigen Sie eine eigene Käuferwallet mit USDC auf Base. Die x402-Abwicklung übernimmt die Gasgebühr dieses Kaufs. Tragen Sie den Schlüssel ausschließlich lokal in eine Datei <code>.env.buyer</code> ein. Datei und Schlüssel gehören weder in einen Chat noch in Git oder ein Webformular.</p><pre><code>BUYER_PRIVATE_KEY=YOUR_DEDICATED_BUYER_KEY
+MERCHANT_ADDRESS={{PAY_TO_ADDRESS}}</code></pre>
+<p>Der angegebene Empfänger ist die Betreiberwallet. Das Beispiel prüft diesen Wert zusätzlich gegen die tatsächliche Zahlungsanforderung. Eine andere oder höhere Zahlungsanforderung wird nicht freigegeben.</p>
+<h2>4. Genau einen Kauf freigeben</h2><p><strong>Wählen Sie REST oder MCP.</strong> Der folgende REST-Befehl erlaubt einen einzigen SERP-Kauf bis zum angezeigten Betrag. Er löst eine echte USDC-Zahlung aus.</p><pre><code>chmod 600 .env.buyer
+APPROVE_USDC={{SERP_PRICE}} node --env-file=.env.buyer buyer.mjs</code></pre>
+<p>Die Antwort wird in <code>agent-api-purchase.json</code> gespeichert (Dateirechte 600), einschließlich Anfragekennung und Ergebnis-Token. Der Schlüssel und die Zahlungsunterschrift werden nicht gespeichert. Bewahren Sie diese Datei privat auf und löschen Sie sie nicht, um einen unklaren Kauf erneut zu versuchen.</p>
+<h2 id="mcp">MCP verwenden</h2><p>Endpoint: <code>{{BASE_URL}}/mcp</code>, Streamable HTTP. Die folgende Konfiguration verbindet einen passenden MCP-Client mit den vier kostenlosen Werkzeugen. Die genaue Konfigurationsform hängt vom Client ab.</p><pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;agent-data-api&quot;: {
+      &quot;type&quot;: &quot;http&quot;,
+      &quot;url&quot;: &quot;{{BASE_URL}}/mcp&quot;
+    }
+  }
+}</code></pre>
+<p><code>list_services</code> liest den Katalog; <code>preflight</code> prüft die Eingabe. <code>get_result</code> holt vorhandene Ergebnisse mit Token ab. <code>retry_request</code> ist eine ausdrückliche Wiederholung eines bezahlten, fehlgeschlagenen Abrufs und löst einen neuen Datenabruf aus. Das Verbinden allein zahlt nichts.</p>
+<p>Für bezahlte Werkzeuge benötigt der Käuferclient x402-Unterstützung. Ein gewöhnlicher MCP-Client erhält nur die Zahlungsanforderung. Nutzen Sie alternativ im selben Beispiel einen einzelnen MCP-Kauf <strong>anstelle</strong> des REST-Kaufs:</p><pre><code>APPROVE_USDC={{SERP_PRICE}} node --env-file=.env.buyer buyer.mjs --mcp</code></pre>
+<p>Das Beispiel verwendet <code>@x402/mcp</code> und prüft dieselben Grenzen wie bei REST. Es gibt keine pauschale Freigabe für andere Werkzeuge oder weitere Zahlungen.</p>
+<h2>Auftrag zum Kopieren für einen KI-Agenten</h2><pre><code>Bereite eine Google-SERP-Abfrage für „running shoes“, USA (2840), Englisch vor.
+Lies zuerst den kostenlosen Katalog und prüfe die Eingabe per Preflight.
+Nenne den aktuellen Preis und das Netzwerk. Kaufe erst nach meiner ausdrücklichen
+Freigabe eines Betragslimits. Führe genau einen Kauf aus. Stoppe bei unklarer
+Zahlung oder verlorener Antwort; keine neue Zahlung zur Ergebnisabholung.
+Zugang: {{BASE_URL}}/mcp
+Anleitung: {{BASE_URL}}/quickstart.html</code></pre>
+<h2 id="hilfe">Wenn eine Antwort fehlt</h2><p>Bei Timeout, Verbindungsabbruch oder einer Fehlermeldung nach dem Senden der Zahlungsfreigabe ist eine fehlende Antwort <strong>kein Beweis für eine fehlende Zahlung</strong>. Nicht automatisch erneut kaufen oder eine neue Zahlungsfreigabe erzeugen.</p>
+<ol><li>Vorhandene Kaufdatei und öffentliche Transaktionskennung aufbewahren.</li><li>Mit vorhandener Anfragekennung und Ergebnis-Token den gespeicherten Vorgang abrufen:</li></ol><pre><code>curl {{BASE_URL}}/api/v1/results/REQUEST_ID \
+  -H &#x27;Authorization: Bearer RESULT_TOKEN&#x27; </code></pre>
+<p>Das Token gehört zur privaten Antwort. Bei einer ganz verlorenen Antwort kann derselbe ursprünglich signierte REST-Aufruf innerhalb von 15 Minuten das gespeicherte Ergebnis liefern, wenn Sie ihn noch sicher lokal vorliegen haben. Das Beispiel speichert keine Signatur; wenn Anfragekennung/Token fehlen, wenden Sie sich mit dem öffentlichen Zahlungsbeleg an <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>. Keine Schlüssel oder Signaturen senden.</p>
+<p>Nach einem bestätigten Upstream-Fehler erlaubt der Dienst eine ausdrückliche kostenlose Wiederholung unter <code>POST /api/v1/results/REQUEST_ID/retry</code> mit demselben Bearer-Token. Die Entscheidung erfolgt erst nach Prüfung des Vorgangs; keine neue USDC-Zahlung. Eingaben und Ergebnisse werden nach 30 Tagen gelöscht.</p>
+<h2>Die anderen Dienste</h2><p>Alle sechs REST-Routen, MCP-Werkzeuge, Preise und Grenzen finden Sie im <a href="/api/v1/services">Katalog</a> und in <a href="/openapi.json">OpenAPI</a>. Keyword Ideas liefert wortbasierte Suggestions zu genau einem Startbegriff. KI-Nachfragewerte sind modellierte Schätzungen. Dieses Käuferbeispiel kauft ausschließlich Google SERP.</p>
+<p><a href="/llms.txt">Übersicht für Agenten</a> · <a href="/">Zur Startseite</a></p></main>
+<footer><div class="wrap foot"><span>{{NAME}}</span><a href="/legal.html">Datenschutz und Nutzungsbedingungen</a></div></footer></body></html>

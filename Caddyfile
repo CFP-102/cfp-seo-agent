@@ -1,0 +1,56 @@
+# Caddy obtains and renews the HTTPS certificate (Let's Encrypt) automatically.
+# DOMAIN comes from .env via docker-compose.
+{
+	servers {
+		timeouts {
+			read_header 10s
+			read_body 30s
+			idle 2m
+		}
+	}
+}
+
+{$DOMAIN} {
+	encode zstd gzip
+
+	# Only the app's public surface is proxied; the request body is capped well above our own 128 KB limit.
+	request_body {
+		max_size 256KB
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		X-Frame-Options "DENY"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+		-Server
+		-X-Powered-By
+	}
+
+	# Access log without IP addresses, headers (Authorization, payment signatures) or bodies.
+	log {
+		output stdout
+		format filter {
+			wrap json
+			fields {
+				request>remote_ip delete
+				request>remote_port delete
+				request>client_ip delete
+				request>headers delete
+				request>tls delete
+			}
+		}
+	}
+
+	reverse_proxy app:3000 {
+		# Caddy ignores X-Forwarded-* from untrusted clients and sets its own: the app sees the real client IP.
+		health_uri /health
+		health_interval 30s
+		transport http {
+			dial_timeout 5s
+			# Allow the 120-second upstream limit plus payment/processing overhead.
+			response_header_timeout 150s
+		}
+	}
+}

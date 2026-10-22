@@ -1,0 +1,699 @@
+{
+ "_fixture_note": "SANDBOX RESPONSE captured 2026-10-21 from sandbox.dataforseo.com (structure identical to live; VALUES ARE DATAFORSEO DUMMY DATA, unrelated to the request). Used only as a test fixture.",
+ "version": "0.1.20260917",
+ "status_code": 20000,
+ "status_message": "Ok.",
+ "time": "0 sec.",
+ "cost": 0,
+ "tasks_count": 1,
+ "tasks_error": 0,
+ "tasks": [
+  {
+   "id": "10211758-2869-0386-2000-28dcb882ddee",
+   "status_code": 20000,
+   "status_message": "Ok.",
+   "time": "0 sec.",
+   "cost": 0,
+   "result_count": 1,
+   "path": [
+    "v3",
+    "dataforseo_labs",
+    "google",
+    "competitors_domain",
+    "live"
+   ],
+   "data": {
+    "api": "dataforseo_labs",
+    "function": "competitors_domain",
+    "se_type": "google",
+    "target": "example.com",
+    "location_code": 2840,
+    "language_code": "en",
+    "limit": 10
+   },
+   "result": [
+    {
+     "se_type": "google",
+     "target": "newmouth.com",
+     "location_code": 2840,
+     "language_code": "en",
+     "total_count": 993,
+     "items_count": 3,
+     "items": [
+      {
+       "se_type": "google",
+       "domain": "youtube.com",
+       "avg_position": 13.843478260869565,
+       "sum_position": 1592,
+       "intersections": 115,
+       "full_domain_metrics": {
+        "organic": {
+         "pos_1": 4936436,
+         "pos_2_3": 8746669,
+         "pos_4_10": 53257275,
+         "pos_11_20": 46232950,
+         "pos_21_30": 19046995,
+         "pos_31_40": 9072134,
+         "pos_41_50": 4877510,
+         "pos_51_60": 2630791,
+         "pos_61_70": 1379488,
+         "pos_71_80": 638386,
+         "pos_81_90": 270102,
+         "pos_91_100": 97979,
+         "etv": 3055537510.621658,
+         "count": 151186715,
+         "estimated_paid_traffic_cost": 3993250059.729753,
+         "is_new": 108504091,
+         "is_up": 16319995,
+         "is_down": 19455163,
+         "is_lost": 103109552,
+         "clickstream_etv": 507982016.7904747,
+         "clickstream_gender_distribution": {
+          "female": 49,
+          "male": 50
+         },
+         "clickstream_age_distribution": {
+          "18-24": 30,
+          "25-34": 16,
+          "35-44": 14,
+          "45-54": 28,
+          "55-64": 9
+         }
+        },
+        "paid": {
+         "pos_1": 3,
+         "pos_2_3": 1,
+         "pos_4_10": 0,
+         "pos_11_20": 0,
+         "pos_21_30": 0,
+         "pos_31_40": 0,
+         "pos_41_50": 0,
+         "pos_51_60": 0,
+         "pos_61_70": 0,
+         "pos_71_80": 0,
+         "pos_81_90": 0,
+         "pos_91_100": 0,
+         "etv": 17.852999687194824,
+         "count": 4,
+         "estimated_paid_traffic_cost": 61.052489280700684,
+         "is_new": 4,
+         "is_up": 0,
+         "is_down": 0,
+         "is_lost": 8,
+         "clickstream_etv": 3.5549999999999997,
+         "clickstream_gender_distribution": {
+          "female": 0,
+          "male": 100
+         },
+         "clickstream_age_distribution": {
+          "18-24": 0,
+          "25-34": 100,
+          "35-44": 0,
+          "45-54": 0,
+          "55-64": 0
+         }
+        },
+        "local_pack": null,
+        "featured_snippet": null
+       },
+       "metrics": {
+        "organic": {
+         "pos_1": 0,
+         "pos_2_3": 0,
+         "pos_4_10": 0,
+         "pos_11_20": 0,
+         "pos_21_30": 0,
+         "pos_31_40": 0,
+         "pos_41_50": 2,
+         "pos_51_60": 14,
+         "pos_61_70": 33,
+         "pos_71_80": 28,
+         "pos_81_90": 29,
+         "pos_91_100": 9,
+         "etv": 236.46000405214727,
+         "count": 115,
+         "estimated_paid_traffic_cost": 550.4887525131926,
+         "is_new": 68,
+         "is_up": 24,
+         "is_down": 21,
+         "is_lost": 0,
+         "clickstream_etv": 9.2988,
+         "clickstream_gender_distribution": {
+          "female": 1775,
+          "male": 1124
+         },
+         "clickstream_age_distribution": {
+          "18-24": 198,
+          "25-34": 953,
+          "35-44": 1311,
+          "45-54": 435,
+          "55-64": 0
+         }
+        },
+        "paid": {
+         "pos_1": 0,
+         "pos_2_3": 0,
+         "pos_4_10": 0,
+         "pos_11_20": 0,
+         "pos_21_30": 0,
+         "pos_31_40": 0,
+         "pos_41_50": 0,
+         "pos_51_60": 0,
+         "pos_61_70": 0,
+         "pos_71_80": 0,
+         "pos_81_90": 0,
+         "pos_91_100": 0,
+         "etv": 0,
+         "count": 0,
+         "estimated_paid_traffic_cost": 0,
+         "is_new": 0,
+         "is_up": 0,
+         "is_down": 0,
+         "is_lost": 0,
+         "clickstream_etv": 0,
+         "clickstream_gender_distribution": {
+          "female": 0,
+          "male": 0
+         },
+         "clickstream_age_distribution": {
+          "18-24": 0,
+          "25-34": 0,
+          "35-44": 0,
+          "45-54": 0,
+          "55-64": 0
+         }
+        },
+        "local_pack": null,
+        "featured_snippet": null
+       },
+       "competitor_metrics": {
+        "organic": {
+         "pos_1": 1,
+         "pos_2_3": 1,
+         "pos_4_10": 57,
+         "pos_11_20": 40,
+         "pos_21_30": 7,
+         "pos_31_40": 2,
+         "pos_41_50": 6,
+         "pos_51_60": 1,
+         "pos_61_70": 0,
+         "pos_71_80": 0,
+         "pos_81_90": 0,
+         "pos_91_100": 0,
+         "etv": 1524.4579883534461,
+         "count": 115,
+         "estimated_paid_traffic_cost": 3978.3035071603954,
+         "is_new": 68,
+         "is_up": 18,
+         "is_down": 24,
+         "is_lost": 0,
+         "clickstream_etv": 86.10489977896214,
+         "clickstream_gender_distribution": {
+          "female": 766,
+          "male": 529
+         },
+         "clickstream_age_distribution": {
+          "18-24": 125,
+          "25-34": 402,
+          "35-44": 536,
+          "45-54": 228,
+          "55-64": 0
+         }
+        },
+        "paid": {
+         "pos_1": 0,
+         "pos_2_3": 0,
+         "pos_4_10": 0,
+         "pos_11_20": 0,
+         "pos_21_30": 0,
+         "pos_31_40": 0,
+         "pos_41_50": 0,
+         "pos_51_60": 0,
+         "pos_61_70": 0,
+         "pos_71_80": 0,
+         "pos_81_90": 0,
+         "pos_91_100": 0,
+         "etv": 0,
+         "count": 0,
+         "estimated_paid_traffic_cost": 0,
+         "is_new": 0,
+         "is_up": 0,
+         "is_down": 0,
+         "is_lost": 0,
+         "clickstream_etv": 0,
+         "clickstream_gender_distribution": {
+          "female": 0,
+          "male": 0
+         },
+         "clickstream_age_distribution": {
+          "18-24": 0,
+          "25-34": 0,
+          "35-44": 0,
+          "45-54": 0,
+          "55-64": 0
+         }
+        },
+        "local_pack": null,
+        "featured_snippet": null
+       }
+      },
+      {
+       "se_type": "google",
+       "domain": "trysnow.com",
+       "avg_position": 43.87826086956522,
+       "sum_position": 5046,
+       "intersections": 115,
+       "full_domain_metrics": {
+        "organic": {
+         "pos_1": 116,
+         "pos_2_3": 256,
+         "pos_4_10": 870,
+         "pos_11_20": 1537,
+         "pos_21_30": 1914,
+         "pos_31_40": 2295,
+         "pos_41_50": 2417,
+         "pos_51_60": 2843,
+         "pos_61_70": 2636,
+         "pos_71_80": 2197,
+         "pos_81_90": 1473,
+         "pos_91_100": 636,
+         "etv": 40312.95184815861,
+         "count": 19190,
+         "estimated_paid_traffic_cost": 115586.36984097998,
+         "is_new": 7548,
+         "is_up": 5607,
+         "is_down": 5487,
+         "is_lost": 11721,
+         "clickstream_etv": 3996.8767,
+         "clickstream_gender_distribution": {
+          "female": 50,
+          "male": 49
+         },
+         "clickstream_age_distribution": {
+          "18-24": 34,
+          "25-34": 16,
+          "35-44": 13,
+          "45-54": 27,
+          "55-64": 8
+         }
+        },
+        "paid": {
+         "pos_1": 0,
+         "pos_2_3": 0,
+         "pos_4_10": 0,
+         "pos_11_20": 0,
+         "pos_21_30": 0,
+         "pos_31_40": 0,
+         "pos_41_50": 0,
+         "pos_51_60": 0,
+         "pos_61_70": 0,
+         "pos_71_80": 0,
+         "pos_81_90": 0,
+         "pos_91_100": 0,
+         "etv": 0,
+         "count": 0,
+         "estimated_paid_traffic_cost": 0,
+         "is_new": 0,
+         "is_up": 0,
+         "is_down": 0,
+         "is_lost": 0,
+         "clickstream_etv": 0,
+         "clickstream_gender_distribution": {
+          "female": 0,
+          "male": 0
+         },
+         "clickstream_age_distribution": {
+          "18-24": 0,
+          "25-34": 0,
+          "35-44": 0,
+          "45-54": 0,
+          "55-64": 0
+         }
+        },
+        "local_pack": null,
+        "featured_snippet": null
+       },
+       "metrics": {
+        "organic": {
+         "pos_1": 0,
+         "pos_2_3": 0,
+         "pos_4_10": 0,
+         "pos_11_20": 0,
+         "pos_21_30": 0,
+         "pos_31_40": 0,
+         "pos_41_50": 2,
+         "pos_51_60": 14,
+         "pos_61_70": 33,
+         "pos_71_80": 28,
+         "pos_81_90": 29,
+         "pos_91_100": 9,
+         "etv": 236.46000405214727,
+         "count": 115,
+         "estimated_paid_traffic_cost": 550.4887525131926,
+         "is_new": 68,
+         "is_up": 24,
+         "is_down": 21,
+         "is_lost": 0,
+         "clickstream_etv": 9.2988,
+         "clickstream_gender_distribution": {
+          "female": 1775,
+          "male": 1124
+         },
+         "clickstream_age_distribution": {
+          "18-24": 198,
+          "25-34": 953,
+          "35-44": 1311,
+          "45-54": 435,
+          "55-64": 0
+         }
+        },
+        "paid": {
+         "pos_1": 0,
+         "pos_2_3": 0,
+         "pos_4_10": 0,
+         "pos_11_20": 0,
+         "pos_21_30": 0,
+         "pos_31_40": 0,
+         "pos_41_50": 0,
+         "pos_51_60": 0,
+         "pos_61_70": 0,
+         "pos_71_80": 0,
+         "pos_81_90": 0,
+         "pos_91_100": 0,
+         "etv": 0,
+         "count": 0,
+         "estimated_paid_traffic_cost": 0,
+         "is_new": 0,
+         "is_up": 0,
+         "is_down": 0,
+         "is_lost": 0,
+         "clickstream_etv": 0,
+         "clickstream_gender_distribution": {
+          "female": 0,
+          "male": 0
+         },
+         "clickstream_age_distribution": {
+          "18-24": 0,
+          "25-34": 0,
+          "35-44": 0,
+          "45-54": 0,
+          "55-64": 0
+         }
+        },
+        "local_pack": null,
+        "featured_snippet": null
+       },
+       "competitor_metrics": {
+        "organic": {
+         "pos_1": 2,
+         "pos_2_3": 0,
+         "pos_4_10": 3,
+         "pos_11_20": 7,
+         "pos_21_30": 9,
+         "pos_31_40": 16,
+         "pos_41_50": 35,
+         "pos_51_60": 31,
+         "pos_61_70": 10,
+         "pos_71_80": 2,
+         "pos_81_90": 0,
+         "pos_91_100": 0,
+         "etv": 289.63300429843366,
+         "count": 115,
+         "estimated_paid_traffic_cost": 625.1515401853248,
+         "is_new": 46,
+         "is_up": 45,
+         "is_down": 22,
+         "is_lost": 0,
+         "clickstream_etv": 12.965499885380268,
+         "clickstream_gender_distribution": {
+          "female": 766,
+          "male": 529
+         },
+         "clickstream_age_distribution": {
+          "18-24": 125,
+          "25-34": 402,
+          "35-44": 536,
+          "45-54": 228,
+          "55-64": 0
+         }
+        },
+        "paid": {
+         "pos_1": 0,
+         "pos_2_3": 0,
+         "pos_4_10": 0,
+         "pos_11_20": 0,
+         "pos_21_30": 0,
+         "pos_31_40": 0,
+         "pos_41_50": 0,
+         "pos_51_60": 0,
+         "pos_61_70": 0,
+         "pos_71_80": 0,
+         "pos_81_90": 0,
+         "pos_91_100": 0,
+         "etv": 0,
+         "count": 0,
+         "estimated_paid_traffic_cost": 0,
+         "is_new": 0,
+         "is_up": 0,
+         "is_down": 0,
+         "is_lost": 0,
+         "clickstream_etv": 0,
+         "clickstream_gender_distribution": {
+          "female": 0,
+          "male": 0
+         },
+         "clickstream_age_distribution": {
+          "18-24": 0,
+          "25-34": 0,
+          "35-44": 0,
+          "45-54": 0,
+          "55-64": 0
+         }
+        },
+        "local_pack": null,
+        "featured_snippet": null
+       }
+      },
+      {
+       "se_type": "google",
+       "domain": "health.com",
+       "avg_position": 11.71304347826087,
+       "sum_position": 1347,
+       "intersections": 115,
+       "full_domain_metrics": {
+        "organic": {
+         "pos_1": 9353,
+         "pos_2_3": 29469,
+         "pos_4_10": 125671,
+         "pos_11_20": 213113,
+         "pos_21_30": 195343,
+         "pos_31_40": 188986,
+         "pos_41_50": 160972,
+         "pos_51_60": 113344,
+         "pos_61_70": 65714,
+         "pos_71_80": 30097,
+         "pos_81_90": 12279,
+         "pos_91_100": 4267,
+         "etv": 9114889.069699308,
+         "count": 1148608,
+         "estimated_paid_traffic_cost": 14662950.659828488,
+         "is_new": 393283,
+         "is_up": 371623,
+         "is_down": 326792,
+         "is_lost": 620118,
+         "clickstream_etv": 566802.18683599,
+         "clickstream_gender_distribution": {
+          "female": 53,
+          "male": 46
+         },
+         "clickstream_age_distribution": {
+          "18-24": 28,
+          "25-34": 13,
+          "35-44": 12,
+          "45-54": 31,
+          "55-64": 14
+         }
+        },
+        "paid": {
+         "pos_1": 0,
+         "pos_2_3": 0,
+         "pos_4_10": 0,
+         "pos_11_20": 0,
+         "pos_21_30": 0,
+         "pos_31_40": 0,
+         "pos_41_50": 0,
+         "pos_51_60": 0,
+         "pos_61_70": 0,
+         "pos_71_80": 0,
+         "pos_81_90": 0,
+         "pos_91_100": 0,
+         "etv": 0,
+         "count": 0,
+         "estimated_paid_traffic_cost": 0,
+         "is_new": 0,
+         "is_up": 0,
+         "is_down": 0,
+         "is_lost": 0,
+         "clickstream_etv": 0,
+         "clickstream_gender_distribution": {
+          "female": 0,
+          "male": 0
+         },
+         "clickstream_age_distribution": {
+          "18-24": 0,
+          "25-34": 0,
+          "35-44": 0,
+          "45-54": 0,
+          "55-64": 0
+         }
+        },
+        "local_pack": null,
+        "featured_snippet": null
+       },
+       "metrics": {
+        "organic": {
+         "pos_1": 0,
+         "pos_2_3": 0,
+         "pos_4_10": 0,
+         "pos_11_20": 0,
+         "pos_21_30": 0,
+         "pos_31_40": 0,
+         "pos_41_50": 2,
+         "pos_51_60": 14,
+         "pos_61_70": 33,
+         "pos_71_80": 28,
+         "pos_81_90": 29,
+         "pos_91_100": 9,
+         "etv": 236.46000405214727,
+         "count": 115,
+         "estimated_paid_traffic_cost": 550.4887525131926,
+         "is_new": 68,
+         "is_up": 24,
+         "is_down": 21,
+         "is_lost": 0,
+         "clickstream_etv": 9.2988,
+         "clickstream_gender_distribution": {
+          "female": 1775,
+          "male": 1124
+         },
+         "clickstream_age_distribution": {
+          "18-24": 198,
+          "25-34": 953,
+          "35-44": 1311,
+          "45-54": 435,
+          "55-64": 0
+         }
+        },
+        "paid": {
+         "pos_1": 0,
+         "pos_2_3": 0,
+         "pos_4_10": 0,
+         "pos_11_20": 0,
+         "pos_21_30": 0,
+         "pos_31_40": 0,
+         "pos_41_50": 0,
+         "pos_51_60": 0,
+         "pos_61_70": 0,
+         "pos_71_80": 0,
+         "pos_81_90": 0,
+         "pos_91_100": 0,
+         "etv": 0,
+         "count": 0,
+         "estimated_paid_traffic_cost": 0,
+         "is_new": 0,
+         "is_up": 0,
+         "is_down": 0,
+         "is_lost": 0,
+         "clickstream_etv": 0,
+         "clickstream_gender_distribution": {
+          "female": 0,
+          "male": 0
+         },
+         "clickstream_age_distribution": {
+          "18-24": 0,
+          "25-34": 0,
+          "35-44": 0,
+          "45-54": 0,
+          "55-64": 0
+         }
+        },
+        "local_pack": null,
+        "featured_snippet": null
+       },
+       "competitor_metrics": {
+        "organic": {
+         "pos_1": 8,
+         "pos_2_3": 19,
+         "pos_4_10": 37,
+         "pos_11_20": 28,
+         "pos_21_30": 18,
+         "pos_31_40": 4,
+         "pos_41_50": 0,
+         "pos_51_60": 1,
+         "pos_61_70": 0,
+         "pos_71_80": 0,
+         "pos_81_90": 0,
+         "pos_91_100": 0,
+         "etv": 17596.645605921745,
+         "count": 115,
+         "estimated_paid_traffic_cost": 48607.68472119048,
+         "is_new": 21,
+         "is_up": 33,
+         "is_down": 54,
+         "is_lost": 0,
+         "clickstream_etv": 262.95070464909077,
+         "clickstream_gender_distribution": {
+          "female": 766,
+          "male": 529
+         },
+         "clickstream_age_distribution": {
+          "18-24": 125,
+          "25-34": 402,
+          "35-44": 536,
+          "45-54": 228,
+          "55-64": 0
+         }
+        },
+        "paid": {
+         "pos_1": 0,
+         "pos_2_3": 0,
+         "pos_4_10": 0,
+         "pos_11_20": 0,
+         "pos_21_30": 0,
+         "pos_31_40": 0,
+         "pos_41_50": 0,
+         "pos_51_60": 0,
+         "pos_61_70": 0,
+         "pos_71_80": 0,
+         "pos_81_90": 0,
+         "pos_91_100": 0,
+         "etv": 0,
+         "count": 0,
+         "estimated_paid_traffic_cost": 0,
+         "is_new": 0,
+         "is_up": 0,
+         "is_down": 0,
+         "is_lost": 0,
+         "clickstream_etv": 0,
+         "clickstream_gender_distribution": {
+          "female": 0,
+          "male": 0
+         },
+         "clickstream_age_distribution": {
+          "18-24": 0,
+          "25-34": 0,
+          "35-44": 0,
+          "45-54": 0,
+          "55-64": 0
+         }
+        },
+        "local_pack": null,
+        "featured_snippet": null
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,86 @@
+{
+ "_fixture_note": "SANDBOX RESPONSE captured 2026-10-21 from sandbox.dataforseo.com (structure identical to live; VALUES ARE DATAFORSEO DUMMY DATA, unrelated to the request). Used only as a test fixture.",
+ "version": "0.1.20260917",
+ "status_code": 20000,
+ "status_message": "Ok.",
+ "time": "0 sec.",
+ "cost": 0,
+ "tasks_count": 1,
+ "tasks_error": 0,
+ "tasks": [
+  {
+   "id": "10211758-2869-0541-2000-681a480fe5b5",
+   "status_code": 20000,
+   "status_message": "Ok.",
+   "time": "0 sec.",
+   "cost": 0,
+   "result_count": 1,
+   "path": [
+    "v3",
+    "dataforseo_labs",
+    "google",
+    "search_intent",
+    "live"
+   ],
+   "data": {
+    "api": "dataforseo_labs",
+    "function": "search_intent",
+    "se_type": "google",
+    "keywords": [
+     "buy running shoes",
+     "how to tie a tie"
+    ],
+    "language_code": "en"
+   },
+   "result": [
+    {
+     "items_count": 4,
+     "items": [
+      {
+       "keyword": "login page",
+       "keyword_intent": {
+        "label": "navigational",
+        "probability": 0.9999
+       },
+       "secondary_keyword_intents": null
+      },
+      {
+       "keyword": "transmitter",
+       "keyword_intent": {
+        "label": "transactional",
+        "probability": 0.5211
+       },
+       "secondary_keyword_intents": [
+        {
+         "label": "informational",
+         "probability": 0.3911
+        }
+       ]
+      },
+      {
+       "keyword": "albert einstein",
+       "keyword_intent": {
+        "label": "informational",
+        "probability": 0.9934
+       },
+       "secondary_keyword_intents": null
+      },
+      {
+       "keyword": "pizza new york",
+       "keyword_intent": {
+        "label": "transactional",
+        "probability": 0.3796
+       },
+       "secondary_keyword_intents": [
+        {
+         "label": "informational",
+         "probability": 0.3354
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

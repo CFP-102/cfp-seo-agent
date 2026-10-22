@@ -1,0 +1,1325 @@
+{
+ "_fixture_note": "SANDBOX RESPONSE captured 2026-10-22 from sandbox.dataforseo.com (structure identical to live; VALUES ARE DATAFORSEO DUMMY DATA, unrelated to the request). Used only as a test fixture.",
+ "version": "0.1.20260917",
+ "status_code": 20000,
+ "status_message": "Ok.",
+ "time": "0 sec.",
+ "cost": 0,
+ "tasks_count": 1,
+ "tasks_error": 0,
+ "tasks": [
+  {
+   "id": "10221345-2869-0381-2000-e581dccc4fb4",
+   "status_code": 20000,
+   "status_message": "Ok.",
+   "time": "0 sec.",
+   "cost": 0,
+   "result_count": 1,
+   "path": [
+    "v3",
+    "dataforseo_labs",
+    "google",
+    "ranked_keywords",
+    "live"
+   ],
+   "data": {
+    "api": "dataforseo_labs",
+    "function": "ranked_keywords",
+    "se_type": "google",
+    "target": "example.com",
+    "location_code": 2840,
+    "language_code": "en",
+    "limit": 25
+   },
+   "result": [
+    {
+     "se_type": "google",
+     "target": "dataforseo.com",
+     "location_code": 2840,
+     "language_code": "en",
+     "total_count": 8806,
+     "items_count": 3,
+     "metrics": {
+      "organic": {
+       "pos_1": 42,
+       "pos_2_3": 145,
+       "pos_4_10": 1120,
+       "pos_11_20": 2103,
+       "pos_21_30": 1787,
+       "pos_31_40": 1261,
+       "pos_41_50": 970,
+       "pos_51_60": 686,
+       "pos_61_70": 395,
+       "pos_71_80": 181,
+       "pos_81_90": 91,
+       "pos_91_100": 25,
+       "etv": 31087.251239720732,
+       "count": 8806,
+       "estimated_paid_traffic_cost": 183134.64866102854,
+       "is_new": 7167,
+       "is_up": 883,
+       "is_down": 575,
+       "is_lost": 0,
+       "clickstream_etv": 28152.741619999986,
+       "clickstream_gender_distribution": {
+        "female": 47,
+        "male": 52
+       },
+       "clickstream_age_distribution": {
+        "18-24": 30,
+        "25-34": 17,
+        "35-44": 18,
+        "45-54": 29,
+        "55-64": 4
+       }
+      },
+      "paid": {
+       "pos_1": 0,
+       "pos_2_3": 0,
+       "pos_4_10": 0,
+       "pos_11_20": 0,
+       "pos_21_30": 0,
+       "pos_31_40": 0,
+       "pos_41_50": 0,
+       "pos_51_60": 0,
+       "pos_61_70": 0,
+       "pos_71_80": 0,
+       "pos_81_90": 0,
+       "pos_91_100": 0,
+       "etv": 0,
+       "count": 0,
+       "estimated_paid_traffic_cost": 0,
+       "is_new": 0,
+       "is_up": 0,
+       "is_down": 0,
+       "is_lost": 0,
+       "clickstream_etv": 0,
+       "clickstream_gender_distribution": {
+        "female": 0,
+        "male": 0
+       },
+       "clickstream_age_distribution": {
+        "18-24": 0,
+        "25-34": 0,
+        "35-44": 0,
+        "45-54": 0,
+        "55-64": 0
+       }
+      },
+      "featured_snippet": null,
+      "local_pack": null,
+      "ai_overview_reference": null
+     },
+     "metrics_absolute": {
+      "organic": {
+       "pos_1": 22,
+       "pos_2_3": 69,
+       "pos_4_10": 916,
+       "pos_11_20": 1825,
+       "pos_21_30": 1785,
+       "pos_31_40": 1317,
+       "pos_41_50": 968,
+       "pos_51_60": 784,
+       "pos_61_70": 531,
+       "pos_71_80": 312,
+       "pos_81_90": 175,
+       "pos_91_100": 72,
+       "is_new": 7167,
+       "is_up": 883,
+       "is_down": 575,
+       "is_lost": 0,
+       "clickstream_etv": 28152.741619999986,
+       "clickstream_gender_distribution": {
+        "female": 47,
+        "male": 52
+       },
+       "clickstream_age_distribution": {
+        "18-24": 30,
+        "25-34": 17,
+        "35-44": 18,
+        "45-54": 29,
+        "55-64": 4
+       }
+      },
+      "paid": {
+       "pos_1": 0,
+       "pos_2_3": 0,
+       "pos_4_10": 0,
+       "pos_11_20": 0,
+       "pos_21_30": 0,
+       "pos_31_40": 0,
+       "pos_41_50": 0,
+       "pos_51_60": 0,
+       "pos_61_70": 0,
+       "pos_71_80": 0,
+       "pos_81_90": 0,
+       "pos_91_100": 0,
+       "is_new": 0,
+       "is_up": 0,
+       "is_down": 0,
+       "is_lost": 0,
+       "clickstream_etv": 0,
+       "clickstream_gender_distribution": {
+        "female": 0,
+        "male": 0
+       },
+       "clickstream_age_distribution": {
+        "18-24": 0,
+        "25-34": 0,
+        "35-44": 0,
+        "45-54": 0,
+        "55-64": 0
+       }
+      },
+      "featured_snippet": null,
+      "local_pack": null,
+      "ai_overview_reference": null
+     },
+     "items": [
+      {
+       "se_type": "google",
+       "keyword_data": {
+        "se_type": "google",
+        "keyword": "alternatives to google trends",
+        "location_code": 2840,
+        "language_code": "en",
+        "keyword_info": {
+         "se_type": "google",
+         "last_updated_time": "2026-09-17 05:05:27 +00:00",
+         "competition": 0.28999999165534973,
+         "competition_level": "LOW",
+         "cpc": 20.049999237060547,
+         "search_volume": 30,
+         "low_top_of_page_bid": 4.360000133514404,
+         "high_top_of_page_bid": 16.350000381469727,
+         "categories": [
+          10004,
+          10276,
+          11088,
+          12376
+         ],
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 30
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 30
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 40
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 40
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 20
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 20
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 9,
+           "search_volume": 40
+          }
+         ],
+         "search_volume_trend": {
+          "monthly": 0,
+          "quarterly": 100,
+          "yearly": -60
+         }
+        },
+        "keyword_info_normalized_with_bing": {
+         "last_updated_time": "2026-09-27 02:27:37 +00:00",
+         "search_volume": 3,
+         "is_normalized": true,
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 2
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 2
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 1
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 3
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 3
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 4
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 2
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 4
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 2
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 2
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 3
+          },
+          {
+           "year": 2025,
+           "month": 9,
+           "search_volume": 4
+          }
+         ]
+        },
+        "keyword_info_normalized_with_clickstream": {
+         "last_updated_time": "2026-09-27 02:27:37 +00:00",
+         "search_volume": 30,
+         "is_normalized": true,
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 30
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 30
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 39
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 20
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 13
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 10
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 15
+          },
+          {
+           "year": 2025,
+           "month": 9,
+           "search_volume": 20
+          }
+         ]
+        },
+        "clickstream_keyword_info": {
+         "search_volume": 101,
+         "last_updated_time": "2026-10-05 23:55:50 +00:00",
+         "gender_distribution": {
+          "female": 50,
+          "male": 50
+         },
+         "age_distribution": {
+          "18-24": null,
+          "25-34": 100,
+          "35-44": null,
+          "45-54": null,
+          "55-64": null
+         },
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 9,
+           "search_volume": 100
+          },
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 100
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 100
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 100
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 100
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 100
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 50
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 50
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 50
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 100
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 50
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 50
+          }
+         ]
+        },
+        "keyword_properties": {
+         "se_type": "google",
+         "core_keyword": "google trends alternatives",
+         "synonym_clustering_algorithm": "text_processing",
+         "keyword_difficulty": 6,
+         "detected_language": "en",
+         "is_another_language": false
+        },
+        "serp_info": {
+         "se_type": "google",
+         "check_url": "https://www.google.com/search?q=alternatives%20to%20google%20trends&hl=en&gl=US&ie=UTF-8&uule=w+CAIQIFISCQs2MuSEtepUEUK33kOSuTsc",
+         "serp_item_types": [
+          "ai_overview",
+          "organic",
+          "discussions_and_forums",
+          "people_also_ask",
+          "related_searches"
+         ],
+         "se_results_count": 123,
+         "last_updated_time": "2026-09-01 03:22:08 +00:00",
+         "previous_updated_time": "2026-06-16 07:53:47 +00:00"
+        },
+        "avg_backlinks_info": {
+         "se_type": "google",
+         "backlinks": 1918.199951171875,
+         "dofollow": 1915.9000244140625,
+         "referring_pages": 1917.199951171875,
+         "referring_domains": 14.699999809265137,
+         "referring_main_domains": 14.100000381469727,
+         "rank": 79,
+         "main_domain_rank": 535.0999755859375,
+         "last_updated_time": "2026-09-01 03:23:22 +00:00"
+        },
+        "search_intent_info": {
+         "se_type": "google",
+         "main_intent": "informational",
+         "foreign_intent": [
+          "commercial"
+         ],
+         "last_updated_time": "2026-04-29 00:25:10 +00:00"
+        }
+       },
+       "ranked_serp_element": {
+        "se_type": "google",
+        "serp_item": {
+         "se_type": "google",
+         "type": "organic",
+         "rank_group": 1,
+         "rank_absolute": 2,
+         "position": "left",
+         "xpath": "/html[1]/body[1]/div[3]/div[1]/div[13]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]",
+         "domain": "trends.dataforseo.com",
+         "title": "DataForSEO Trends",
+         "url": "https://trends.dataforseo.com/",
+         "breadcrumb": "https://trends.dataforseo.com",
+         "website_name": "DataForSEO Trends",
+         "is_image": false,
+         "is_video": false,
+         "is_featured_snippet": false,
+         "is_malicious": false,
+         "checks": null,
+         "description": "Whether you're a marketer, journalist, or researcher, DataForSEO Trends provides a valuable alternative for a popular Google Trends platform to help you improve ... Read more",
+         "pre_snippet": null,
+         "extended_snippet": null,
+         "amp_version": false,
+         "rating": null,
+         "highlighted": [
+          "DataForSEO Trends"
+         ],
+         "links": null,
+         "about_this_result": null,
+         "main_domain": "dataforseo.com",
+         "relative_url": "/",
+         "etv": 9.119999885559082,
+         "estimated_paid_traffic_cost": 182.8560028076172,
+         "clickstream_etv": 30.704,
+         "rank_changes": {
+          "previous_rank_absolute": 3,
+          "is_new": false,
+          "is_up": true,
+          "is_down": false
+         },
+         "backlinks_info": {
+          "referring_domains": 79,
+          "referring_main_domains": 77,
+          "referring_pages": 172719,
+          "dofollow": 172719,
+          "backlinks": 172723,
+          "time_update": "2026-10-11 03:37:41 +00:00"
+         },
+         "rank_info": {
+          "page_rank": 431,
+          "main_domain_rank": 340
+         }
+        },
+        "check_url": "https://www.google.com/search?q=alternatives%20to%20google%20trends&hl=en&gl=US&ie=UTF-8&uule=w+CAIQIFISCQs2MuSEtepUEUK33kOSuTsc",
+        "serp_item_types": [
+         "ai_overview",
+         "organic",
+         "discussions_and_forums",
+         "people_also_ask",
+         "related_searches"
+        ],
+        "se_results_count": 123,
+        "keyword_difficulty": 6,
+        "is_lost": false,
+        "last_updated_time": "2026-09-01 03:22:08 +00:00",
+        "previous_updated_time": "2026-06-16 07:53:47 +00:00"
+       }
+      },
+      {
+       "se_type": "google",
+       "keyword_data": {
+        "se_type": "google",
+        "keyword": "amazon search volume api",
+        "location_code": 2840,
+        "language_code": "en",
+        "keyword_info": {
+         "se_type": "google",
+         "last_updated_time": "2026-09-15 10:31:03 +00:00",
+         "competition": 0.10999999940395355,
+         "competition_level": "LOW",
+         "cpc": null,
+         "search_volume": 30,
+         "low_top_of_page_bid": null,
+         "high_top_of_page_bid": null,
+         "categories": [
+          13575,
+          13860
+         ],
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 70
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 50
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 30
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 20
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 10
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 10
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 9,
+           "search_volume": 70
+          }
+         ],
+         "search_volume_trend": {
+          "monthly": 0,
+          "quarterly": -50,
+          "yearly": -80
+         }
+        },
+        "keyword_info_normalized_with_bing": {
+         "last_updated_time": "2026-09-15 10:31:03 +00:00",
+         "search_volume": 30,
+         "is_normalized": false,
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 70
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 50
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 30
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 20
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 10
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 10
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 9,
+           "search_volume": 70
+          }
+         ]
+        },
+        "keyword_info_normalized_with_clickstream": {
+         "last_updated_time": "2026-09-15 10:31:03 +00:00",
+         "search_volume": 30,
+         "is_normalized": false,
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 70
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 50
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 30
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 20
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 10
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 10
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 9,
+           "search_volume": 70
+          }
+         ]
+        },
+        "clickstream_keyword_info": {
+         "search_volume": 0,
+         "last_updated_time": "2026-10-06 00:02:25 +00:00",
+         "gender_distribution": {
+          "female": null,
+          "male": null
+         },
+         "age_distribution": {
+          "18-24": null,
+          "25-34": null,
+          "35-44": null,
+          "45-54": null,
+          "55-64": null
+         },
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 9,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 0
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 0
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 0
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 50
+          }
+         ]
+        },
+        "keyword_properties": {
+         "se_type": "google",
+         "core_keyword": null,
+         "synonym_clustering_algorithm": null,
+         "keyword_difficulty": 0,
+         "detected_language": "en",
+         "is_another_language": false
+        },
+        "serp_info": {
+         "se_type": "google",
+         "check_url": "https://www.google.com/search?q=amazon%20search%20volume%20api&hl=en&gl=US&ie=UTF-8&uule=w+CAIQIFISCQs2MuSEtepUEUK33kOSuTsc",
+         "serp_item_types": [
+          "ai_overview",
+          "organic",
+          "related_searches"
+         ],
+         "se_results_count": 137,
+         "last_updated_time": "2026-08-17 21:01:47 +00:00",
+         "previous_updated_time": "2026-05-10 09:28:33 +00:00"
+        },
+        "avg_backlinks_info": {
+         "se_type": "google",
+         "backlinks": 96.5999984741211,
+         "dofollow": 55.099998474121094,
+         "referring_pages": 92.69999694824219,
+         "referring_domains": 45,
+         "referring_main_domains": 43.900001525878906,
+         "rank": 35.20000076293945,
+         "main_domain_rank": 476,
+         "last_updated_time": "2026-08-17 21:01:50 +00:00"
+        },
+        "search_intent_info": {
+         "se_type": "google",
+         "main_intent": "informational",
+         "foreign_intent": null,
+         "last_updated_time": "2026-04-24 22:57:30 +00:00"
+        }
+       },
+       "ranked_serp_element": {
+        "se_type": "google",
+        "serp_item": {
+         "se_type": "google",
+         "type": "organic",
+         "rank_group": 1,
+         "rank_absolute": 2,
+         "position": "left",
+         "xpath": "/html[1]/body[1]/div[3]/div[1]/div[13]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]",
+         "domain": "dataforseo.com",
+         "title": "How to get keyword search volume data for Amazon?",
+         "url": "https://dataforseo.com/help-center/get-keyword-search-volume-data-for-amazon",
+         "breadcrumb": "https://dataforseo.com › Help Сenter",
+         "website_name": "DataForSEO",
+         "is_image": false,
+         "is_video": false,
+         "is_featured_snippet": false,
+         "is_malicious": false,
+         "checks": null,
+         "description": "Using the Amazon Bulk Search Volume endpoint in DataForSEO. The endpoint can provide search volume values for up to 1,000 keywords in one API request.",
+         "pre_snippet": null,
+         "extended_snippet": null,
+         "amp_version": false,
+         "rating": null,
+         "highlighted": [
+          "Using the Amazon Bulk Search Volume endpoint in DataForSEO"
+         ],
+         "links": null,
+         "about_this_result": null,
+         "main_domain": "dataforseo.com",
+         "relative_url": "/help-center/get-keyword-search-volume-data-for-amazon",
+         "etv": 9.119999885559082,
+         "estimated_paid_traffic_cost": null,
+         "clickstream_etv": 0,
+         "rank_changes": {
+          "previous_rank_absolute": null,
+          "is_new": true,
+          "is_up": false,
+          "is_down": false
+         },
+         "backlinks_info": null,
+         "rank_info": {
+          "page_rank": 0,
+          "main_domain_rank": 336
+         }
+        },
+        "check_url": "https://www.google.com/search?q=amazon%20search%20volume%20api&hl=en&gl=US&ie=UTF-8&uule=w+CAIQIFISCQs2MuSEtepUEUK33kOSuTsc",
+        "serp_item_types": [
+         "ai_overview",
+         "organic",
+         "related_searches"
+        ],
+        "se_results_count": 137,
+        "keyword_difficulty": 0,
+        "is_lost": false,
+        "last_updated_time": "2026-08-17 21:01:47 +00:00",
+        "previous_updated_time": "2026-05-10 09:28:33 +00:00"
+       }
+      },
+      {
+       "se_type": "google",
+       "keyword_data": {
+        "se_type": "google",
+        "keyword": "api for seo software projects",
+        "location_code": 2840,
+        "language_code": "en",
+        "keyword_info": {
+         "se_type": "google",
+         "last_updated_time": "2026-09-16 16:23:03 +00:00",
+         "competition": 0,
+         "competition_level": "LOW",
+         "cpc": null,
+         "search_volume": 70,
+         "low_top_of_page_bid": null,
+         "high_top_of_page_bid": null,
+         "categories": [
+          10004,
+          10276,
+          11088,
+          12376,
+          13152
+         ],
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 40
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 90
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 70
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 90
+          },
+          {
+           "year": 2025,
+           "month": 9,
+           "search_volume": 390
+          }
+         ],
+         "search_volume_trend": {
+          "monthly": -50,
+          "quarterly": 0,
+          "yearly": -80
+         }
+        },
+        "keyword_info_normalized_with_bing": {
+         "last_updated_time": "2026-09-16 16:23:03 +00:00",
+         "search_volume": 70,
+         "is_normalized": false,
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 40
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 90
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 70
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 90
+          },
+          {
+           "year": 2025,
+           "month": 9,
+           "search_volume": 390
+          }
+         ]
+        },
+        "keyword_info_normalized_with_clickstream": {
+         "last_updated_time": "2026-09-16 16:23:03 +00:00",
+         "search_volume": 70,
+         "is_normalized": false,
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 40
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 90
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 70
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 90
+          },
+          {
+           "year": 2025,
+           "month": 9,
+           "search_volume": 390
+          }
+         ]
+        },
+        "clickstream_keyword_info": null,
+        "keyword_properties": {
+         "se_type": "google",
+         "core_keyword": null,
+         "synonym_clustering_algorithm": null,
+         "keyword_difficulty": 9,
+         "detected_language": "en",
+         "is_another_language": false
+        },
+        "serp_info": {
+         "se_type": "google",
+         "check_url": "https://www.google.com/search?q=api%20for%20seo%20software%20projects&hl=en&gl=US&ie=UTF-8&uule=w+CAIQIFISCQs2MuSEtepUEUK33kOSuTsc",
+         "serp_item_types": [
+          "ai_overview",
+          "organic",
+          "discussions_and_forums",
+          "people_also_ask",
+          "related_searches"
+         ],
+         "se_results_count": 148,
+         "last_updated_time": "2026-09-25 03:49:13 +00:00",
+         "previous_updated_time": "2026-07-21 02:27:16 +00:00"
+        },
+        "avg_backlinks_info": {
+         "se_type": "google",
+         "backlinks": 7499.10009765625,
+         "dofollow": 7332.7001953125,
+         "referring_pages": 7447.39990234375,
+         "referring_domains": 124.5,
+         "referring_main_domains": 119,
+         "rank": 98.69999694824219,
+         "main_domain_rank": 494.29998779296875,
+         "last_updated_time": "2026-09-25 03:49:23 +00:00"
+        },
+        "search_intent_info": {
+         "se_type": "google",
+         "main_intent": "commercial",
+         "foreign_intent": null,
+         "last_updated_time": "2026-04-29 09:49:29 +00:00"
+        }
+       },
+       "ranked_serp_element": {
+        "se_type": "google",
+        "serp_item": {
+         "se_type": "google",
+         "type": "organic",
+         "rank_group": 1,
+         "rank_absolute": 2,
+         "position": "left",
+         "xpath": "/html[1]/body[1]/div[3]/div[1]/div[13]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]",
+         "domain": "dataforseo.com",
+         "title": "DataForSEO: Powerful API Stack For Data-Driven SEO Tools",
+         "url": "https://dataforseo.com/",
+         "breadcrumb": "https://dataforseo.com",
+         "website_name": "DataForSEO",
+         "is_image": false,
+         "is_video": false,
+         "is_featured_snippet": false,
+         "is_malicious": false,
+         "checks": null,
+         "description": "We provide comprehensive data solutions for SEO and SEM analytics via API. DataForSEO is a trusted partner for 750+ SEO software companies and agencies.",
+         "pre_snippet": null,
+         "extended_snippet": null,
+         "amp_version": false,
+         "rating": null,
+         "highlighted": [
+          "SEO and SEM analytics via API"
+         ],
+         "links": null,
+         "about_this_result": null,
+         "main_domain": "dataforseo.com",
+         "relative_url": "/",
+         "etv": 21.280000686645508,
+         "estimated_paid_traffic_cost": null,
+         "clickstream_etv": 0,
+         "rank_changes": {
+          "previous_rank_absolute": null,
+          "is_new": true,
+          "is_up": false,
+          "is_down": false
+         },
+         "backlinks_info": {
+          "referring_domains": 1174,
+          "referring_main_domains": 1119,
+          "referring_pages": 177477,
+          "dofollow": 176463,
+          "backlinks": 180183,
+          "time_update": "2026-10-11 04:07:01 +00:00"
+         },
+         "rank_info": {
+          "page_rank": 523,
+          "main_domain_rank": 341
+         }
+        },
+        "check_url": "https://www.google.com/search?q=api%20for%20seo%20software%20projects&hl=en&gl=US&ie=UTF-8&uule=w+CAIQIFISCQs2MuSEtepUEUK33kOSuTsc",
+        "serp_item_types": [
+         "ai_overview",
+         "organic",
+         "discussions_and_forums",
+         "people_also_ask",
+         "related_searches"
+        ],
+        "se_results_count": 148,
+        "keyword_difficulty": 9,
+        "is_lost": false,
+        "last_updated_time": "2026-09-25 03:49:13 +00:00",
+        "previous_updated_time": "2026-07-21 02:27:16 +00:00"
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

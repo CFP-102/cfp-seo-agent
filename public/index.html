@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{NAME}} – Pay-per-call data APIs for AI agents</title>
+<meta name="description" content="Keyword, SERP, competitor, intent and AI-demand data for AI agents. Pay per request in USDC with x402. No signup, no API key. REST, OpenAPI and MCP.">
+<link rel="canonical" href="{{BASE_URL}}/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="alternate" type="application/json" href="/openapi.json" title="OpenAPI 3.1">
+<meta property="og:title" content="{{NAME}} – Pay-per-call data APIs for AI agents">
+<meta property="og:description" content="Pay per request in USDC with x402. No signup, no API key.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{BASE_URL}}/">
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap bar">
+    <a class="brand" href="/"><span class="mark" aria-hidden="true"></span>{{NAME}}</a>
+    <nav aria-label="Main">
+      <a href="#services">Services</a>
+      <a href="#how">How it works</a>
+      <a href="#docs">Docs</a>
+      <a href="#mcp">MCP</a>
+      <a href="#status">Status</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero wrap">
+  <p class="eyebrow">x402 · USDC on Base · DataForSEO</p>
+  <h1>Pay-per-call data APIs for AI agents</h1>
+  <p class="lead">Keyword metrics, SERP results, competitor discovery, search intent and AI-search demand. One request, one small USDC payment. No account, no API key, no subscription.</p>
+  <div class="cta">
+    <a class="btn primary" href="/quickstart.html">Make your first call</a>
+    <a class="btn" href="/openapi.json">OpenAPI 3.1</a>
+    <a class="btn" href="#mcp">Connect via MCP</a>
+  </div>
+  {{MODE_NOTE}}
+  <p class="fine">For businesses only (B2B). By calling a paid endpoint you confirm that you act as a business and accept the <a href="/legal.html#terms">terms of use</a>.</p>
+</section>
+
+<section id="how" class="wrap">
+  <h2>How payment works</h2>
+  <p class="sub"><a href="https://github.com/x402-foundation/x402" rel="noopener">x402</a> turns HTTP status 402 into a payment step that software can complete on its own.</p>
+  <ol class="steps">
+    <li><strong>Ask.</strong> Call an endpoint. The server answers <code>402 Payment Required</code> and lists the price, the asset (USDC) and the network.</li>
+    <li><strong>Pay.</strong> Your x402 client signs a USDC authorization. No gas, no wallet popup, no account.</li>
+    <li><strong>Receive.</strong> The payment is settled first, then the data is fetched exactly once and returned with a receipt.</li>
+  </ol>
+  <p class="fine">Inputs are validated <em>before</em> a price is quoted, so you are never asked to pay for a request we cannot serve. Retrying the same payment returns the stored result and never charges twice.</p>
+</section>
+
+<section id="services" class="wrap">
+  <h2>Services</h2>
+  <p class="sub">Prices are per call, in USDC. All results show whether they are live or sandbox data.</p>
+  <div class="grid">
+{{SERVICE_CARDS}}
+  </div>
+</section>
+
+<section id="docs" class="wrap">
+  <h2>Documentation</h2>
+  <p class="sub">Machine-readable: <a href="/openapi.json">/openapi.json</a> · <a href="/llms.txt">/llms.txt</a> · <a href="/api/v1/services">/api/v1/services</a></p>
+
+  <h3>1 · See what is available (free)</h3>
+<pre><code>curl {{BASE_URL}}/api/v1/services</code></pre>
+
+  <h3>2 · Check an input without paying (free)</h3>
+<pre><code>curl -X POST {{BASE_URL}}/api/v1/preflight/keyword-metrics \
+  -H 'content-type: application/json' \
+  -d '{"keywords":["running shoes"],"location_code":2840,"language_code":"en"}'</code></pre>
+
+  <h3>3 · Approve one purchase</h3>
+  <p>Follow the <a href="/quickstart.html">REST and MCP purchase guide</a>. Its downloadable example starts with a free preview and requires an explicit spending limit before signing one payment. It checks the merchant, network, USDC contract, price and resource.</p>
+  <p class="fine">If payment or delivery is unclear, keep the existing purchase record and retrieve its result. Do not create a new payment just to recover an answer.</p>
+
+  <h3>Parameters</h3>
+  <p class="fine"><code>location_code</code> is a country-level DataForSEO code (2840 United States, 2276 Germany, 2826 United Kingdom). <code>language_code</code> is optional (<code>en</code>, <code>de</code>, …). Unsupported combinations are rejected with HTTP 422 before any payment is requested.</p>
+</section>
+
+<section id="mcp" class="wrap">
+  <h2>MCP (Model Context Protocol)</h2>
+  <p class="sub">Streamable HTTP endpoint: <code>{{BASE_URL}}/mcp</code></p>
+  <p>Free tools work with any MCP client: <code>list_services</code>, <code>preflight</code>, <code>get_result</code>, <code>retry_request</code>.
+     The paid tools (one per service) need a client that supports x402 payments, for example one built with <code>@x402/mcp</code>.
+     A client without payment support can still list and inspect the tools; a paid call then returns a "payment required" result and charges nothing.</p>
+  <p><a class="btn" href="/quickstart.html#mcp">MCP connection and guarded purchase example</a></p>
+</section>
+
+<section id="status" class="wrap">
+  <h2>Status</h2>
+  <p class="status"><span id="dot" class="dot"></span><span id="status-text">Checking…</span></p>
+  <p class="fine">Live check: <a href="/health">/health</a>. Per-service availability is shown on each card above.</p>
+</section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <strong>{{NAME}}</strong><br>
+      <span class="fine">Contact: <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a></span>
+    </div>
+    <div class="fine">
+      <a href="/legal.html#impressum">Impressum</a> ·
+      <a href="/legal.html#datenschutz">Datenschutz / Privacy</a> ·
+      <a href="/legal.html#terms">Terms of use</a>
+    </div>
+  </div>
+</footer>
+<script src="/app.js" defer></script>
+</body>
+</html>
