@@ -102,11 +102,12 @@ describe("/admin", () => {
     const page = await fetch(base + "/admin", { headers: { authorization: basic("boss", PASSWORD) } });
     expect(page.status).toBe(200);
     expect(page.headers.get("content-security-policy")).toContain("default-src 'none'");
+    expect(page.headers.get("content-security-policy")).toContain("script-src 'self'");
     const html = await page.text();
     expect(html).toContain("Needs attention");
     expect(html).toContain("0xdeadbeef");
     expect(html).toContain("(test)");
-    expect(html).not.toMatch(/<script/i);
+    expect(html).not.toMatch(/<script(?![^>]*\bsrc="\/admin\.js")/i); // only the same-origin helper script, nothing inline
   });
 
   it("shows history, margin per service, buyers and a CSV export for real money only", async () => {
@@ -137,7 +138,7 @@ describe("/admin", () => {
     const html = await (await fetch(base + "/admin", auth)).text();
     expect(html).toContain("<svg");
     expect(html).toContain("Margin and reliability per service");
-    expect(html).not.toMatch(/<script|style=/i);
+    expect(html).not.toMatch(/<script(?![^>]*\bsrc="\/admin\.js")|style=/i);
 
     const csv = await fetch(base + "/admin/payments.csv", auth);
     expect(csv.headers.get("content-type")).toContain("text/csv");
@@ -164,8 +165,14 @@ describe("/admin", () => {
   it("is not reachable through the website's static handler", async () => {
     const { app } = buildTestApp({ fetchImpl: routedUpstream([]).impl, env: adminEnv });
     const base = await start(app);
-    const res = await fetch(base + "/admin.css");
-    expect(res.status).toBe(200); // the stylesheet is public, contains no data
-    expect((await res.text()).length).toBeLessThan(2000);
+    // Stylesheet and helper script are public static files: they must contain no data, only presentation and DOM code.
+    for (const file of ["/admin.css", "/admin.js"]) {
+      const res = await fetch(base + file);
+      expect(res.status, file).toBe(200);
+      const text = await res.text();
+      expect(text.length, file).toBeLessThan(20_000);
+      expect(text, file).not.toContain(PASSWORD);
+      expect(text, file).not.toMatch(/0x[0-9a-fA-F]{40}|fetch\(|XMLHttpRequest/);
+    }
   });
 });

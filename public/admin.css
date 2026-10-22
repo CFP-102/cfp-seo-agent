@@ -1,15 +1,118 @@
-.tablewrap { overflow-x: auto; margin: 8px 0 20px; border: 1px solid var(--line); border-radius: 10px; }
+/* Admin dashboard. Dark theme tokens come from style.css. No inline styles are used (CSP: style-src 'self'). */
+body.admin { background: radial-gradient(1200px 500px at 10% -10%, #10151b 0%, var(--bg) 60%); }
+main.wide { max-width: 1180px; padding-top: 22px; padding-bottom: 64px; }
+.modes { display: flex; gap: 8px; }
+.pill { font: 600 0.72rem var(--mono); letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); background: var(--panel); }
+
+/* KPI tiles */
+.kpis { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-bottom: 18px; }
+.kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; animation: rise 0.5s ease both; transition: border-color 0.2s, transform 0.2s; }
+.kpi:hover { border-color: #3a4049; transform: translateY(-2px); }
+.kpi:nth-child(2) { animation-delay: 60ms; } .kpi:nth-child(3) { animation-delay: 120ms; } .kpi:nth-child(4) { animation-delay: 180ms; } .kpi:nth-child(5) { animation-delay: 240ms; }
+.klabel { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.kvalue { font: 650 1.5rem/1.2 var(--sans); letter-spacing: -0.02em; }
+.ksub { color: var(--muted); font-size: 0.8rem; }
+.kpi.bad { border-color: #5a2b2b; } .kpi.bad .kvalue { color: var(--bad); }
+
+/* Toolbar */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; position: sticky; top: 56px; z-index: 4; padding: 10px 0; background: linear-gradient(var(--bg) 70%, transparent); }
+.toolbar input { flex: 1 1 280px; min-width: 200px; background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 9px 14px; font: inherit; font-size: 0.92rem; }
+.toolbar input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+.toolbar button { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; font: inherit; font-size: 0.85rem; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.toolbar button:hover { border-color: #3a4049; background: #171a20; }
+.toolbar .fine { margin-left: auto; font-size: 0.8rem; }
+
+/* Collapsible panels */
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 14px; overflow: hidden; animation: rise 0.45s ease both; }
+.panel > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 14px 18px; font-weight: 600; user-select: none; transition: background 0.15s; }
+.panel > summary::-webkit-details-marker { display: none; }
+.panel > summary:hover { background: #151820; }
+.chev { width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(-45deg); transition: transform 0.2s ease; margin-right: 4px; }
+.panel[open] > summary .chev { transform: rotate(45deg); }
+.panel[open] > summary { border-bottom: 1px solid var(--line); }
+.ptitle { flex: 1; }
+.pbody { padding: 14px 18px 18px; animation: fade 0.3s ease both; }
+.pbody h3 { margin: 22px 0 6px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.pbody p { margin: 0 0 10px; }
+.line { color: var(--text); }
+.empty { color: var(--muted); font-size: 0.9rem; padding: 6px 0; }
+.badge { font: 600 0.72rem var(--mono); padding: 2px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.badge.bad { color: var(--bad); border-color: #5a2b2b; background: #1d1010; }
+.badge.warn { color: var(--warn); border-color: #4a3f1f; background: #1a1608; }
+
+/* Tables */
+.tablewrap { overflow-x: auto; margin: 8px 0 14px; border: 1px solid var(--line); border-radius: 10px; max-height: 480px; }
 table { border-collapse: collapse; width: 100%; font-size: 0.82rem; }
 th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
-th { color: var(--muted); font-weight: 600; background: var(--panel); }
+th { position: sticky; top: 0; z-index: 1; color: var(--muted); font-weight: 600; background: #14171c; cursor: pointer; user-select: none; }
+th:hover { color: var(--text); }
+th.asc::after { content: " ▲"; font-size: 0.65rem; } th.desc::after { content: " ▼"; font-size: 0.65rem; }
+tbody tr { transition: background 0.12s; }
+tbody tr:nth-child(even) { background: #0f1115; }
+tbody tr:hover { background: #171b22; }
 tr:last-child td { border-bottom: 0; }
-main h3 { margin-top: 20px; font-size: 0.95rem; color: var(--muted); }
+td.num { text-align: right; font-variant-numeric: tabular-nums; }
+th.numh { text-align: right; }
+td.mono { font-family: var(--mono); font-size: 0.78rem; color: #b8c0cc; }
+td.muted { color: var(--muted); }
+td.negative { color: var(--bad); font-weight: 600; }
+.tag { display: inline-block; font: 600 0.7rem var(--mono); padding: 2px 8px; border-radius: 6px; }
+.tag.bad { background: #2a1414; color: var(--bad); }
+.tag.ok { background: #10241b; color: var(--accent); }
 
-.chart { width: 100%; max-width: 760px; height: auto; margin: 8px 0; }
-.chart .bar-rev { fill: var(--accent, #2a7); opacity: 0.55; }
-.chart .bar-cost { fill: var(--warn, #c63); }
+/* Budget meters */
+.meterrow { margin-bottom: 14px; }
+.meterhead { display: flex; justify-content: space-between; font-size: 0.88rem; color: var(--muted); margin-bottom: 6px; }
+.meter { width: 100%; height: 10px; display: block; border-radius: 5px; overflow: hidden; }
+.meter-bg { fill: #1a1e25; }
+.meter-fill { fill: var(--accent); transform-box: fill-box; transform-origin: left center; animation: grow-x 0.9s cubic-bezier(.2,.8,.2,1) both; }
+.meter-fill.warn { fill: var(--warn); } .meter-fill.bad { fill: var(--bad); }
+
+/* Chart */
+.chart { width: 100%; max-width: 100%; height: auto; margin: 8px 0; overflow: visible; }
+.chart .bar-rev { fill: var(--accent); opacity: 0.55; transition: opacity 0.15s; }
+.chart .bar-cost { fill: var(--warn); transition: opacity 0.15s; }
+.chart g { transform-box: fill-box; transform-origin: bottom center; animation: grow-y 0.7s cubic-bezier(.2,.8,.2,1) both; }
+.chart g:hover .bar-rev { opacity: 0.95; }
 .chart .axis { stroke: var(--line); }
 .chart .axis-label { fill: var(--muted); font-size: 11px; }
 .key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 4px 0 10px; }
-.key-rev { background: var(--accent, #2a7); opacity: 0.55; }
-.key-cost { background: var(--warn, #c63); }
+.key-rev { background: var(--accent); opacity: 0.55; }
+.key-cost { background: var(--warn); }
+.chart g:nth-child(2) { animation-delay: 0ms; }
+.chart g:nth-child(3) { animation-delay: 18ms; }
+.chart g:nth-child(4) { animation-delay: 36ms; }
+.chart g:nth-child(5) { animation-delay: 54ms; }
+.chart g:nth-child(6) { animation-delay: 72ms; }
+.chart g:nth-child(7) { animation-delay: 90ms; }
+.chart g:nth-child(8) { animation-delay: 108ms; }
+.chart g:nth-child(9) { animation-delay: 126ms; }
+.chart g:nth-child(10) { animation-delay: 144ms; }
+.chart g:nth-child(11) { animation-delay: 162ms; }
+.chart g:nth-child(12) { animation-delay: 180ms; }
+.chart g:nth-child(13) { animation-delay: 198ms; }
+.chart g:nth-child(14) { animation-delay: 216ms; }
+.chart g:nth-child(15) { animation-delay: 234ms; }
+.chart g:nth-child(16) { animation-delay: 252ms; }
+.chart g:nth-child(17) { animation-delay: 270ms; }
+.chart g:nth-child(18) { animation-delay: 288ms; }
+.chart g:nth-child(19) { animation-delay: 306ms; }
+.chart g:nth-child(20) { animation-delay: 324ms; }
+.chart g:nth-child(21) { animation-delay: 342ms; }
+.chart g:nth-child(22) { animation-delay: 360ms; }
+.chart g:nth-child(23) { animation-delay: 378ms; }
+.chart g:nth-child(24) { animation-delay: 396ms; }
+.chart g:nth-child(25) { animation-delay: 414ms; }
+.chart g:nth-child(26) { animation-delay: 432ms; }
+.chart g:nth-child(27) { animation-delay: 450ms; }
+.chart g:nth-child(28) { animation-delay: 468ms; }
+.chart g:nth-child(29) { animation-delay: 486ms; }
+.chart g:nth-child(30) { animation-delay: 504ms; }
+.chart g:nth-child(31) { animation-delay: 522ms; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes grow-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+@media (max-width: 640px) { .toolbar { position: static; } .toolbar .fine { margin-left: 0; width: 100%; } }
