@@ -84,6 +84,11 @@ export class Store {
         error_code TEXT
       );
       CREATE INDEX IF NOT EXISTS requests_created ON requests(created_at);
+      CREATE TABLE IF NOT EXISTS wishes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        created_at TEXT NOT NULL,
+        text TEXT NOT NULL
+      );
       CREATE TABLE IF NOT EXISTS counters (
         day TEXT NOT NULL,
         service_id TEXT NOT NULL,
@@ -277,6 +282,7 @@ export class Store {
          WHERE created_at < ? AND status != 'processing' AND (input_json IS NOT NULL OR result_json IS NOT NULL OR input_hash IS NOT NULL)`,
       )
       .run(cutoff);
+    this.db.prepare(`DELETE FROM wishes WHERE created_at < ?`).run(cutoff);
     return Number(r.changes);
   }
 
@@ -336,6 +342,15 @@ export class Store {
          ORDER BY created_at DESC LIMIT ?`,
       )
       .all(limit) as Record<string, string | number | null>[];
+  }
+
+  /** Wishlist: free text from visitors (no caller data). Deleted with the other payloads after the retention period. */
+  addWish(text: string, now: Date = new Date()): void {
+    this.db.prepare(`INSERT INTO wishes (created_at, text) VALUES (?, ?)`).run(now.toISOString(), text);
+  }
+
+  recentWishes(limit = 50) {
+    return this.db.prepare(`SELECT created_at, text FROM wishes ORDER BY id DESC LIMIT ?`).all(limit) as { created_at: string; text: string }[];
   }
 
   /** Real-money (mainnet) figures per day for the last `days` days, oldest first, missing days filled with zeros. */

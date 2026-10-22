@@ -1,0 +1,1526 @@
+{
+ "_fixture_note": "SANDBOX RESPONSE captured 2026-10-22 from sandbox.dataforseo.com (structure identical to live; values are DataForSEO dummy data). Test fixture only.",
+ "version": "0.1.20261022",
+ "status_code": 20000,
+ "status_message": "Ok.",
+ "time": "0 sec.",
+ "cost": 0,
+ "tasks_count": 1,
+ "tasks_error": 0,
+ "tasks": [
+  {
+   "id": "10221606-2869-0139-2000-49afac042023",
+   "status_code": 20000,
+   "status_message": "Ok.",
+   "time": "0 sec.",
+   "cost": 0,
+   "result_count": 1,
+   "path": [
+    "v3",
+    "serp",
+    "google",
+    "images",
+    "live",
+    "advanced"
+   ],
+   "data": {
+    "api": "serp",
+    "function": "live",
+    "se": "google",
+    "se_type": "images",
+    "keyword": "red bicycle",
+    "location_code": 2840,
+    "language_code": "en",
+    "depth": 10
+   },
+   "result": [
+    {
+     "keyword": "pizza",
+     "type": "images",
+     "se_domain": "google.com",
+     "location_code": 1006886,
+     "language_code": "en",
+     "check_url": "https://www.google.com/search?q=pizza&udm=2&hl=en&gl=GB&gws_rd=cr&ie=UTF-8&oe=UTF-8&uule=w+CAIQIFISCXXeIa8LoNhHEZkq1d1aOpZS",
+     "datetime": "2026-10-19 06:24:30 +00:00",
+     "spell": null,
+     "refinement_chips": null,
+     "item_types": [
+      "images_search",
+      "related_searches",
+      "carousel"
+     ],
+     "se_results_count": 0,
+     "items_count": 105,
+     "items": [
+      {
+       "type": "carousel",
+       "rank_group": 1,
+       "rank_absolute": 1,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[6]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/span[1]/div[1]/div[1]",
+       "title": null,
+       "items": [
+        {
+         "type": "carousel_element",
+         "title": "Cheese",
+         "subtitle": null,
+         "image_url": "https://api.dataforseo.com/cdn/i/10190624-0001-0139-0000-dad5685520cd:0"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Pepperoni",
+         "subtitle": null,
+         "image_url": "https://api.dataforseo.com/cdn/i/10190624-0001-0139-0000-dad5685520cd:1"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Dominos",
+         "subtitle": null,
+         "image_url": "https://api.dataforseo.com/cdn/i/10190624-0001-0139-0000-dad5685520cd:2"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Clipart",
+         "subtitle": null,
+         "image_url": "https://api.dataforseo.com/cdn/i/10190624-0001-0139-0000-dad5685520cd:3"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Chicken",
+         "subtitle": null,
+         "image_url": "https://api.dataforseo.com/cdn/i/10190624-0001-0139-0000-dad5685520cd:4"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Chocolate",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6--H6-dS5padseJhMj_9-oDayEj4ilN8C3OYFQ6eZPEFFGlSCoxxnoGAe&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Margherita",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcWjo5_uPTpenNfu8cA4F82zBZecbcuBaXey49ISGrrBs70lf7SL1zoVP8&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Slice",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROHGu6tAeK24_dv4YyNW5oLkR5yPRPOIcyKrUlLIRPja6adGR5HmgeWlkq&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Animated",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7jDTu2RxCS6H-SJlsmQwxBzoLdqoSy72iQPoPm_4k87VZZ0MBPgkIx890&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Menu",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6c2mWBfaxTq28jJyttpew441FTIbcvTR_fznbZ6h_SzVtt_lj77F16bGf&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Transparent",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQM3Uh-ePHkMtwW40jFCrXwktxfMIVqpZNT1st-v_Tz6l_9BhM7JOV6XOVo&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Mac and cheese",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSU3f_rNXucQtXCI747BX4ZZ-FVLsSPF_4gajhy8dl7w0oU2czjOg8h5H3s&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Ice cream",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTW26dvNSDLQ9Q6KESAnnwzIO-GOp03xGbwLHZyUXFB4eG6g2MIhKr_I1wL&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Drawing",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrEToZzyaFhJ991VBZwxyVzWvbsWvRdnfJ5s1qTUi9jFfrqX_YGUIztIve&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Food",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYHbTw1J0RaNMcqiHqkXsVulHoiSt6aiz_UosMvDX1bQy9tROKj3vA76xz&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Circle",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlAECV1ltbOUIyEbbdEqbmj-ScT6cxVgMnxbNXWv09VZyWoO5Af_sVcFrs&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Logo",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlQk4dP_WSek1RnEYFKF3MOjG_WhDWg2L-GsyiO4Q3iXOnutiSFkfgRFAq&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Little caesars",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSB6yBLfufpTmGpSDDuHiGCmxpFwdca4Y9rda7iNHAygBQzcwezMzBBBVvs&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Cute",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyW5agUnbXb6OEQswtmSSKt6YM9rsqF3i4AWkm9rAZ6a4x02tDWBpMBNaK&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Burger",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-93K6S1zsp9SXZtPnic6fX5h58kGv-Os5drh1RCGfg2S-h93ThnH5YrK2&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Real",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBCFz_7AUm8THW4cbWKedQoJadszV9VJi3C7b8EnDaS4QGQk0tFH1-cpF_&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Easy",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTvN8nUFzXTgzN8GrPL8DhS9HcgJtUaGy_L2mkRqJLj5RZsM6jDkHJQOGm&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Restaurant",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRARz1s_CCQb_wi_92DfnoYMX6yLbPFLwjCWpt3h99GZuSE6-WIZI7-0n-4&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Extra cheese",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQn4-XscNCMeKG8l7WAJCfptpb03YnYslnk9dA9houl1E0XH0h8x0BgQ-jy&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Crust",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMDph8g01dWk7YXUDPP3NyTk5puaa-mEn_RjnLAnMLS4NR9jeZWic5Mw8-&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Stuffed crust",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcj3U-n8guzLFPRg0f6FPe7Kq6RmRzRGG233XcXU0YEhP46jP5jZFCcaJf&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Design",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqoQ0ACAa0QZwU-hVLeiZpVUiLAlEMqeL81sYh1ZlJGp3bP3W9XLhxrYKb&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Veg",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR186FOjw1MKoa-o_qGpi6h2BIZhL2k3dNsh0SVcl7I7YyH4fbuYXXiv4E7&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Background",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRj-UrhZ9eE-lKlgl5afTgrYaTfaPiegUdI9GPGgNt5BEDY2jTbSGlMOa5k&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Thin crust",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSml5ug2B5_cNeouBQ7oU9B8HjQ5_A8SnYnjJnDEFnSMGlr2Cz7vBB9XkWE&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Art",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiqzPimGZs5GUmsyfmEYbMnHjL7YdaMN49xtVqVfBsmxo8zT8AjUmkA-0F&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Taco",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ62_RNGTURQ0lozq8M_XEzBHuHRhpNkd7eVvhHidR5k37f3nGo_wod4GLu&s"
+        },
+        {
+         "type": "carousel_element",
+         "title": "Neapolitan",
+         "subtitle": null,
+         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpadd0xSK2oixU4Yy1h_C-_WGg1jTxseOOOYyiAPizWNen7FpQQY8LDpZx&s"
+        }
+       ],
+       "rectangle": null
+      },
+      {
+       "type": "images_search",
+       "rank_group": 1,
+       "rank_absolute": 2,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]",
+       "title": "Pizza - Wikipedia",
+       "subtitle": "Wikipedia",
+       "alt": "Pizza - Wikipedia",
+       "url": "https://en.wikipedia.org/wiki/Pizza",
+       "source_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/91/Pizza-3007395.jpg/1280px-Pizza-3007395.jpg?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=thumbnail",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSF9UmS2jtTpaDly1Td2PIHLTHAhVTLTLfOpA4gSayYsA&s"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 2,
+       "rank_absolute": 3,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[2]",
+       "title": "Classic Margherita Pizza",
+       "subtitle": "Ooni UK - Ooni Pizza Ovens",
+       "alt": "Classic Margherita Pizza",
+       "url": "https://uk.ooni.com/blogs/recipes/margherita-pizza",
+       "source_url": "https://uk.ooni.com/cdn/shop/articles/20220211142645-margherita-9920_e3a9cdac-3ff9-48e0-86f2-821e1f6c4f36.jpg?v=1790674632&width=1080",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDK3uM2PrEPNZxB_9Ujn4ey3EYAv_SNh0GL6DiKOp2eQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 3,
+       "rank_absolute": 4,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[3]/div[1]/div[2]",
+       "title": "Garlic cheese pizza",
+       "subtitle": "RecipeTin Eats",
+       "alt": "Garlic cheese pizza",
+       "url": "https://www.recipetineats.com/garlic-cheese-pizza/",
+       "source_url": "https://www.recipetineats.com/tachyon/2023/05/Garlic-cheese-pizza_9.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7gQORF59Mqsm0hZDYA-XTrGavOyQNaMW4xXtWuqSCDg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 4,
+       "rank_absolute": 5,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]/div[1]/div[2]",
+       "title": "East Roasted Veggie Pizza",
+       "subtitle": "Live Eat Learn",
+       "alt": "East Roasted Veggie Pizza",
+       "url": "https://www.liveeatlearn.com/veggie-pizza/",
+       "source_url": "https://www.liveeatlearn.com/wp-content/uploads/2025/09/Veggie-Pizza-12.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_4aGn1VO584EPbMq-rpavYLrYDRt71DqO9uQioHpGyQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 5,
+       "rank_absolute": 6,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[5]/div[1]/div[2]",
+       "title": "Homemade Pizza",
+       "subtitle": "Taste of Home",
+       "alt": "Homemade Pizza",
+       "url": "https://www.tasteofhome.com/recipes/homemade-pizza/",
+       "source_url": "https://www.tasteofhome.com/wp-content/uploads/2018/01/Homemade-Pizza_EXPS_FT23_376_EC_120123_3.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZJmtAev2vwGnmBe1lC7v8netdl01q4HO5wbBscjiYtA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 6,
+       "rank_absolute": 7,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[6]/div[1]/div[2]",
+       "title": "Chicken Parmesan Pizza",
+       "subtitle": "Olives & Lamb",
+       "alt": "Chicken Parmesan Pizza",
+       "url": "https://olivesandlamb.com/chicken-parmesan-pizza/",
+       "source_url": "https://olivesandlamb.com/wp-content/uploads/2024/05/Chicken-Parmesan-Pizza-10-4x5-1-scaled.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3yKZ3xnhKwwPFFG4HejPha_woLt9ybKzzk-sIwPjRIQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 7,
+       "rank_absolute": 8,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[7]/div[1]/div[2]",
+       "title": "My Dream Pepperoni Pizza",
+       "subtitle": "Cloudy Kitchen",
+       "alt": "My Dream Pepperoni Pizza",
+       "url": "https://cloudykitchen.com/blog/pepperoni-pizza/",
+       "source_url": "https://cloudykitchen.com/wp-content/uploads/2025/12/sliced-pepperoni-pizza.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjpM2ZmnzVgMvdObSUBQmto4wHoOij69rAzD0X5bOXsg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 8,
+       "rank_absolute": 9,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[8]/div[1]/div[2]",
+       "title": "Easy Pizza Recipe",
+       "subtitle": "Schwartz",
+       "alt": "Easy Pizza Recipe",
+       "url": "https://www.schwartz.co.uk/blogs/recipes/easy-pizza",
+       "source_url": "http://mccormick.widen.net/content/c9ui9bdflj/jpeg/4.Easy%20Pizza_18.jpeg?w=2000&h=1125&position=c&color=ffffffff&quality=100&u=nyf6gz",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqOxsJBx6_0OucJUl-ZG6BY2-pcrcDXX9VT8dOtdd4Lg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 9,
+       "rank_absolute": 10,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[9]/div[1]/div[2]",
+       "title": "Pepperoni pizza",
+       "subtitle": "ProCook",
+       "alt": "Pepperoni pizza",
+       "url": "https://www.procook.co.uk/the-pantry/recipe/pepperoni-pizza",
+       "source_url": "https://cdn.procook.co.uk/9bfb7344-02a2-4448-819b-b43500b8065d/Product-image-square/Pepperoni-pizza-1.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvRQ2-IajjIwrpBSdiPlB2U7POUIRkp5cbbRV3BNy7ow&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 10,
+       "rank_absolute": 11,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[10]/div[1]/div[2]",
+       "title": "Pepperoni Pizza",
+       "subtitle": "Table for Two Blog",
+       "alt": "Pepperoni Pizza",
+       "url": "https://www.tablefortwoblog.com/pizzeria-style-pepperoni-pizza/",
+       "source_url": "https://www.tablefortwoblog.com/wp-content/uploads/2025/06/pepperoni-pizza-recipe-photos-tablefortwoblog-7.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQf8QEC9PPM89TYYVVpliuM_s5lcy8zKP5DxG_Q-HX2LA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 11,
+       "rank_absolute": 12,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[11]/div[1]/div[2]",
+       "title": "London Pizza Depot Ilford - Ilford's Number 1 Pizza Delivery",
+       "subtitle": "londonpizzadepot.co.uk",
+       "alt": "London Pizza Depot Ilford - Ilford's Number 1 Pizza Delivery",
+       "url": "https://londonpizzadepot.co.uk/",
+       "source_url": "https://londonpizzadepot.co.uk/wp-content/uploads/2025/09/442580_ec659f1ffd4d4885872e62876080c22cmv2.png",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYthBk2KluV0b9J3ZXcgs5cx7ivAp8ZEgFyAv7Riw0bA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 12,
+       "rank_absolute": 13,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[12]/div[1]/div[2]",
+       "title": "Chewy Neapolitan Style Pizza at home (Beginners guide)",
+       "subtitle": "The Scran Line",
+       "alt": "Chewy Neapolitan Style Pizza at home (Beginners guide)",
+       "url": "https://thescranline.com/chewy-neapolitan-style-pizza-beginners-guide/",
+       "source_url": "https://thescranline.com/wp-content/uploads/2026/01/PIZZA-RECIPE-S-02-500x375.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_9wMSRKv48dnJRjhldyqYIKIC67JbRTvn_5k9B0TPZA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 13,
+       "rank_absolute": 14,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[13]/div[1]/div[2]",
+       "title": "Chilli broccoli pizza",
+       "subtitle": "BBC",
+       "alt": "Chilli broccoli pizza",
+       "url": "https://www.bbc.co.uk/food/recipes/chilli_broccoli_pizza_25406",
+       "source_url": "https://ichef.bbci.co.uk/food/ic/food_16x9_1600/recipes/chilli_broccoli_pizza_25406_16x9.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPqOl0Aqb6KUL9uobxpJ4nVcMjzzPbvb9C6e75y8BHvg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 14,
+       "rank_absolute": 15,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[14]/div[1]/div[2]",
+       "title": "The best pizza restaurants in London - delicious. magazine",
+       "subtitle": "delicious. magazine",
+       "alt": "The best pizza restaurants in London - delicious. magazine",
+       "url": "https://www.deliciousmagazine.co.uk/best-pizza-restaurants-london/",
+       "source_url": "https://www.deliciousmagazine.co.uk/wp-content/uploads/2020/02/Best-Pizza-Restaurants-London.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkEUIHmxfgQU30GJQra01Wfx6F3rzpzFHFbxRTdhR3wA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 15,
+       "rank_absolute": 16,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[15]/div[1]/div[2]",
+       "title": "Easy Double Cheese Pizza",
+       "subtitle": "Cloudy Kitchen",
+       "alt": "Easy Double Cheese Pizza",
+       "url": "https://cloudykitchen.com/blog/cheese-pizza/",
+       "source_url": "https://cloudykitchen.com/wp-content/uploads/2025/12/piece-of-pizza-2.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScmVGChMBUZin1v3ws-J8uYW3UNsox0SuWBUXGJwXXsQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 16,
+       "rank_absolute": 17,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[16]/div[1]/div[2]",
+       "title": "Neapolitan Pizza",
+       "subtitle": "Cookidoo",
+       "alt": "Neapolitan Pizza",
+       "url": "https://cookidoo.co.uk/recipes/recipe/en-gb/r803143",
+       "source_url": "https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480_1_5x/img/recipe/ras/Assets/48a49653c8716457eb0b2f7eb3c7d74c/Derivates/8d83d9ed4567fa15456d8eec7557e60006a15576.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRi43gPU_J-KkObOospt176sCdYaVfuxiLnL301coHMA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 17,
+       "rank_absolute": 18,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[17]/div[1]/div[2]",
+       "title": "Chocolate pizza",
+       "subtitle": "BBC Good Food",
+       "alt": "Chocolate pizza",
+       "url": "https://www.bbcgoodfood.com/recipes/chocolate-pizza",
+       "source_url": "https://images.immediate.co.uk/production/volatile/sites/30/2023/03/Chocolate-pizza-a24aff9.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAeB2xaaftfCS-ZFtDza3SlQ0r9b-Nj4X7RCGLamj6qQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 18,
+       "rank_absolute": 19,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[18]/div[1]/div[2]",
+       "title": "Pizza Margherita",
+       "subtitle": "Just Spices",
+       "alt": "Pizza Margherita",
+       "url": "https://www.justspices.co.uk/recipes/classic-pizza-margherita.html?srsltid=AU7gw4UGD7Pv1myFPIA3vxQ9Q9tHB__yy5XHMB3oCLAlFJ7ZyLCWIqqL",
+       "source_url": "https://www.justspices.co.uk/media/recipe/Pizza_Gewuerz_Pizza_Margherita-4.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTr1CaFHeoRCnl3ydkDqrTGtem87IRpeAbMPz9PyeBUdA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 19,
+       "rank_absolute": 20,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[19]/div[1]/div[2]",
+       "title": "Easy Cheese and Tomato Pizza (Margherita Pizza)",
+       "subtitle": "Easy Peasy Foodie",
+       "alt": "Easy Cheese and Tomato Pizza (Margherita Pizza)",
+       "url": "https://www.easypeasyfoodie.com/easy-cheese-and-tomato-pizza/",
+       "source_url": "https://www.easypeasyfoodie.com/wp-content/uploads/2024/07/Easy-Cheese-and-Tomato-Pizza-Hero.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcXBHXYTwnhMHWgjVI2Ke0ob_aRI-yH55TcCMI-j2cXA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 20,
+       "rank_absolute": 21,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[20]/div[1]/div[2]",
+       "title": "Vegetable pizza",
+       "subtitle": "BBC",
+       "alt": "Vegetable pizza",
+       "url": "https://www.bbc.co.uk/food/recipes/vegetable_pizza_29175",
+       "source_url": "https://ichef.bbci.co.uk/food/ic/food_16x9_1600/recipes/vegetable_pizza_29175_16x9.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPS-fJdeMp1xlzaJCNxh5-8C4lam7I3W6IdJCqa7BCmg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 21,
+       "rank_absolute": 22,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[21]/div[1]/div[2]",
+       "title": "3-Cheese Pizza with Crispy Wedges and Tomato Salad",
+       "subtitle": "HelloFresh",
+       "alt": "3-Cheese Pizza with Crispy Wedges and Tomato Salad",
+       "url": "https://www.hellofresh.co.uk/recipes/super-cheesy-pizza-5d7a5e280dcef100100a109a",
+       "source_url": "https://media.hellofresh.com/q_100,w_3840,f_auto,c_limit,fl_lossy/recipes/image/super-cheesy-pizza-7fdf4215-5ac67289.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6rIzFueJavAmsaXkUbvs0jxVs8bsB2p0AHQ1NitdcfQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 22,
+       "rank_absolute": 23,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[22]/div[1]/div[2]",
+       "title": "Alpine pizza",
+       "subtitle": "BBC",
+       "alt": "Alpine pizza",
+       "url": "https://www.bbc.co.uk/food/recipes/alpine_pizza_32132",
+       "source_url": "https://ichef.bbc.co.uk/ace/standard/1600/food/recipes/alpine_pizza_32132_16x9.jpg.webp",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOPIhOnCfWmh7EPGPTA275Mfk9qN5G90AXrC-RPtX6Dw&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 23,
+       "rank_absolute": 24,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[23]/div[1]/div[2]",
+       "title": "Pizza Pilgrim's Eccellenza Campana Pizza Recipe",
+       "subtitle": "The Happy Foodie",
+       "alt": "Pizza Pilgrim's Eccellenza Campana Pizza Recipe",
+       "url": "https://thehappyfoodie.co.uk/recipes/eccellenza-campana-pizza/",
+       "source_url": "https://thehappyfoodie.co.uk/wp-content/uploads/2026/02/Pizza-Pilgrims-Pizza-Campana-.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTOrDB18saOeT2-CUoxslDGQI66_Y7uqd7utsUk_CACg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 24,
+       "rank_absolute": 25,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[24]/div[1]/div[2]",
+       "title": "Cheese Pizza Recipe",
+       "subtitle": "JoyFoodSunshine",
+       "alt": "Cheese Pizza Recipe",
+       "url": "https://joyfoodsunshine.com/cheese-pizza-recipe/",
+       "source_url": "https://joyfoodsunshine.com/wp-content/uploads/2023/04/best-cheese-pizza-recipe-1.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5peqVVjaSAHIjD_snsSjnxCQbaar8rL5Kn-28Tag8CQ&s=10"
+      },
+      {
+       "type": "related_searches",
+       "rank_group": 1,
+       "rank_absolute": 26,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[25]/div[1]",
+       "items": [
+        "pizza cartoon",
+        "pizza slice",
+        "real pizza pic"
+       ],
+       "rectangle": null
+      },
+      {
+       "type": "images_search",
+       "rank_group": 25,
+       "rank_absolute": 27,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[26]/div[1]/div[2]",
+       "title": "Pizza margherita",
+       "subtitle": "Sainsbury's Magazine",
+       "alt": "Pizza margherita",
+       "url": "https://www.sainsburysmagazine.co.uk/recipes/mains/pizza-margherita",
+       "source_url": "https://www.sainsburysmagazine.co.uk/uploads/media/1080x1155/01/18311-pizza-margherita.jpg?v=1-0",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIr_4IH4UjEZi-M-ZTWCwYrrKkxGaNr0jj0nlQZHFDlw&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 26,
+       "rank_absolute": 28,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[27]/div[1]/div[2]",
+       "title": "Pizza napoletana",
+       "subtitle": "GialloZafferano Recipes",
+       "alt": "Pizza napoletana",
+       "url": "https://www.giallozafferano.com/recipes/Pizza-napoletana.html",
+       "source_url": "https://www.giallozafferano.com/images/251-25178/Pizza-napoletana_780x520_wm.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXQ38q415cohDdCK-jd4wRHmsup55XCr8RqB962OZ-aQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 27,
+       "rank_absolute": 29,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[28]/div[1]/div[2]",
+       "title": "Healthy pizza",
+       "subtitle": "BBC",
+       "alt": "Healthy pizza",
+       "url": "https://www.bbc.co.uk/food/recipes/healthy_pizza_55143",
+       "source_url": "https://ichef.bbci.co.uk/food/ic/food_16x9_1600/recipes/healthy_pizza_55143_16x9.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhDBkPiXlTzn1DmSOoGb2MV-eMLnKqb2FybCRhA6_I-A&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 28,
+       "rank_absolute": 30,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[29]/div[1]/div[2]",
+       "title": "Sourdough pizza",
+       "subtitle": "Delicious Magazine",
+       "alt": "Sourdough pizza",
+       "url": "https://www.deliciousmagazine.co.uk/recipes/sourdough-pizza/",
+       "source_url": "https://www.deliciousmagazine.co.uk/wp-content/uploads/2020/09/GettyImages-768.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdVeBuFceadH2mXo7MqCsm7DRLK8glbbB6usPwhLA3-Q&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 29,
+       "rank_absolute": 31,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[30]/div[1]/div[2]",
+       "title": "Easy Margherita Pizza",
+       "subtitle": "Belly Full",
+       "alt": "Easy Margherita Pizza",
+       "url": "https://bellyfull.net/margherita-pizza/",
+       "source_url": "https://bellyfull.net/wp-content/uploads/2026/02/Margherita-Pizza-hero.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ340yIAkYAvTxfpGG41kM8RbtEf11X54ii5WtB5UcoTg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 30,
+       "rank_absolute": 32,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[31]/div[1]/div[2]",
+       "title": "Pizza Margherita (Tomato, Basil, and Mozzarella Pizza)",
+       "subtitle": "Saveur",
+       "alt": "Pizza Margherita (Tomato, Basil, and Mozzarella Pizza)",
+       "url": "https://www.saveur.com/article/recipes/pizza-margherita-tomato-basil-and-mozzarella-pizza/",
+       "source_url": "https://www.saveur.com/uploads/2013/04/JTPSD2ONPYISBHIP4CJ5HDW55A_01.webp?format=auto&optimize=high&width=1440",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb8S4gT3C8gc1t49iUeUfh3S0nqGXSWkDNCgdp8ynbfw&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 31,
+       "rank_absolute": 33,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[32]/div[1]/div[2]",
+       "title": "Cheese and Tomato Frying Pan Pizza",
+       "subtitle": "Doves Farm",
+       "alt": "Cheese and Tomato Frying Pan Pizza",
+       "url": "https://www.dovesfarm.co.uk/recipes/cheese-and-tomato-frying-pan-pizza",
+       "source_url": "https://www.dovesfarm.co.uk/wp-content/uploads/2024/07/DF446-Frying-Pan-Pizza_1080.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTv-al5A91UHqBEviZx_73x3gRCht8Pu3Ip46ZHHYhNQA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 32,
+       "rank_absolute": 34,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[33]/div[1]/div[2]",
+       "title": "BBQ Chicken Pizza",
+       "subtitle": "Vilgain",
+       "alt": "BBQ Chicken Pizza",
+       "url": "https://vilgain.co.uk/bbq-chicken-pizza?srsltid=AU7gw4WQRA8LOy_kZOFFwWVaca6WwVNJv4zH0BXk8okIey66U1oQHqhA",
+       "source_url": "https://cdn.vilgain.com/image/recipe-cover/cover-desktop/832ed909-4fa6-43c5-82f5-1259155dd547?v=1721375724",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGdJ7krqiK6xUARGGIpAqqv1ypUYwwRuKnDMnBbjEsHQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 33,
+       "rank_absolute": 35,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[34]/div[1]/div[2]",
+       "title": "What Is a Margherita Pizza? The Neapolitan Standard | Via Napoli Pizzeria",
+       "subtitle": "Via Napoli Pizzeria",
+       "alt": "What Is a Margherita Pizza? The Neapolitan Standard | Via Napoli Pizzeria",
+       "url": "https://vianapoli.com.au/blog/art-of-the-perfect-margherita-pizza/",
+       "source_url": "https://vianapoli.com.au/wp-content/uploads/margherita-pizza-slice-lifted-neapolitan-style-via-napoli-20260604-uai-1534x1023.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFjEf3Flc8UIWPt9e_VxXgIK6CYdOAEhhXWX61LvxcZw&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 34,
+       "rank_absolute": 36,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[35]/div[1]/div[2]",
+       "title": "Pizza Cosacca - Recipe - Gustini - italienischer Foodblog",
+       "subtitle": "www.gustini.co.uk",
+       "alt": "Pizza Cosacca - Recipe - Gustini - italienischer Foodblog",
+       "url": "https://www.gustini.co.uk/blog/favorite-italian-recipes/pizza-cosacca-recipe/",
+       "source_url": "https://www.gustini.co.uk/blog/wp-content/uploads/2025/01/Cosacca-Rezept-Vorschau.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO3R0FQ_px0StisZ6IqbM0qb_Gevg4HIVyJbwZODgKgA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 35,
+       "rank_absolute": 37,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[36]/div[1]/div[2]",
+       "title": "Pizza alla diavola",
+       "subtitle": "GialloZafferano Recipes",
+       "alt": "Pizza alla diavola",
+       "url": "https://www.giallozafferano.com/recipes/Pizza-alla-diavola.html",
+       "source_url": "https://www.giallozafferano.com/images/295-29562/Pizza-alla-diavola_780x520_wm.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfzE2Hdyy-ygx-j31A5Q35-T8T1vBZJ3oRqbpBSD8r5Q&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 36,
+       "rank_absolute": 38,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[37]/div[1]/div[2]",
+       "title": "Homemade BBQ Chicken Pizza",
+       "subtitle": "Modern Honey",
+       "alt": "Homemade BBQ Chicken Pizza",
+       "url": "https://www.modernhoney.com/homemade-bbq-chicken-pizza/",
+       "source_url": "https://www.modernhoney.com/wp-content/uploads/2025/01/BBQ-Chicken-Pizza-4-crop-scaled.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuSPWysfpO0nqwzMriTOXQFsFxZ5-SluJh_lhQBxynpw&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 37,
+       "rank_absolute": 39,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[38]/div[1]/div[2]",
+       "title": "Hot Honey Garlic Flatbread Pizzas",
+       "subtitle": "Don't Go Bacon My Heart",
+       "alt": "Hot Honey Garlic Flatbread Pizzas",
+       "url": "https://www.dontgobaconmyheart.co.uk/hot-honey-garlic-bread-pizza/",
+       "source_url": "https://www.dontgobaconmyheart.co.uk/wp-content/uploads/2024/06/garlic-flatbread-pizza.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGV2jeXsHRstIo3ci5Znv4YJ104LkrEpGp99Dz6oPULQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 38,
+       "rank_absolute": 40,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[39]/div[1]/div[2]",
+       "title": "Air Fryer Pizza",
+       "subtitle": "Doves Farm",
+       "alt": "Air Fryer Pizza",
+       "url": "https://www.dovesfarm.co.uk/recipes/air-fryer-pizza",
+       "source_url": "https://www.dovesfarm.co.uk/wp-content/uploads/2025/02/DF455_Air-Fryer-Pizza-1080.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMWA_FrJScpncV5VElllgTkPd5D0GBrA8swk_4FoMxRw&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 39,
+       "rank_absolute": 41,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[40]/div[1]/div[2]",
+       "title": "Pepperoni Pizza With Balsamic Salad",
+       "subtitle": "Gousto",
+       "alt": "Pepperoni Pizza With Balsamic Salad",
+       "url": "https://www.gousto.co.uk/cookbook/pork-recipes/pepperoni-pizza-with-rocket-salad",
+       "source_url": "https://production-media.gousto.co.uk/cms/mood-image/1772_Pepperoni-Pizza-With-Rocket-Salad_001_0-1718268553711.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQk1Rkkfp9lqqqlscDr0w2zYyyPGDz4C6dKpxE7Y97x3w&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 40,
+       "rank_absolute": 42,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[41]/div[1]/div[2]",
+       "title": "Pizza Caprese",
+       "subtitle": "Gozney",
+       "alt": "Pizza Caprese",
+       "url": "https://eu.gozney.com/blogs/recipes/pizza-caprese-recipe",
+       "source_url": "https://eu.gozney.com/cdn/shop/files/Caprese_Pizza_Feng_Chen_leopardcrust_-_Large_f0796fcd-05f1-4c1e-9341-fb6012fe7907.png?v=1743691203&width=1500",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_0mMH4mlQm_b-YzVQPrubdjyhx4K6DdRUCaIGxA9lTQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 41,
+       "rank_absolute": 43,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[42]/div[1]/div[2]",
+       "title": "59 Pizza Recipes and Toppings | olivemagazine",
+       "subtitle": "Olive Magazine",
+       "alt": "59 Pizza Recipes and Toppings | olivemagazine",
+       "url": "https://www.olivemagazine.com/recipes/collection/pizza-recipes/",
+       "source_url": "https://images.immediate.co.uk/production/volatile/sites/2/2025/04/Capricciosa-bianca-a1d18b2.jpg?resize=1366,1503",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmuNKRyuM_ykm1H2KCbwgYXHrkA7QaSqSD0DR8yXhM9A&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 42,
+       "rank_absolute": 44,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[43]/div[1]/div[2]",
+       "title": "Spicy Chicken and Jalapeño Pizza",
+       "subtitle": "Baked by Rachel •",
+       "alt": "Spicy Chicken and Jalapeño Pizza",
+       "url": "https://www.bakedbyrachel.com/spicy-chicken-and-jalapeno-pizza/",
+       "source_url": "https://cdn.bakedbyrachel.com/wp-content/uploads/2018/01/chickenjalapenopizza_bakedbyrachel-2.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQg6PPDKu4OINeV5fbZDH3FOXzkWDdCFwExQuyQU03XA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 43,
+       "rank_absolute": 45,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[44]/div[1]/div[2]",
+       "title": "Margherita Pizza",
+       "subtitle": "Little Chefs, Big Chefs",
+       "alt": "Margherita Pizza",
+       "url": "https://littlechefsbigchefs.org.uk/margherita-pizza/",
+       "source_url": "https://littlechefsbigchefs.org.uk/wp-content/uploads/2025/07/Margherita-pizza-500x500.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkA1jt5tC-pPgc78jxIZ6PBoMmqh7hXLBlQS2ladRs7Q&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 44,
+       "rank_absolute": 46,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[45]/div[1]/div[2]",
+       "title": "London Pizza Depot Ilford - Ilford's Number 1 Pizza Delivery",
+       "subtitle": "londonpizzadepot.co.uk",
+       "alt": "London Pizza Depot Ilford - Ilford's Number 1 Pizza Delivery",
+       "url": "https://londonpizzadepot.co.uk/",
+       "source_url": "https://londonpizzadepot.co.uk/wp-content/uploads/2025/09/442580_9d74b73e44284447a9c1d48b1bf481f3mv2.png",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYyAL0sO64R-kSPmo8txib7k6uEk29hOxLllmSHtl2fA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 45,
+       "rank_absolute": 47,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[46]/div[1]/div[2]",
+       "title": "Sourdough Neapolitan (ish) Pizza",
+       "subtitle": "The Boy Who Bakes",
+       "alt": "Sourdough Neapolitan (ish) Pizza",
+       "url": "https://www.theboywhobakes.co.uk/recipes/2020/5/15/sourdough-neapolitan-ish-pizza",
+       "source_url": "https://images.squarespace-cdn.com/content/v1/549367d9e4b0b0a3e2543543/1589554352224-UK7W7S69JCEBCLPLEENA/pizza+crust-1-3.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVRvX4m1ivmq2s3M_YNBXtYe6ynge_wvTo9d2w4FV55w&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 46,
+       "rank_absolute": 48,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[47]/div[1]/div[2]",
+       "title": "Classic Cheese Pizza Recipe – Easy Homemade Delight | Sharp Blades",
+       "subtitle": "Sharp Blades",
+       "alt": "Classic Cheese Pizza Recipe – Easy Homemade Delight | Sharp Blades",
+       "url": "https://www.sharpblades.co.uk/blogs/recipes/classic-cheese-pizza-recipe?srsltid=AU7gw4VXCKxuBlXuKKI8gT1OvOf7fSotWp_eUXN6KTgdWAkVzwZkLjxr",
+       "source_url": "http://www.sharpblades.co.uk/cdn/shop/articles/Classic_Cheese_Pizza_with_Golden_Crust_and_Melted_Mozzarella_d413dd62-a73a-45c7-aa3b-b2e46b102ad1.webp?v=1747599885",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQH-gRqPkSZLYwj2T5knDq1E1hkBcN3NlbyqgHHgTLxAQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 47,
+       "rank_absolute": 49,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[48]/div[1]/div[2]",
+       "title": "Cheese Pizza",
+       "subtitle": "Barbara Bakes",
+       "alt": "Cheese Pizza",
+       "url": "https://www.barbarabakes.com/cheese-pizza/",
+       "source_url": "https://www.barbarabakes.com/wp-content/uploads/2024/08/cheese-pizza-recipe-2.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8A4ekohLPuFXXgEOV16Yjfw3d5Pk0rhioVkHvhaA-jA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 48,
+       "rank_absolute": 50,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[49]/div[1]/div[2]",
+       "title": "Grilled BBQ Chicken Pizza",
+       "subtitle": "Diethood",
+       "alt": "Grilled BBQ Chicken Pizza",
+       "url": "https://diethood.com/grilled-bbq-chicken-pizza/",
+       "source_url": "https://diethood.com/wp-content/uploads/2014/06/bbq-chicken-pizza-3.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOIA98q7_bZZP39hrEqlmogb2d3JCzc5T7XOhGDypEvw&s=10"
+      },
+      {
+       "type": "related_searches",
+       "rank_group": 2,
+       "rank_absolute": 51,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[50]/div[1]",
+       "items": [
+        "cheese pizza",
+        "animated pizza",
+        "pizza slice images"
+       ],
+       "rectangle": null
+      },
+      {
+       "type": "images_search",
+       "rank_group": 49,
+       "rank_absolute": 52,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[51]/div[1]/div[2]",
+       "title": "Pizza for beginners – Simple pizza dough",
+       "subtitle": "Gozney",
+       "alt": "Pizza for beginners – Simple pizza dough",
+       "url": "https://www.gozney.com/blogs/recipes/pizza-for-beginners-simple-pizza-dough?srsltid=AU7gw4VkXwWkVigcbpftegRPlA2zBKdogbwdUJ2yZ7LWJoyskHY6llmP",
+       "source_url": "https://www.gozney.com/cdn/shop/files/Pizza_for_beginners_Simple_pizza_dough.webp?v=1746656156&width=1500",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSx-wRQxCX4H2X4u1YJLW9tpqHVQ0aBIrOVZwhFKFYzOQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 50,
+       "rank_absolute": 53,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[52]/div[1]/div[2]",
+       "title": "Spring veg spelt pizza",
+       "subtitle": "Sainsbury's Magazine",
+       "alt": "Spring veg spelt pizza",
+       "url": "https://www.sainsburysmagazine.co.uk/recipes/mains/spring-veg-spelt-pizza",
+       "source_url": "https://www.sainsburysmagazine.co.uk/uploads/media/1080x1155/01/5531-SpringVegSpeltPizza1120.jpg?v=1-0",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbLlaQ6PPoC1x8fKis1pMrZHEsIUL1jxHAKOFvW6wEpg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 51,
+       "rank_absolute": 54,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[53]/div[1]/div[2]",
+       "title": "Homemade Pizza",
+       "subtitle": "Feast + West",
+       "alt": "Homemade Pizza",
+       "url": "https://feastandwest.com/homemade-pizza/",
+       "source_url": "https://feastandwest.com/wp-content/uploads/2024/05/homemade-pizza-pix.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ6Tx-0OxVaDqsX1_6TFxzKKaQTu4FfAHzrVhXI3XryQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 52,
+       "rank_absolute": 55,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[54]/div[1]/div[2]",
+       "title": "Easy Homemade Pizza Dough",
+       "subtitle": "Allrecipes",
+       "alt": "Easy Homemade Pizza Dough",
+       "url": "https://www.allrecipes.com/recipe/20171/quick-and-easy-pizza-crust/",
+       "source_url": "https://www.allrecipes.com/thmb/1RCV_iJpbztKS2k_y3sscbIAnUc=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/ALR-20171-quick-and-easy-pizza-crust-VAT-4x3-2-229693959a224d749b062d4eb8983351.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVgAOVJCBtOPve_iVv9J5qUNY59Rugw-WiOyoOn2Ox3Q&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 53,
+       "rank_absolute": 56,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[55]/div[1]/div[2]",
+       "title": "Heart-Shaped Margherita Pizza",
+       "subtitle": "Kotányi",
+       "alt": "Heart-Shaped Margherita Pizza",
+       "url": "https://www.kotanyi.com/en/recipe/heart-shaped-margherita-pizza/",
+       "source_url": "https://kotanyi-en.imgix.net/wp-content/uploads/2026/01/Heart-Shaped-Margherita-Pizza-1.jpg?auto=format,compress",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-DhVTbbF0kGBTEToUmHOnyREiM_o6pUd1ADNYGUdisA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 54,
+       "rank_absolute": 57,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[56]/div[1]/div[2]",
+       "title": "Easy Gluten Free Pizza Base",
+       "subtitle": "Freee Foods",
+       "alt": "Easy Gluten Free Pizza Base",
+       "url": "https://www.freee-foods.co.uk/recipes/easy-gluten-free-pizza-base/",
+       "source_url": "https://www.freee-foods.co.uk/wp-content/uploads/2025/10/Pizza-Mix.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXX9Ein6b3SV_BoZUpxpzFF9gmmU2LJUliEAa_Zooynw&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 55,
+       "rank_absolute": 58,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[57]/div[1]/div[2]",
+       "title": "Tandoori hot naan pizza",
+       "subtitle": "BBC",
+       "alt": "Tandoori hot naan pizza",
+       "url": "https://www.bbc.co.uk/food/recipes/tandoori_hot_naan_pizza_32381",
+       "source_url": "https://ichef.bbci.co.uk/food/ic/food_16x9_1600/recipes/tandoori_hot_naan_pizza_32381_16x9.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRT46ubYijvJNqWUgB8K55ftGrELXlBqRTtyjIMMyV-Zg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 56,
+       "rank_absolute": 59,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[58]/div[1]/div[2]",
+       "title": "Sourdough Pizza Margherita",
+       "subtitle": "Savoring Italy",
+       "alt": "Sourdough Pizza Margherita",
+       "url": "https://www.savoringitaly.com/sourdough-pizza-margherita/",
+       "source_url": "https://www.savoringitaly.com/wp-content/uploads/2024/09/sourdough-pizza-5.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvys8Uo_lNnvRbKRmS4X_hbSB94aQPSA6UyWFKHfoSEA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 57,
+       "rank_absolute": 60,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[59]/div[1]/div[2]",
+       "title": "Jalapeño and Coppa Spicy Pizza Recipe with Hot Honey",
+       "subtitle": "Vindulge",
+       "alt": "Jalapeño and Coppa Spicy Pizza Recipe with Hot Honey",
+       "url": "https://www.vindulge.com/spicy-jalapeno-pizza/",
+       "source_url": "https://www.vindulge.com/wp-content/uploads/2023/02/Pizza-with-Jalapeno-Coppa-and-Hot-Honey.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQp3oDAe9gjQCK2QLL9EC5_QBbS6VJkJXtuxNgNwAzSWQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 58,
+       "rank_absolute": 61,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[60]/div[1]/div[2]",
+       "title": "BBQ chicken pizza",
+       "subtitle": "Cookidoo",
+       "alt": "BBQ chicken pizza",
+       "url": "https://cookidoo.co.uk/recipes/recipe/en-gb/r749999",
+       "source_url": "https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480_1_5x/img/recipe/ras/Assets/2caca97b-77f6-48e7-837d-62642c0c9861/Derivates/12591894-e010-4a02-b04e-2627d8374298.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2eMZVsMp7bSJrpGxWhQQbA_EWPmy-RnShmH8zm_3x9w&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 59,
+       "rank_absolute": 62,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[61]/div[1]/div[2]",
+       "title": "Home | Basilico",
+       "subtitle": "basilico.co.uk",
+       "alt": "Home | Basilico",
+       "url": "https://basilico.co.uk/",
+       "source_url": "https://basilico.co.uk/assets/img/basilicohero.png",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZYBs8pjF-TSGQIPBGP_tBsQIHyBYYW2tKf7-jdr4esA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 60,
+       "rank_absolute": 63,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[62]/div[1]/div[2]",
+       "title": "Pear & Blue Cheese Pizza",
+       "subtitle": "Abel & Cole",
+       "alt": "Pear & Blue Cheese Pizza",
+       "url": "https://www.abelandcole.co.uk/recipes/pear-blue-cheese-pizza",
+       "source_url": "https://www.abelandcole.co.uk/media/1405_52701_x.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoOalRBc69KVG7bxP9ztxjuK9HsIEB4XO2Yy-cIeBY1g&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 61,
+       "rank_absolute": 64,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[63]/div[1]/div[2]",
+       "title": "Cheesy Garlic Bread Pizza Recipe",
+       "subtitle": "A Mummy Too",
+       "alt": "Cheesy Garlic Bread Pizza Recipe",
+       "url": "https://www.amummytoo.co.uk/cheesy-garlic-bread-pizza/",
+       "source_url": "https://www.amummytoo.co.uk/wp-content/uploads/2025/03/cheese-garlic-bread-pizza-SQUARE-2.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKzg-61dRTAGxMnpWMBDFQhX4_O56tq_oUmEf_raeYsQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 62,
+       "rank_absolute": 65,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[64]/div[1]/div[2]",
+       "title": "Neapolitan Pizza",
+       "subtitle": "Caputo Flour",
+       "alt": "Neapolitan Pizza",
+       "url": "https://caputoflour.com/blogs/recipes/neapolitan-pizza?srsltid=AU7gw4XkbQUhulxUlUr9zB4RrdqrPMid49XS_HVxAeQjBTDa1bs5JjSt",
+       "source_url": "https://caputoflour.com/cdn/shop/articles/Neapolitan_1024x1024.png?v=1779129637",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_6kAc_RZEmz5wdrf98OtG8ve_ZiE9EltKw-wjALAv-w&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 63,
+       "rank_absolute": 66,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[65]/div[1]/div[2]",
+       "title": "Easy Triple Cheese Pizza",
+       "subtitle": "Gousto",
+       "alt": "Easy Triple Cheese Pizza",
+       "url": "https://www.gousto.co.uk/cookbook/vegetarian-recipes/easy-triple-cheese-pizza",
+       "source_url": "https://production-media.gousto.co.uk/cms/mood-image/983_Easy-Triple-Cheese-Pizza-1786692531869.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWrlrrWsmH_JPt35_ycCpAs2V1gnpFV98sMsRvNZqgIg&s"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 64,
+       "rank_absolute": 67,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[66]/div[1]/div[2]",
+       "title": "Pancetta and rocket pizza",
+       "subtitle": "Delicious Magazine",
+       "alt": "Pancetta and rocket pizza",
+       "url": "https://www.deliciousmagazine.co.uk/recipes/pancetta-and-rocket-pizza/",
+       "source_url": "https://www.deliciousmagazine.co.uk/wp-content/uploads/2018/07/787795-1-eng-GB_pancetta-and-rocket-pizza.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSU-DYomhDq8OTklo3loQURS1WDlQu-aHg5bWgkGsGj7w&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 65,
+       "rank_absolute": 68,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[67]/div[1]/div[2]",
+       "title": "Pizza Dough",
+       "subtitle": "Allrecipes",
+       "alt": "Pizza Dough",
+       "url": "https://www.allrecipes.com/recipe/23290/pizza-dough-iii/",
+       "source_url": "https://www.allrecipes.com/thmb/kgZB2WpV5NUBsd0XPOkcOOV9SEY=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/23290-pizza-dough-iii-VAT-Beauty-4x3-06192801c8fa48fe8afaadfea28f532b.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToBey2QG-xJpuu5_XhQVOszqdmTBdnstuV-Wri3ugFmQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 66,
+       "rank_absolute": 69,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[68]/div[1]/div[2]",
+       "title": "Homemade Pizza Dough",
+       "subtitle": "Dish by Rish",
+       "alt": "Homemade Pizza Dough",
+       "url": "https://www.dishbyrish.co.uk/2025/06/homemade-pizza-dough/",
+       "source_url": "https://www.dishbyrish.co.uk/wp-content/uploads/2025/06/Pizza-dough-recipe.00_00_01_24.Still002-min-735x1306.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlmvSQaDAuD6fC_QFTNfADer4YzQeNYRcpKKMw07-Ltg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 67,
+       "rank_absolute": 70,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[69]/div[1]/div[2]",
+       "title": "Ciabatta pepperoni pizza",
+       "subtitle": "Sainsbury's Magazine",
+       "alt": "Ciabatta pepperoni pizza",
+       "url": "https://www.sainsburysmagazine.co.uk/recipes/mains/ciabatta-pepperoni-pizza",
+       "source_url": "https://www.sainsburysmagazine.co.uk/uploads/media/1080x1155/05/19915-ciabatta-pizza.jpg?v=1-0",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsC-4Cen2ECBccOK2dY-Go0STCMRrL2l84vlAGpQcFPA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 68,
+       "rank_absolute": 71,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[70]/div[1]/div[2]",
+       "title": "Heart Shaped Pizza (Perfect for Valentine's Day or Date Night)",
+       "subtitle": "Kathryns Kitchen Blog",
+       "alt": "Heart Shaped Pizza (Perfect for Valentine's Day or Date Night)",
+       "url": "https://kathrynskitchenblog.com/heart-shaped-pizza/",
+       "source_url": "https://kathrynskitchenblog.com/wp-content/uploads/2021/01/Heart-Shaped-Pizza-3.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZpQ2SBPKmD6S8xenx9teYREyIwZ6rqYGgxIM0mKW7Jg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 69,
+       "rank_absolute": 72,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[71]/div[1]/div[2]",
+       "title": "Pizza Margherita - Wikipedia",
+       "subtitle": "Wikipedia",
+       "alt": "Pizza Margherita - Wikipedia",
+       "url": "https://en.wikipedia.org/wiki/Pizza_Margherita",
+       "source_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/57/Neapolitan_pizza_at_Trappica_%2848701940197%29.jpg/1280px-Neapolitan_pizza_at_Trappica_%2848701940197%29.jpg?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=thumbnail",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKmfptCy9zVcs6s2jpFDEHl9sgzjfBONFa1XO7trc7EA&s"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 70,
+       "rank_absolute": 73,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[72]/div[1]/div[2]",
+       "title": "Pepperoni pizza",
+       "subtitle": "Arla",
+       "alt": "Pepperoni pizza",
+       "url": "https://www.arlafoods.co.uk/recipes/pepperoni-pizza/",
+       "source_url": "https://images.arla.com/recordid/DF1FEC6A-1E82-4435-B62EF9C786303EC2/pepperoni-pizza.jpg?format=webp&width=375&height=469&mode=crop",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQme8z35Eq-_LHqKE1YVp3LkgfEqCYzJqWqHwQ0KE9t9A&s"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 71,
+       "rank_absolute": 74,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[73]/div[1]/div[2]",
+       "title": "Ultimate Veggie Pizza",
+       "subtitle": "Cookie and Kate",
+       "alt": "Ultimate Veggie Pizza",
+       "url": "https://cookieandkate.com/veggie-pizza-recipe/",
+       "source_url": "https://cookieandkate.com/images/2020/10/best-veggie-pizza-recipe-1.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUPrYUFFPkT5DiHYvNAT_KaEByYyNWMtksjW9Ce-d_VQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 72,
+       "rank_absolute": 75,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[74]/div[1]/div[2]",
+       "title": "Pizza margherita",
+       "subtitle": "Cookidoo",
+       "alt": "Pizza margherita",
+       "url": "https://cookidoo.co.uk/recipes/recipe/en-GB/r323752",
+       "source_url": "https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480/img/recipe/ras/Assets/4F1526F0-0A46-4C87-A3D5-E80AD76C0D70/Derivates/df9a8be7-6ab2-4d5a-8c4d-6cbe8aceda72.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpyK5ZAQv1AzK1P7XLilsrlkoblxiTj01abSb4UgTg1w&s=10"
+      },
+      {
+       "type": "related_searches",
+       "rank_group": 3,
+       "rank_absolute": 76,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[75]/div[1]",
+       "items": [
+        "pizza photo real",
+        "pizza dominos",
+        "transparent pizza"
+       ],
+       "rectangle": null
+      },
+      {
+       "type": "images_search",
+       "rank_group": 73,
+       "rank_absolute": 77,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[76]/div[1]/div[2]",
+       "title": "Homemade Pizza",
+       "subtitle": "Delish",
+       "alt": "Homemade Pizza",
+       "url": "https://www.delish.com/cooking/recipe-ideas/a24893663/homemade-pizza-recipe/",
+       "source_url": "https://hips.hearstapps.com/hmg-prod/images/homemade-pizza-index-65b927319ae68.jpg?crop=0.502xw:1.00xh;0.00321xw,0&resize=1200:*",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAx-dGRGplEMI9awdokpS3q73GXb2lAVSaYQW4d1AqTg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 74,
+       "rank_absolute": 78,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[77]/div[1]/div[2]",
+       "title": "BBQ Chicken Pizza Recipe",
+       "subtitle": "Just a Taste",
+       "alt": "BBQ Chicken Pizza Recipe",
+       "url": "https://www.justataste.com/easy-barbecue-chicken-pizza-recipe/",
+       "source_url": "https://www.justataste.com/wp-content/uploads/2014/02/bbq-chicken-pizza-2025.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFDMOiUKgU2qe0nlqDTHwsvQK-5D0Cs_N1rnRwdvCbmg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 75,
+       "rank_absolute": 79,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[78]/div[1]/div[2]",
+       "title": "Pesto Pizza",
+       "subtitle": "Sally's Baking Addiction",
+       "alt": "Pesto Pizza",
+       "url": "https://sallysbakingaddiction.com/pesto-pizza/",
+       "source_url": "https://sallysbakingaddiction.com/wp-content/uploads/2022/08/basil-pesto-pizza-3.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIcczepxNEaKaSkjCgsVh9guJ7IY5H7dolXglD0t1Agg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 76,
+       "rank_absolute": 80,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[79]/div[1]/div[2]",
+       "title": "Pizza Chicken Parmesan",
+       "subtitle": "Don't Go Bacon My Heart",
+       "alt": "Pizza Chicken Parmesan",
+       "url": "https://www.dontgobaconmyheart.co.uk/pizza-chicken-parmesan/",
+       "source_url": "https://www.dontgobaconmyheart.co.uk/wp-content/uploads/2023/06/pizza-chicken-parmigiana.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJKqatC7yncdM2siihy7JoyEyZqIo6o8wf_yyjMNxGKw&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 77,
+       "rank_absolute": 81,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[80]/div[1]/div[2]",
+       "title": "Pepperoni Pizza",
+       "subtitle": "Little Sunny Kitchen",
+       "alt": "Pepperoni Pizza",
+       "url": "https://littlesunnykitchen.com/pepperoni-pizza/",
+       "source_url": "https://littlesunnykitchen.com/wp-content/uploads/2022/03/Pepperoni-Pizza-1.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOLS4ye5rbOYacr3xcS_X70_4tUe0P_plFmSapz2nOGQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 78,
+       "rank_absolute": 82,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[81]/div[1]/div[2]",
+       "title": "Pizza Marinara",
+       "subtitle": "Just Spices",
+       "alt": "Pizza Marinara",
+       "url": "https://www.justspices.co.uk/recipes/pizza-marinara-1.html?srsltid=AU7gw4WZORB1aAYdanyGEAG5yimRKzf4DG8x-A4BpQ6RgSXsDGjZYc-r",
+       "source_url": "https://www.justspices.co.uk/media/recipe/resized/510x510/recipe/pizza-marinara_2.png",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQku1ZXzt2Z57tf0UkpDrPA4V9hnTDoIEvVWjLEr0vdgg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 79,
+       "rank_absolute": 83,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[82]/div[1]/div[2]",
+       "title": "Ploughman’s pizza",
+       "subtitle": "delicious. magazine",
+       "alt": "Ploughman’s pizza",
+       "url": "https://www.deliciousmagazine.co.uk/recipes/ploughmans-pizza/",
+       "source_url": "https://www.deliciousmagazine.co.uk/wp-content/uploads/2019/02/ploughmanas-pizza.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2reP4f1DT1xmPGTN6IdSe0vAzMSy5x8QgIcMxNtrHxg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 80,
+       "rank_absolute": 84,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[83]/div[1]/div[2]",
+       "title": "Quinoa Pizza",
+       "subtitle": "HotCooking",
+       "alt": "Quinoa Pizza",
+       "url": "https://hotcooking.co.uk/recipes/quinoa-pizza/",
+       "source_url": "https://assets.hotcooking.co.uk/portrait45/quinoa_pizza_large.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKyQFqjlOOR5DY2DcGMw6-Iv09nQblBQtDOW18AIaycg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 81,
+       "rank_absolute": 85,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[84]/div[1]/div[2]",
+       "title": "Eggs Florentine pizza",
+       "subtitle": "BBC Good Food",
+       "alt": "Eggs Florentine pizza",
+       "url": "https://www.bbcgoodfood.com/recipes/eggs-florentine-pizza",
+       "source_url": "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/eggs-florentine-pizza-2adefac.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSESUFWAzAN4c_BgenOaIrKjXBZmLxVZBxcvdO6ebNA-w&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 82,
+       "rank_absolute": 86,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[85]/div[1]/div[2]",
+       "title": "Lardo & tomato pizza | Borough Market",
+       "subtitle": "Borough Market",
+       "alt": "Lardo & tomato pizza | Borough Market",
+       "url": "https://boroughmarket.org.uk/recipes/lardo-tomato-pizza/",
+       "source_url": "https://boroughmarket.org.uk/wp-content/uploads/2021/03/Lardo-tomato-pizza-2-e1616084697500.jpeg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdvv1-eqjcIJKhlg1iBi520-F8BhZJJZ-5OmEraw4W5A&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 83,
+       "rank_absolute": 87,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[86]/div[1]/div[2]",
+       "title": "Cheese Pizza",
+       "subtitle": "Taste of Home",
+       "alt": "Cheese Pizza",
+       "url": "https://www.tasteofhome.com/recipes/cheese-pizza-recipe/",
+       "source_url": "https://www.tasteofhome.com/wp-content/uploads/2024/03/Cheese-Pizzas_EXPS_FT23_275162_ST_1128_8.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnXZbVflTpA6KZsfr1_dUAJON8UEqV4zKOFLSfdJvxKQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 84,
+       "rank_absolute": 88,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[87]/div[1]/div[2]",
+       "title": "Knead Pizza - Quality Neapolitan Style Pizza",
+       "subtitle": "www.knead-pizza.co.uk",
+       "alt": "Knead Pizza - Quality Neapolitan Style Pizza",
+       "url": "https://www.knead-pizza.co.uk/",
+       "source_url": "https://www.knead-pizza.co.uk/wp-content/uploads/2025/12/IMG_1316-773x1024.webp",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3OxpbgPDlLdRamYswZNfIjJfBeUl-g0n8-AJaeKDZtA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 85,
+       "rank_absolute": 89,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[88]/div[1]/div[2]",
+       "title": "Homemade Pizza Recipe",
+       "subtitle": "The Food Charlatan",
+       "alt": "Homemade Pizza Recipe",
+       "url": "https://thefoodcharlatan.com/homemade-pizza-recipe/",
+       "source_url": "https://thefoodcharlatan.com/wp-content/uploads/2021/08/Homemade-Pizza-Recipe-1-Hour-or-Overnight-20.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5s_TOTo9MGgQtMRgCs7b_e1dAN2z2Gl6uYq6iBYpK1Q&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 86,
+       "rank_absolute": 90,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[89]/div[1]/div[2]",
+       "title": "Halloumi Pizza Recipe",
+       "subtitle": "A Mummy Too",
+       "alt": "Halloumi Pizza Recipe",
+       "url": "https://www.amummytoo.co.uk/halloumi-pizza/",
+       "source_url": "https://www.amummytoo.co.uk/wp-content/uploads/2025/05/halloumi-pizza-SQUARE.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLHN72SWKaRxIxnlGJRDpGvSNrwh5lrm599WirST08GQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 87,
+       "rank_absolute": 91,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[90]/div[1]/div[2]",
+       "title": "How to Make Authentic Italian Pizza at Home",
+       "subtitle": "Cookist",
+       "alt": "How to Make Authentic Italian Pizza at Home",
+       "url": "https://www.cookist.com/how-to-make-authentic-italian-pizza-at-home/",
+       "source_url": "https://staticcookist.akamaized.net/wp-content/uploads/sites/22/2025/09/PIZZA-ART-2_rev1.jpeg?im=Resize,width=712;",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTurETSQiVAEe0-8RgxOe7AaL2oDVCz8xSC2rFR1jz7A&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 88,
+       "rank_absolute": 92,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[91]/div[1]/div[2]",
+       "title": "Spicy Sausage and Pepperoni Pizza",
+       "subtitle": "Table for Two Blog",
+       "alt": "Spicy Sausage and Pepperoni Pizza",
+       "url": "https://www.tablefortwoblog.com/spicy-sausage-and-pepperoni-pizza/",
+       "source_url": "https://www.tablefortwoblog.com/wp-content/uploads/2026/06/sausage-pepperoni-pizza-recipe-tablefortwoblog-6.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQF6zN1wWEctpAI5aHHm-fBhqEiHWBqID27c2Gtu3gog&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 89,
+       "rank_absolute": 93,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[92]/div[1]/div[2]",
+       "title": "Best Homemade Margherita Pizza",
+       "subtitle": "A Beautiful Plate",
+       "alt": "Best Homemade Margherita Pizza",
+       "url": "https://www.abeautifulplate.com/the-best-homemade-margherita-pizza/",
+       "source_url": "https://www.abeautifulplate.com/wp-content/uploads/2015/08/the-best-homemade-margherita-pizza-1-4.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdZL9D7I-bRfascETmluAAkuQ2ELqbS4YGQTK3hHl1ig&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 90,
+       "rank_absolute": 94,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[93]/div[1]/div[2]",
+       "title": "Papa Johns The Works™ Pizza",
+       "subtitle": "Papa Johns",
+       "alt": "Papa Johns The Works™ Pizza",
+       "url": "https://www.papajohns.co.uk/menu/pizzas/the-works",
+       "source_url": "https://www.papajohns.co.uk/static/assets/products/pizzas/detail_images/85.png",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpJB7_oS7vGrXuKZw6z9ceg60wK-f1bCXb_MUnP6_iIA&s"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 91,
+       "rank_absolute": 95,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[94]/div[1]/div[2]",
+       "title": "Sheet Pan Pizza",
+       "subtitle": "The BakerMama",
+       "alt": "Sheet Pan Pizza",
+       "url": "https://thebakermama.com/recipes/sheet-pan-pizza/",
+       "source_url": "https://thebakermama.com/wp-content/uploads/2014/01/IMG_5966-scaled.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5Q2IhE_GLBNWY_KRDEEqBPAsRloIn1W_W0lOXH52LeQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 92,
+       "rank_absolute": 96,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[95]/div[1]/div[2]",
+       "title": "Black Olive, Serrano Ham and Red and Yellow Cherry Tomato Pizza",
+       "subtitle": "HelloFresh",
+       "alt": "Black Olive, Serrano Ham and Red and Yellow Cherry Tomato Pizza",
+       "url": "https://www.hellofresh.co.uk/recipes/grilled-artichoke-serrano-ham-an-583482472e69d7725034b9e2",
+       "source_url": "https://media.hellofresh.com/q_100,w_3840,f_auto,c_limit,fl_lossy/recipes/image/grilled-artichoke-serrano-ham-an-41f148e9.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTg6Okm5-fdFYnEuuH8ZMNYz4BMB8AZc4C8b2torJSmWg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 93,
+       "rank_absolute": 97,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[96]/div[1]/div[2]",
+       "title": "The Ultimate Veggie Pizza Recipe",
+       "subtitle": "Orchids + Sweet Tea",
+       "alt": "The Ultimate Veggie Pizza Recipe",
+       "url": "https://www.orchidsandsweettea.com/the-ultimate-veggie-pizza/",
+       "source_url": "https://www.orchidsandsweettea.com/wp-content/uploads/2019/05/Veggie-Pizza-2-of-5-e1691215701129.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-HROidqMHWEQwyutoFJV--QZOpLg1uZz9fHvwJL-snQ&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 94,
+       "rank_absolute": 98,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[97]/div[1]/div[2]",
+       "title": "Quick pepperoni pizza",
+       "subtitle": "BBC",
+       "alt": "Quick pepperoni pizza",
+       "url": "https://www.bbc.co.uk/food/recipes/quick_pepperoni_pizza_64616",
+       "source_url": "https://ichef.bbci.co.uk/food/ic/food_16x9_1600/recipes/quick_pepperoni_pizza_64616_16x9.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhegsYi-C8KtlHnnmZljYW2fW_71F00yqkQj_uscAY-Q&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 95,
+       "rank_absolute": 99,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[98]/div[1]/div[2]",
+       "title": "Salami, Red Onion and Oregano Pizza",
+       "subtitle": "Tillamook Creamery",
+       "alt": "Salami, Red Onion and Oregano Pizza",
+       "url": "https://www.tillamook.com/recipes/salami-red-onion-and-oregano-pizza",
+       "source_url": "https://www.tillamook.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fj8tkpy1gjhi5%2F5OvVmigx6VIUsyoKz1EHUs%2Fb8173b7dcfbd6da341ce11bcebfa86ea%2FSalami-pizza-hero.jpg&w=3840&q=75",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLBR9C12SfaiUmqcMCHa30viZtCqdocXwFv-5tT27GfQ&s"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 96,
+       "rank_absolute": 100,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[99]/div[1]/div[2]",
+       "title": "Easy Blackberry Basil Pizza",
+       "subtitle": "Chelsea's Messy Apron",
+       "alt": "Easy Blackberry Basil Pizza",
+       "url": "https://www.chelseasmessyapron.com/30-minute-blackberry-basil-pizza/",
+       "source_url": "https://www.chelseasmessyapron.com/wp-content/uploads/2017/10/Easy-Blackberry-Basil-Pizza-ChelseasMessyApron-1200-1.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStGfAPiRbVmdUk3qcyuG1zjLSjeQp8d6sgMa_DHtRGhQ&s=10"
+      },
+      {
+       "type": "related_searches",
+       "rank_group": 4,
+       "rank_absolute": 101,
+       "page": 1,
+       "position": "left",
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[100]/div[1]",
+       "items": [
+        "clipart pizza images",
+        "pizza pilgrims",
+        "chicken pizza"
+       ],
+       "rectangle": null
+      },
+      {
+       "type": "images_search",
+       "rank_group": 97,
+       "rank_absolute": 102,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[101]/div[1]/div[2]",
+       "title": "Healthy Stove top Pizza + oven's grill: best Neapolitan taste",
+       "subtitle": "CHE Food Revolution",
+       "alt": "Healthy Stove top Pizza + oven's grill: best Neapolitan taste",
+       "url": "https://chefoodrevolution.com/en/stove-top-pizza/",
+       "source_url": "https://chefoodrevolution.com/wp-content/uploads/2022/12/Stove-top-Pizza.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSFaHjoTBwAIFPJsHsmobraBfaP49VcZ2LuPdjAieUTA&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 98,
+       "rank_absolute": 103,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[102]/div[1]/div[2]",
+       "title": "Chorizo Pizza With Tomato & Salad",
+       "subtitle": "Gousto",
+       "alt": "Chorizo Pizza With Tomato & Salad",
+       "url": "https://www.gousto.co.uk/cookbook/pork-recipes/chorizo-pizza-with-tomato-rocket-salad",
+       "source_url": "https://production-media.gousto.co.uk/cms/mood-image/1797_Chorizo-Pizza-With-Tomato--Salad_001_0-1752488076822.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJ4epMA7qx60f7ox1Yx23cL2JMoMb33xUkQeA2A_-Aqg&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 99,
+       "rank_absolute": 104,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[103]/div[1]/div[2]",
+       "title": "Pepperoni Pizza",
+       "subtitle": "Tastes Better From Scratch",
+       "alt": "Pepperoni Pizza",
+       "url": "https://tastesbetterfromscratch.com/pepperoni-pizza/",
+       "source_url": "https://tastesbetterfromscratch.com/wp-content/uploads/2023/06/Pepperoni-Pizza-1.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1aSkX2Mg4XPsqHRJ4TOSJBM3QRnk6RaxRYa4y-cJB9A&s=10"
+      },
+      {
+       "type": "images_search",
+       "rank_group": 100,
+       "rank_absolute": 105,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[14]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[104]/div[1]/div[2]",
+       "title": "Homemade Pizza & Pizza Dough",
+       "subtitle": "Simply Recipes",
+       "alt": "Homemade Pizza & Pizza Dough",
+       "url": "https://www.simplyrecipes.com/recipes/homemade_pizza/",
+       "source_url": "https://www.simplyrecipes.com/thmb/KRw_r32s4gQeOX-d07NWY1OlOFk=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Simply-Recipes-Homemade-Pizza-Dough-Lead-Shot-1c-c2b1885d27d4481c9cfe6f6286a64342.jpg",
+       "encoded_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSz1ndgz-eHD7BXetv_KdOXTN-kMWLV1ZrvbyhrtdXO5A&s=10"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

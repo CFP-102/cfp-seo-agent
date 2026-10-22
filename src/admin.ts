@@ -80,6 +80,7 @@ export function buildAdminStats(env: Env, store: Store, pipeline: Pipeline) {
     month: period("month"),
     needs_attention: store.needsAttention(),
     margins: margins(store, pipeline),
+    wishes: store.recentWishes(50),
     history: store.history(30),
     buyers: store.buyers(`${today().slice(0, 7)}-01`),
     services: pipeline.services.map((s) => ({ id: s.id, price_usdc: s.priceUsdc, enabled: pipeline.isEnabled(s) })),
@@ -215,6 +216,7 @@ function renderPage(env: Env, st: Stats): string {
         table(["wallet", "paid calls", "USDC", "last seen"], st.buyers.top.map((b) => [mono(b.payer), b.calls, usd(b.usdc), b.last_seen])) +
         `<p class="fine"><a href="/admin/payments.csv">Download this month as CSV</a> · other month: /admin/payments.csv?month=YYYY-MM</p>`,
     ),
+    panel("Wishlist", `<p class="fine">What visitors would pay for (latest 50, untrusted text from the public, shown escaped).</p>` + table(["time", "wish"], st.wishes.map((w) => [w.created_at, w.text])), { open: false, badge: st.wishes.length ? String(st.wishes.length) : "" }),
     panel("Today", section(st.day), { open: false }),
     panel("This month", section(st.month), { open: false }),
     panel("Services", table(["service", "price USDC", "enabled"], st.services.map((s) => [s.id, s.price_usdc, s.enabled ? tag("yes", "ok") : tag("no", "bad")])), { open: false }),

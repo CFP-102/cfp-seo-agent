@@ -94,6 +94,10 @@ describe("OpenAPI 3.1", () => {
       "bing-serp": "serp-bing-organic.json",
       "page-audit": "onpage-instant-pages.json",
       "domain-technologies": "domain-technologies.json",
+      "keywords-for-site": "labs-keywords-for-site.json",
+      "traffic-estimate": "labs-bulk-traffic-estimation.json",
+      "news-search": "serp-google-news.json",
+      "image-search": "serp-google-images.json",
     };
     const keys = (v: unknown): string[] => {
       const out: string[] = [];

@@ -1,0 +1,96 @@
+{
+  "name": "Agent Data API task recipes",
+  "note": "Free, no payment authority: copying a recipe does not approve a purchase. Check the price with GET /api/v1/services and validate the input first with POST /api/v1/preflight/{service-id}. Each step is one paid call.",
+  "recipes": [
+    {
+      "id": "keyword-research",
+      "goal": "Find and rank keyword ideas for a topic",
+      "steps": [
+        {
+          "service": "keyword-ideas",
+          "why": "keyword suggestions for one seed phrase"
+        },
+        {
+          "service": "keyword-difficulty",
+          "why": "difficulty 0-100 for the shortlisted keywords (up to 100)"
+        },
+        {
+          "service": "search-intent",
+          "why": "informational vs commercial intent for the final keywords"
+        }
+      ]
+    },
+    {
+      "id": "competitor-analysis",
+      "goal": "See where a competitor wins and you do not",
+      "steps": [
+        {
+          "service": "competitors",
+          "why": "organic competitors of your domain"
+        },
+        {
+          "service": "domain-overview",
+          "why": "traffic and ranking distribution of a competitor"
+        },
+        {
+          "service": "keyword-gap",
+          "why": "keywords the competitor ranks for and you do not"
+        }
+      ]
+    },
+    {
+      "id": "site-keyword-audit",
+      "goal": "Understand what a site ranks for and what it should target",
+      "steps": [
+        {
+          "service": "ranked-keywords",
+          "why": "top 25 keywords the domain ranks for"
+        },
+        {
+          "service": "keywords-for-site",
+          "why": "keywords relevant to the site"
+        },
+        {
+          "service": "traffic-estimate",
+          "why": "compare traffic of up to 10 domains in one call"
+        }
+      ]
+    },
+    {
+      "id": "local-market-check",
+      "goal": "Check a local market for a business type and city",
+      "steps": [
+        {
+          "service": "local-business",
+          "why": "Google Maps businesses for a query and location"
+        },
+        {
+          "service": "google-serp",
+          "why": "organic Google results for the same query"
+        },
+        {
+          "service": "page-audit",
+          "why": "quick technical check of one competitor page"
+        }
+      ]
+    },
+    {
+      "id": "topic-and-news-watch",
+      "goal": "Check demand and current coverage of a topic",
+      "steps": [
+        {
+          "service": "google-trends",
+          "why": "interest over 12 months for up to 5 terms"
+        },
+        {
+          "service": "news-search",
+          "why": "current Google News results"
+        },
+        {
+          "service": "image-search",
+          "why": "image results and their source pages"
+        }
+      ]
+    }
+  ]
+}

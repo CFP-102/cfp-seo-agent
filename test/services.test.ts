@@ -1,5 +1,5 @@
 /**
- * Adapter tests for all fifteen services. Fixtures are sandbox responses or explicitly
+ * Adapter tests for all nineteen services. Fixtures are sandbox responses or explicitly
  * marked derived live fixtures — see _fixture_note in each file.
  */
 import { describe, expect, it } from "vitest";
@@ -21,15 +21,19 @@ import { googleTrends } from "../src/services/googleTrends.js";
 import { keywordGap } from "../src/services/keywordGap.js";
 import { localBusiness } from "../src/services/localBusiness.js";
 import { pageAudit } from "../src/services/pageAudit.js";
+import { imageSearch } from "../src/services/imageSearch.js";
+import { keywordsForSite } from "../src/services/keywordsForSite.js";
+import { newsSearch } from "../src/services/newsSearch.js";
+import { trafficEstimate } from "../src/services/trafficEstimate.js";
 import { fixture } from "./helpers.js";
 
 const task = (name: string) => fixture(name).tasks[0];
 const US = { location_code: 2840, language_code: "en" };
 
 describe("registry", () => {
-  it("has all fifteen services, matching config, unique ids and routes", () => {
+  it("has all nineteen services, matching config, unique ids and routes", () => {
     expect(SERVICES.map((s) => s.id).sort()).toEqual(Object.keys(SERVICE_CONFIG).sort());
-    expect(new Set(SERVICES.map((s) => s.route)).size).toBe(15);
+    expect(new Set(SERVICES.map((s) => s.route)).size).toBe(19);
     for (const s of SERVICES) {
       expect(s.route).toBe(SERVICE_CONFIG[s.id]!.route);
       expect(s.priceUsdc).toBe(SERVICE_CONFIG[s.id]!.priceUsdc);
@@ -65,6 +69,10 @@ describe("registry", () => {
       "bing-serp": { keyword: "running shoes" },
       "page-audit": { url: "https://example.com/" },
       "domain-technologies": { domain: "example.com" },
+      "keywords-for-site": { domain: "example.com" },
+      "traffic-estimate": { domains: Array.from({ length: 10 }, (_, i) => `site${i}.com`) },
+      "news-search": { keyword: "electric cars" },
+      "image-search": { keyword: "red bicycle" },
     };
     for (const s of SERVICES) {
       const parsed = s.inputSchema.parse(maxInputs[s.id]);
@@ -226,6 +234,8 @@ describe("price list sanity", () => {
       bingLivePerPage: 0.002,
       instantPagesPerPage: 0.00015,
       domainTechPerTask: 0.012,
+      newsLivePerPage: 0.002,
+      imagesLivePerPage: 0.002,
     });
   });
 });
@@ -314,5 +324,37 @@ describe("keyword-gap, google-trends, local-business, bing-serp, page-audit, dom
     expect(out.found).toBe(true);
     expect(Object.keys(out.technologies).length).toBeGreaterThan(0);
     expect(JSON.stringify(out)).not.toMatch(/@|phone/);
+  });
+});
+
+describe("keywords-for-site, traffic-estimate, news-search, image-search", () => {
+  it("keywords-for-site maps keyword metrics and caps the count", () => {
+    const i = keywordsForSite.inputSchema.parse({ domain: "example.com" });
+    const out = keywordsForSite.mapResult(task("labs-keywords-for-site.json"), i);
+    expect(out.keywords.length).toBeGreaterThan(0);
+    expect(out.keywords[0]).toHaveProperty("search_volume");
+    expect((keywordsForSite.buildRequest(i)[0] as any)).toMatchObject({ limit: 25, include_clickstream_data: false, include_serp_info: false });
+  });
+
+  it("traffic-estimate takes up to 10 domains, bills per domain and lists domains without data", () => {
+    const i = trafficEstimate.inputSchema.parse({ domains: ["a.com", "www.a.com", "b.org", "never-returned.com"] });
+    expect(i.domains).toEqual(["a.com", "b.org", "never-returned.com"]);
+    expect(trafficEstimate.estimateCostUsd(i)).toBeCloseTo(DFS_PRICES.labsPerTask + 3 * DFS_PRICES.labsPerItem, 10);
+    expect(trafficEstimate.inputSchema.safeParse({ domains: Array.from({ length: 11 }, (_, n) => `s${n}.com`) }).success).toBe(false);
+    const out = trafficEstimate.mapResult(task("labs-bulk-traffic-estimation.json"), i);
+    expect(out.domains.length).toBeGreaterThan(0);
+    expect(out.not_found).toContain("never-returned.com");
+  });
+
+  it("news-search and image-search map only their own item types and refuse operators", () => {
+    const news = newsSearch.mapResult(task("serp-google-news.json"), newsSearch.inputSchema.parse({ keyword: "pizza" }));
+    expect(news.results.length).toBeGreaterThan(0);
+    expect(news.results.length).toBeLessThanOrEqual(10);
+    const img = imageSearch.mapResult(task("serp-google-images.json"), imageSearch.inputSchema.parse({ keyword: "pizza" }));
+    expect(img.results.length).toBe(20);
+    expect(img.results[0]!.image_url).toMatch(/^https?:/);
+    expect(JSON.stringify(img)).not.toContain("encrypted-tbn");
+    expect(newsSearch.inputSchema.safeParse({ keyword: "site:example.com" }).success).toBe(false);
+    expect(imageSearch.inputSchema.safeParse({ keyword: '"x"' }).success).toBe(false);
   });
 });

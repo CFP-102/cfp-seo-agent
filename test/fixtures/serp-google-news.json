@@ -1,0 +1,199 @@
+{
+ "_fixture_note": "SANDBOX RESPONSE captured 2026-10-22 from sandbox.dataforseo.com (structure identical to live; values are DataForSEO dummy data). Test fixture only.",
+ "version": "0.1.20261022",
+ "status_code": 20000,
+ "status_message": "Ok.",
+ "time": "0 sec.",
+ "cost": 0,
+ "tasks_count": 1,
+ "tasks_error": 0,
+ "tasks": [
+  {
+   "id": "10221606-2869-0139-2000-b2631ef83279",
+   "status_code": 20000,
+   "status_message": "Ok.",
+   "time": "0 sec.",
+   "cost": 0,
+   "result_count": 1,
+   "path": [
+    "v3",
+    "serp",
+    "google",
+    "news",
+    "live",
+    "advanced"
+   ],
+   "data": {
+    "api": "serp",
+    "function": "live",
+    "se": "google",
+    "se_type": "news",
+    "keyword": "electric cars",
+    "location_code": 2840,
+    "language_code": "en",
+    "depth": 10
+   },
+   "result": [
+    {
+     "keyword": "pizza",
+     "type": "news",
+     "se_domain": "google.com",
+     "location_code": 1006886,
+     "language_code": "en",
+     "check_url": "https://www.google.com/search?q=pizza&num=10&hl=en&gl=GB&gws_rd=cr&tbm=nws&uule=w+CAIQIFISCXXeIa8LoNhHEZkq1d1aOpZS&ie=UTF-8&oe=UTF-8",
+     "datetime": "2026-10-20 12:22:30 +00:00",
+     "spell": null,
+     "refinement_chips": null,
+     "includes_non_news_search_results": false,
+     "item_types": [
+      "news_search"
+     ],
+     "se_results_count": 1080000,
+     "items_count": 10,
+     "items": [
+      {
+       "type": "news_search",
+       "rank_group": 1,
+       "rank_absolute": 1,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[12]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]",
+       "domain": "www.ft.com",
+       "title": "Obsessed with . . . London-style pizza",
+       "url": "https://www.ft.com/content/1ad7af9c-7b48-4afe-9ca8-b8af135f7beb",
+       "image_url": "https://api.dataforseo.com/cdn/i/10201222-0001-0139-0000-ba7ab797d1a8:0",
+       "snippet": "This article is part of FT Globetrotter's guide to London. Pizza means a lot to me. It has been a part of my life ever since I can remember.",
+       "time_published": "8 hours ago",
+       "timestamp": "2026-10-20 04:22:30 +00:00",
+       "rectangle": null
+      },
+      {
+       "type": "news_search",
+       "rank_group": 2,
+       "rank_absolute": 2,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[12]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[2]",
+       "domain": "www.ign.com",
+       "title": "Kratos Would Have Had a Different Name Were It Not for Relentless Domino's Pizza Jokes, God of War Creator Reveals",
+       "url": "https://www.ign.com/articles/dominos-pizza-jokes-god-of-war-dev-name-kratos",
+       "image_url": "https://api.dataforseo.com/cdn/i/10201222-0001-0139-0000-ba7ab797d1a8:1",
+       "snippet": "God of War's Kratos almost went by a different name, but developers at Santa Monica Studio made too many Domino's pizza jokes.",
+       "time_published": "2 hours ago",
+       "timestamp": "2026-10-20 10:22:30 +00:00",
+       "rectangle": null
+      },
+      {
+       "type": "news_search",
+       "rank_group": 3,
+       "rank_absolute": 3,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[12]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[3]",
+       "domain": "www.tastingtable.com",
+       "title": "I Tried Stuffed Crust Pizza From Pizza Hut, Domino's, And Papa Johns: The Winner Is Clear",
+       "url": "https://www.tastingtable.com/2287063/best-stuffed-crust-pizza-pizza-hut-dominos-papa-johns/",
+       "image_url": "https://api.dataforseo.com/cdn/i/10201222-0001-0139-0000-ba7ab797d1a8:2",
+       "snippet": "Stuffed crust is arguably the best way to enjoy pizza. We tried stuffed crust pies from Pizza Hut, Dominos, and Papa Johns to see which one...",
+       "time_published": "18 hours ago",
+       "timestamp": "2026-10-19 18:22:30 +00:00",
+       "rectangle": null
+      },
+      {
+       "type": "news_search",
+       "rank_group": 4,
+       "rank_absolute": 4,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[12]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[4]",
+       "domain": "www.axios.com",
+       "title": "A startup offered free pizza if its AI agent ordered it. Chaos ensued.",
+       "url": "https://www.axios.com/2026/10/20/hark-ai-agent-startup-free-pizza-doordash",
+       "image_url": "https://api.dataforseo.com/cdn/i/10201222-0001-0139-0000-ba7ab797d1a8:3",
+       "snippet": "A startup offered free pizza on Friday in exchange for letting its AI agent handle the ordering. After multiple attempts, I ended up with a...",
+       "time_published": "3 hours ago",
+       "timestamp": "2026-10-20 09:22:30 +00:00",
+       "rectangle": null
+      },
+      {
+       "type": "news_search",
+       "rank_group": 5,
+       "rank_absolute": 5,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[12]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[5]",
+       "domain": "www.livescience.com",
+       "title": "11th-century 'pizza peel' discovered in Russia doubled as a medieval game board",
+       "url": "https://www.livescience.com/archaeology/11th-century-pizza-peel-discovered-in-russia-doubled-as-a-medieval-game-board",
+       "image_url": "https://api.dataforseo.com/cdn/i/10201222-0001-0139-0000-ba7ab797d1a8:4",
+       "snippet": "Archaeologists in Russia unearthed a flat wooden baking implement that had a board game carved into it.",
+       "time_published": "17 hours ago",
+       "timestamp": "2026-10-19 19:22:30 +00:00",
+       "rectangle": null
+      },
+      {
+       "type": "news_search",
+       "rank_group": 6,
+       "rank_absolute": 6,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[12]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[6]",
+       "domain": "www.bighospitality.co.uk",
+       "title": "Theo’s to open third pizzeria",
+       "url": "https://www.bighospitality.co.uk/Article/2026/10/20/theos-to-open-third-pizzeria/",
+       "image_url": "https://api.dataforseo.com/cdn/i/10201222-0001-0139-0000-ba7ab797d1a8:5",
+       "snippet": "The group is opening a pizzeria in Peckham, which will officially open on 6 November. Theo's was founded by Theo Lewis, a former head chef...",
+       "time_published": "1 hour ago",
+       "timestamp": "2026-10-20 11:22:30 +00:00",
+       "rectangle": null
+      },
+      {
+       "type": "news_search",
+       "rank_group": 7,
+       "rank_absolute": 7,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[12]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[7]",
+       "domain": "www.hot-dinners.com",
+       "title": "Trying out Faros, serving up top pizzas and Italian-Mediterranean hospitality just off Oxford Circus",
+       "url": "https://www.hot-dinners.com/Gastroblog/Test-drive/faros-restaurant-review-oxford-circus-london-italian",
+       "image_url": "https://api.dataforseo.com/cdn/i/10201222-0001-0139-0000-ba7ab797d1a8:6",
+       "snippet": "Just minutes away from Oxford Circus, Italian/Mediterranean restaurant Faros is too good to leave to the tourists.",
+       "time_published": "5 hours ago",
+       "timestamp": "2026-10-20 07:22:30 +00:00",
+       "rectangle": null
+      },
+      {
+       "type": "news_search",
+       "rank_group": 8,
+       "rank_absolute": 8,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[12]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[8]",
+       "domain": "www.edp24.co.uk",
+       "title": "Norwich pizzeria up for sale as owner plans retirement",
+       "url": "https://www.edp24.co.uk/news/26644999.owner-behind-donnellis-pizzeria-puts-business-sale/",
+       "image_url": "https://api.dataforseo.com/cdn/i/10201222-0001-0139-0000-ba7ab797d1a8:7",
+       "snippet": "Northumbrian-born Eric Donnelly is selling Norwich pizzeria Donnelli's after 11 years.",
+       "time_published": "2 days ago",
+       "timestamp": "2026-10-18 12:22:30 +00:00",
+       "rectangle": null
+      },
+      {
+       "type": "news_search",
+       "rank_group": 9,
+       "rank_absolute": 9,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[12]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[9]",
+       "domain": "www.bbc.co.uk",
+       "title": "Pizza restaurants: Why pizza-making robots are not cutting it",
+       "url": "https://www.bbc.co.uk/news/articles/czxq0wgkkdjo",
+       "image_url": "https://api.dataforseo.com/cdn/i/10201222-0001-0139-0000-ba7ab797d1a8:8",
+       "snippet": "Overcooked? Why robotic pizza makers are failing ... The \"dough feeder\". The sauce and cheese modules – even the pepperoni-sprinkler. All lay...",
+       "time_published": "1 month ago",
+       "timestamp": "2026-09-20 12:22:30 +00:00",
+       "rectangle": null
+      },
+      {
+       "type": "news_search",
+       "rank_group": 10,
+       "rank_absolute": 10,
+       "xpath": "/html[1]/body[1]/div[3]/div[1]/div[12]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[10]",
+       "domain": "www.foxnews.com",
+       "title": "America's best pizzerias crowned in new rankings on Columbus Day as pizza expert shares skepticism",
+       "url": "https://www.foxnews.com/food-drink/americas-best-pizzerias-crowned-new-rankings-pizza-expert-gives-slice-skepticism",
+       "image_url": "https://api.dataforseo.com/cdn/i/10201222-0001-0139-0000-ba7ab797d1a8:9",
+       "snippet": "Una Pizza Napoletana tops the 50 Top Pizza 2026 list of best pizzerias in America on Columbus Day. Pizzeria Sei, Tony's Pizza Napoletana,...",
+       "time_published": "1 week ago",
+       "timestamp": "2026-10-13 12:22:30 +00:00",
+       "rectangle": null
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

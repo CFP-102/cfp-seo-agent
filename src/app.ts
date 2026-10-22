@@ -7,6 +7,7 @@ import { buildCatalog } from "./catalog.js";
 import { createMcpHandler } from "./mcp/server.js";
 import type { McpCall } from "./payments/x402.js";
 import { createAdminRouter } from "./admin.js";
+import { createWishlist } from "./wishlist.js";
 import { createFreeSample } from "./freeSample.js";
 import { createSiteRouter } from "./web/site.js";
 import { findService } from "./services/index.js";
@@ -66,13 +67,20 @@ export function createApp(deps: AppDeps) {
 
   // Free catalog: what we sell, for how much, with which limits.
   app.get("/api/v1/services", limiter, (_req, res) => {
-    res.json(buildCatalog({ env, pipeline, network: deps.payments?.network, freeSample: freeSample.enabled() ? freeSample.info() : undefined }));
+    res.json(buildCatalog({ env, pipeline, network: deps.payments?.network, freeSample: freeSample.enabled() ? freeSample.info() : undefined, wishlist: wishlist.info() }));
   });
 
   // Free sample: one keyword per client per day, hard daily cap (see src/freeSample.ts). Off unless FREE_SAMPLE_DAILY_LIMIT > 0.
   const freeSample = createFreeSample({ pipeline, store, dailyLimit: env.FREE_SAMPLE_DAILY_LIMIT });
   app.post("/api/v1/free-sample", limiter, async (req, res) => {
     const out = await freeSample.run(req.ip, req.body);
+    res.status(out.status).json(out.body);
+  });
+
+  // Wishlist: visitors tell us which tool they would pay for (free, write-only, see src/wishlist.ts).
+  const wishlist = createWishlist({ store });
+  app.post("/api/v1/wishlist", limiter, (req, res) => {
+    const out = wishlist.run(req.ip, req.body);
     res.status(out.status).json(out.body);
   });
 
@@ -182,7 +190,7 @@ export function createApp(deps: AppDeps) {
   }
 
   // MCP over Streamable HTTP (stateless). Free tools need no payment; paid tools use x402 in the call's _meta.
-  app.all("/mcp", limiter, createMcpHandler({ env, store, pipeline, payments: deps.payments, freeSample }));
+  app.all("/mcp", limiter, createMcpHandler({ env, store, pipeline, payments: deps.payments, freeSample, wishlist }));
 
   // Internal monitoring (HTTP Basic auth; 404 unless ADMIN_PASSWORD is set).
   app.use("/admin", createAdminRouter({ env, store, pipeline }));

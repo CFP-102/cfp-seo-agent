@@ -98,6 +98,10 @@ export const FIXTURE_BY_ENDPOINT: Record<string, string> = {
   "/v3/serp/bing/organic/live/advanced": "serp-bing-organic.json",
   "/v3/on_page/instant_pages": "onpage-instant-pages.json",
   "/v3/domain_analytics/technologies/domain_technologies/live": "domain-technologies.json",
+  "/v3/dataforseo_labs/google/keywords_for_site/live": "labs-keywords-for-site.json",
+  "/v3/dataforseo_labs/google/bulk_traffic_estimation/live": "labs-bulk-traffic-estimation.json",
+  "/v3/serp/google/news/live/advanced": "serp-google-news.json",
+  "/v3/serp/google/images/live/advanced": "serp-google-images.json",
 };
 
 export function routedUpstream(events: Event[]) {

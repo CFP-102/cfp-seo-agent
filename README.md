@@ -46,6 +46,11 @@ npm run smoke:sandbox                     # zweites Terminal
 | POST | `/api/v1/bing-serp` | 0.02 | Top 10 organische Bing-Ergebnisse |
 | POST | `/api/v1/page-audit` | 0.02 | Technischer SEO-Schnellcheck einer Seite (ohne JavaScript) |
 | POST | `/api/v1/domain-technologies` | 0.03 | Technologien einer Website (CMS, Analytics, Server …) |
+| POST | `/api/v1/keywords-for-site` | 0.04 | Relevante Keywords einer Website (25) |
+| POST | `/api/v1/traffic-estimate` | 0.04 | Geschätzter Traffic für bis zu 10 Domains |
+| POST | `/api/v1/news-search` | 0.02 | Google-News-Ergebnisse (10) |
+| POST | `/api/v1/image-search` | 0.02 | Google-Bilder-Ergebnisse (20) |
+| POST | `/api/v1/wishlist` | gratis | Wunsch für ein neues Werkzeug (nur schreibend) |
 | POST | `/api/v1/ai-keyword-demand` | 0.04 | **geschätzte** AI-Search-Nachfrage, bis 10 Keywords |
 | POST | `/mcp` | frei/bezahlt | MCP (Streamable HTTP): 4 kostenlose + 6 Bezahl-Tools (x402-fähiger Client nötig) |
 | GET | `/openapi.json` | frei | OpenAPI 3.1 inkl. x402-Preisangaben |

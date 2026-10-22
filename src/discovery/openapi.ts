@@ -73,6 +73,29 @@ export function buildOpenApi({ env, pipeline, network, freeSample }: OpenApiDeps
           },
         }
       : {}),
+    "/api/v1/wishlist": {
+      post: {
+        operationId: "wishlist",
+        summary: "Tell us which data tool you would pay for (free)",
+        description: "Write-only wishlist: one short text (10 to 300 characters, no personal data). Nothing is published and no reply is sent. Limited to 3 per day per client.",
+        tags: ["free"],
+        security: [],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { type: "object", properties: { text: { type: "string", minLength: 10, maxLength: 300 } }, required: ["text"], additionalProperties: false },
+              examples: { default: { value: { text: "Backlink summary for a domain, about 0.05 USDC" } } },
+            },
+          },
+        },
+        responses: {
+          "200": { description: "Saved", content: { "application/json": { schema: { type: "object" } } } },
+          "429": errorResponse("Too many wishes today"),
+          "400": errorResponse("Invalid input"),
+        },
+      },
+    },
     "/api/v1/preflight/{serviceId}": {
       post: {
         operationId: "preflight",

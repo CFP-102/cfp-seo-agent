@@ -11,6 +11,7 @@ import type { Pipeline, Prepared } from "../services/pipeline.js";
 import type { ServiceDefinition } from "../services/types.js";
 import { toolResult, type McpCall } from "../payments/x402.js";
 import type { FreeSample } from "../freeSample.js";
+import type { Wishlist } from "../wishlist.js";
 
 export const MCP_SERVER_NAME = "agent-data-api";
 export const MCP_SERVER_VERSION = "0.1.0";
@@ -22,6 +23,7 @@ export interface McpDeps {
   /** Absent only in sandbox development mode (no payment). */
   payments?: { network: string; mcp: { callPaidTool: McpCall } };
   freeSample?: FreeSample;
+  wishlist?: Wishlist;
 }
 
 const FREE_TOOLS: Tool[] = [
@@ -63,6 +65,18 @@ const FREE_TOOLS: Tool[] = [
       additionalProperties: false,
     },
     annotations: { title: "Free sample (1 keyword)", readOnlyHint: true, openWorldHint: true },
+  },
+  {
+    name: "wishlist",
+    description:
+      "FREE. Tell the operator which data tool you would pay for (one short text, 10 to 300 characters, no personal data). Write-only: nothing is published and no reply is sent. Limited to 3 per day per client.",
+    inputSchema: {
+      type: "object",
+      properties: { text: { type: "string", description: "Which data tool would you pay for, and roughly what for?", minLength: 10, maxLength: 300 } },
+      required: ["text"],
+      additionalProperties: false,
+    },
+    annotations: { title: "Request a tool", readOnlyHint: false, openWorldHint: false },
   },
   {
     name: "get_result",
@@ -152,6 +166,12 @@ export function createMcpServer(deps: McpDeps, clientId = "unknown"): Server {
       case "free_sample": {
         if (!deps.freeSample?.enabled()) return text({ error: "not_found" }, true);
         const out = await deps.freeSample.run(clientId, args);
+        return text(out.body, out.status >= 400);
+      }
+
+      case "wishlist": {
+        if (!deps.wishlist) return text({ error: "not_found" }, true);
+        const out = deps.wishlist.run(clientId, args);
         return text(out.body, out.status >= 400);
       }
 

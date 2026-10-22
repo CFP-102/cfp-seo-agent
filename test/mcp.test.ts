@@ -14,7 +14,7 @@ import { SERVICES } from "../src/services/index.js";
 import { toolNameOf } from "../src/services/common.js";
 
 const NETWORK = "eip155:84532";
-const FREE_TOOLS = ["get_result", "list_services", "preflight", "retry_request"];
+const FREE_TOOLS = ["get_result", "list_services", "preflight", "retry_request", "wishlist"];
 
 const parse = (r: unknown) => JSON.parse((r as { content: { text: string }[] }).content[0]!.text);
 

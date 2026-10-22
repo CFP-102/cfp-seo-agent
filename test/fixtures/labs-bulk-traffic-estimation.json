@@ -1,0 +1,81 @@
+{
+ "_fixture_note": "SANDBOX RESPONSE captured 2026-10-22 from sandbox.dataforseo.com (structure identical to live; values are DataForSEO dummy data). Test fixture only.",
+ "version": "0.1.20261022",
+ "status_code": 20000,
+ "status_message": "Ok.",
+ "time": "0 sec.",
+ "cost": 0,
+ "tasks_count": 1,
+ "tasks_error": 0,
+ "tasks": [
+  {
+   "id": "10221606-2869-0391-2000-1d921dd0a094",
+   "status_code": 20000,
+   "status_message": "Ok.",
+   "time": "0 sec.",
+   "cost": 0,
+   "result_count": 1,
+   "path": [
+    "v3",
+    "dataforseo_labs",
+    "google",
+    "bulk_traffic_estimation",
+    "live"
+   ],
+   "data": {
+    "api": "dataforseo_labs",
+    "function": "bulk_traffic_estimation",
+    "se_type": "google",
+    "targets": [
+     "example.com",
+     "iana.org"
+    ],
+    "location_code": 2840,
+    "language_code": "en"
+   },
+   "result": [
+    {
+     "se_type": "google",
+     "location_code": 2840,
+     "language_code": "en",
+     "total_count": 2,
+     "items_count": 2,
+     "items": [
+      {
+       "se_type": "google",
+       "target": "cnn.com",
+       "metrics": {
+        "organic": {
+         "etv": 77640808.07193483,
+         "count": 3227132
+        },
+        "paid": {
+         "etv": 37.46099853515625,
+         "count": 14
+        },
+        "local_pack": null,
+        "featured_snippet": null
+       }
+      },
+      {
+       "se_type": "google",
+       "target": "dataforseo.com",
+       "metrics": {
+        "organic": {
+         "etv": 31087.251239720732,
+         "count": 8806
+        },
+        "paid": {
+         "etv": 0,
+         "count": 0
+        },
+        "local_pack": null,
+        "featured_snippet": null
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
