@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.chiemgaufilms.agent/agent-data-api",
   "title": "Agent Data API",
-  "description": "Nine live SEO data APIs for AI agents. Pay per call in USDC on Base via x402.",
-  "version": "0.1.2",
+  "description": "Fifteen live SEO data APIs for AI agents. Pay per call in USDC on Base via x402.",
+  "version": "0.1.3",
   "websiteUrl": "https://agent.chiemgaufilms.com",
   "remotes": [
     {
