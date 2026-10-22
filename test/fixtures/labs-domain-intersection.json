@@ -1,0 +1,871 @@
+{
+ "_fixture_note": "SANDBOX RESPONSE captured 2026-10-22 from sandbox.dataforseo.com (structure identical to live; values are DataForSEO dummy data). Test fixture only.",
+ "version": "0.1.20260917",
+ "status_code": 20000,
+ "status_message": "Ok.",
+ "time": "0 sec.",
+ "cost": 0,
+ "tasks_count": 1,
+ "tasks_error": 0,
+ "tasks": [
+  {
+   "id": "10221430-2869-0389-2000-82acec4381b3",
+   "status_code": 20000,
+   "status_message": "Ok.",
+   "time": "0 sec.",
+   "cost": 0,
+   "result_count": 1,
+   "path": [
+    "v3",
+    "dataforseo_labs",
+    "google",
+    "domain_intersection",
+    "live"
+   ],
+   "data": {
+    "api": "dataforseo_labs",
+    "function": "domain_intersection",
+    "se_type": "google",
+    "target1": "example.com",
+    "target2": "iana.org",
+    "location_code": 2840,
+    "language_code": "en",
+    "limit": 25
+   },
+   "result": [
+    {
+     "se_type": "google",
+     "target1": "dataforseo.com",
+     "target2": "seopanel.org",
+     "location_code": 2840,
+     "language_code": "en",
+     "total_count": 2,
+     "items_count": 2,
+     "items": [
+      {
+       "se_type": "google",
+       "keyword_data": {
+        "se_type": "google",
+        "keyword": "seo open source",
+        "location_code": 2840,
+        "language_code": "en",
+        "keyword_info": {
+         "se_type": "google",
+         "last_updated_time": "2026-09-14 23:27:57 +00:00",
+         "competition": 0.28999999165534973,
+         "competition_level": "LOW",
+         "cpc": 30.8700008392334,
+         "search_volume": 110,
+         "low_top_of_page_bid": 3.8499999046325684,
+         "high_top_of_page_bid": 14.390000343322754,
+         "categories": [
+          10004,
+          10276,
+          11088,
+          12376,
+          13152
+         ],
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 70
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 40
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 30
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 70
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 90
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 260
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 390
+          },
+          {
+           "year": 2025,
+           "month": 9,
+           "search_volume": 320
+          }
+         ],
+         "search_volume_trend": {
+          "monthly": 75,
+          "quarterly": 250,
+          "yearly": 75
+         }
+        },
+        "keyword_info_normalized_with_bing": {
+         "last_updated_time": "2026-09-18 20:20:24 +00:00",
+         "search_volume": 10,
+         "is_normalized": true,
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 6
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 4
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 2
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 3
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 1
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 2
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 1
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 6
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 8
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 24
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 35
+          },
+          {
+           "year": 2025,
+           "month": 9,
+           "search_volume": 29
+          }
+         ]
+        },
+        "keyword_info_normalized_with_clickstream": {
+         "last_updated_time": "2026-09-18 20:20:24 +00:00",
+         "search_volume": 0,
+         "is_normalized": true,
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 14
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 18
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 51
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 77
+          },
+          {
+           "year": 2025,
+           "month": 9,
+           "search_volume": 63
+          }
+         ]
+        },
+        "clickstream_keyword_info": {
+         "search_volume": 0,
+         "last_updated_time": "2026-10-07 10:33:13 +00:00",
+         "gender_distribution": {
+          "female": null,
+          "male": null
+         },
+         "age_distribution": {
+          "18-24": null,
+          "25-34": null,
+          "35-44": null,
+          "45-54": null,
+          "55-64": null
+         },
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 9,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 0
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 50
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 50
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 50
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 50
+          }
+         ]
+        },
+        "keyword_properties": {
+         "se_type": "google",
+         "core_keyword": "open source seo",
+         "synonym_clustering_algorithm": "text_processing",
+         "keyword_difficulty": 17,
+         "detected_language": "en",
+         "is_another_language": false
+        },
+        "serp_info": {
+         "se_type": "google",
+         "check_url": "https://www.google.com/search?q=seo%20open%20source&hl=en&gl=US&ie=UTF-8&uule=w+CAIQIFISCQs2MuSEtepUEUK33kOSuTsc",
+         "serp_item_types": [
+          "ai_overview",
+          "organic",
+          "related_searches"
+         ],
+         "se_results_count": 120,
+         "last_updated_time": "2026-07-12 15:55:00 +00:00",
+         "previous_updated_time": "2026-05-28 04:28:36 +00:00"
+        },
+        "avg_backlinks_info": {
+         "se_type": "google",
+         "backlinks": 162.60000610351562,
+         "dofollow": 104.19999694824219,
+         "referring_pages": 141.8000030517578,
+         "referring_domains": 54,
+         "referring_main_domains": 49.099998474121094,
+         "rank": 123.5,
+         "main_domain_rank": 475.29998779296875,
+         "last_updated_time": "2026-07-12 15:55:01 +00:00"
+        },
+        "search_intent_info": {
+         "se_type": "google",
+         "main_intent": "commercial",
+         "foreign_intent": null,
+         "last_updated_time": "2026-04-29 21:17:30 +00:00"
+        }
+       },
+       "first_domain_serp_element": {
+        "se_type": "google",
+        "type": "organic",
+        "rank_group": 44,
+        "rank_absolute": 49,
+        "position": "left",
+        "xpath": "/html[1]/body[1]/div[3]/div[1]/div[12]/div[1]/div[2]/div[2]/div[1]/div[1]/div[5]/div[1]/div[1]",
+        "domain": "dataforseo.com",
+        "title": "DataForSEO: Powerful API Stack For Data-Driven SEO Tools",
+        "url": "https://dataforseo.com/",
+        "breadcrumb": "https://dataforseo.com",
+        "website_name": "DataForSEO",
+        "is_image": false,
+        "is_video": false,
+        "is_featured_snippet": false,
+        "is_malicious": false,
+        "checks": null,
+        "description": "DataForSEO Databases. Get full access to the industry's biggest proprietary sources of current and historical SEO data. databases-icon. Read more",
+        "pre_snippet": null,
+        "extended_snippet": null,
+        "amp_version": false,
+        "rating": null,
+        "highlighted": [
+         "DataForSEO",
+         "sources",
+         "SEO"
+        ],
+        "links": null,
+        "about_this_result": null,
+        "main_domain": "dataforseo.com",
+        "relative_url": "/",
+        "etv": 0.23100000619888306,
+        "estimated_paid_traffic_cost": 7.130970001220703,
+        "clickstream_etv": 0,
+        "rank_changes": {
+         "previous_rank_absolute": null,
+         "is_new": true,
+         "is_up": false,
+         "is_down": false
+        },
+        "backlinks_info": {
+         "referring_domains": 1174,
+         "referring_main_domains": 1119,
+         "referring_pages": 177477,
+         "dofollow": 176463,
+         "backlinks": 180183,
+         "time_update": "2026-10-11 04:07:01 +00:00"
+        },
+        "rank_info": {
+         "page_rank": 448,
+         "main_domain_rank": 324
+        }
+       },
+       "second_domain_serp_element": {
+        "se_type": "google",
+        "type": "organic",
+        "rank_group": 9,
+        "rank_absolute": 10,
+        "position": "left",
+        "xpath": "/html[1]/body[1]/div[3]/div[1]/div[12]/div[2]/div[1]/div[2]/div[1]/div[1]/div[18]/div[1]/div[1]",
+        "domain": "www.seopanel.org",
+        "title": "Free SEO Software | SMO Tools | SME Tools | SEO Panel",
+        "url": "https://www.seopanel.org/",
+        "breadcrumb": "https://www.seopanel.org",
+        "website_name": "Seo Panel",
+        "is_image": false,
+        "is_video": false,
+        "is_featured_snippet": false,
+        "is_malicious": false,
+        "checks": null,
+        "description": "Take control of your search engine rankings with our award-winning, 100% free and open source SEO management platform. Monitor keywords, track rankings, analyze ... Read more",
+        "pre_snippet": null,
+        "extended_snippet": null,
+        "amp_version": false,
+        "rating": null,
+        "highlighted": [
+         "100% free and open source SEO management platform"
+        ],
+        "links": null,
+        "about_this_result": null,
+        "main_domain": "seopanel.org",
+        "relative_url": "/",
+        "etv": 1.649999976158142,
+        "estimated_paid_traffic_cost": 50.93550109863281,
+        "clickstream_etv": 0,
+        "rank_changes": {
+         "previous_rank_absolute": 6,
+         "is_new": false,
+         "is_up": false,
+         "is_down": true
+        },
+        "backlinks_info": {
+         "referring_domains": 440,
+         "referring_main_domains": 415,
+         "referring_pages": 1170,
+         "dofollow": 807,
+         "backlinks": 1319,
+         "time_update": "2026-10-11 03:26:32 +00:00"
+        },
+        "rank_info": {
+         "page_rank": 329,
+         "main_domain_rank": 297
+        }
+       }
+      },
+      {
+       "se_type": "google",
+       "keyword_data": {
+        "se_type": "google",
+        "keyword": "what is api in seo",
+        "location_code": 2840,
+        "language_code": "en",
+        "keyword_info": {
+         "se_type": "google",
+         "last_updated_time": "2026-09-17 01:45:53 +00:00",
+         "competition": 0.05999999865889549,
+         "competition_level": "LOW",
+         "cpc": null,
+         "search_volume": 40,
+         "low_top_of_page_bid": null,
+         "high_top_of_page_bid": null,
+         "categories": [
+          10004,
+          10276,
+          11088,
+          12376,
+          13152,
+          13316
+         ],
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 50
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 30
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 40
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 30
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 40
+          },
+          {
+           "year": 2025,
+           "month": 9,
+           "search_volume": 90
+          }
+         ],
+         "search_volume_trend": {
+          "monthly": -50,
+          "quarterly": 0,
+          "yearly": -67
+         }
+        },
+        "keyword_info_normalized_with_bing": {
+         "last_updated_time": "2026-09-17 01:45:53 +00:00",
+         "search_volume": 40,
+         "is_normalized": false,
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 50
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 30
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 40
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 30
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 40
+          },
+          {
+           "year": 2025,
+           "month": 9,
+           "search_volume": 90
+          }
+         ]
+        },
+        "keyword_info_normalized_with_clickstream": {
+         "last_updated_time": "2026-09-17 01:45:53 +00:00",
+         "search_volume": 40,
+         "is_normalized": false,
+         "monthly_searches": [
+          {
+           "year": 2026,
+           "month": 8,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 7,
+           "search_volume": 20
+          },
+          {
+           "year": 2026,
+           "month": 6,
+           "search_volume": 10
+          },
+          {
+           "year": 2026,
+           "month": 5,
+           "search_volume": 50
+          },
+          {
+           "year": 2026,
+           "month": 4,
+           "search_volume": 30
+          },
+          {
+           "year": 2026,
+           "month": 3,
+           "search_volume": 40
+          },
+          {
+           "year": 2026,
+           "month": 2,
+           "search_volume": 30
+          },
+          {
+           "year": 2026,
+           "month": 1,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 12,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 11,
+           "search_volume": 30
+          },
+          {
+           "year": 2025,
+           "month": 10,
+           "search_volume": 40
+          },
+          {
+           "year": 2025,
+           "month": 9,
+           "search_volume": 90
+          }
+         ]
+        },
+        "clickstream_keyword_info": null,
+        "keyword_properties": {
+         "se_type": "google",
+         "core_keyword": null,
+         "synonym_clustering_algorithm": null,
+         "keyword_difficulty": 0,
+         "detected_language": "en",
+         "is_another_language": false
+        },
+        "serp_info": {
+         "se_type": "google",
+         "check_url": "https://www.google.com/search?q=what%20is%20api%20in%20seo&hl=en&gl=US&ie=UTF-8&uule=w+CAIQIFISCQs2MuSEtepUEUK33kOSuTsc",
+         "serp_item_types": [
+          "ai_overview",
+          "organic",
+          "people_also_ask"
+         ],
+         "se_results_count": 6220000,
+         "last_updated_time": "2026-10-01 05:55:29 +00:00",
+         "previous_updated_time": "2026-08-14 02:03:12 +00:00"
+        },
+        "avg_backlinks_info": {
+         "se_type": "google",
+         "backlinks": 0,
+         "dofollow": 0,
+         "referring_pages": 0,
+         "referring_domains": 0,
+         "referring_main_domains": 0,
+         "rank": 9.100000381469727,
+         "main_domain_rank": 439.29998779296875,
+         "last_updated_time": "2026-10-01 05:55:30 +00:00"
+        },
+        "search_intent_info": {
+         "se_type": "google",
+         "main_intent": "informational",
+         "foreign_intent": null,
+         "last_updated_time": "2026-04-30 03:04:51 +00:00"
+        }
+       },
+       "first_domain_serp_element": {
+        "se_type": "google",
+        "type": "organic",
+        "rank_group": 2,
+        "rank_absolute": 4,
+        "position": "left",
+        "xpath": "/html[1]/body[1]/div[3]/div[1]/div[13]/div[2]/div[1]/div[2]/div[1]/div[1]/div[6]/div[1]/div[1]",
+        "domain": "dataforseo.com",
+        "title": "Understanding the Algorithm Behind DataForSEO Trends API",
+        "url": "https://dataforseo.com/help-center/algorithm-dataforseo-trends-api",
+        "breadcrumb": "https://dataforseo.com › Help Сenter",
+        "website_name": "DataForSEO",
+        "is_image": false,
+        "is_video": false,
+        "is_featured_snippet": false,
+        "is_malicious": false,
+        "checks": null,
+        "description": "DataForSEO Trends API employs our proprietary algorithm to supply you with the keyword popularity rate over time and for the specified location(s). Read more",
+        "pre_snippet": null,
+        "extended_snippet": null,
+        "amp_version": false,
+        "rating": null,
+        "highlighted": [
+         "DataForSEO Trends API"
+        ],
+        "links": [
+         {
+          "type": "link_element",
+          "title": "Read more",
+          "description": null,
+          "url": "https://dataforseo.com/help-center/algorithm-dataforseo-trends-api#:~:text=DataForSEO%20Trends%20API%20employs%20our,and%20for%20the%20specified%20location(s)."
+         }
+        ],
+        "about_this_result": null,
+        "main_domain": "dataforseo.com",
+        "relative_url": "/help-center/algorithm-dataforseo-trends-api",
+        "etv": 6.480000019073486,
+        "estimated_paid_traffic_cost": null,
+        "clickstream_etv": 0,
+        "rank_changes": {
+         "previous_rank_absolute": null,
+         "is_new": true,
+         "is_up": false,
+         "is_down": false
+        },
+        "backlinks_info": {
+         "referring_domains": 1,
+         "referring_main_domains": 1,
+         "referring_pages": 5,
+         "dofollow": 5,
+         "backlinks": 5,
+         "time_update": "2026-10-11 02:55:01 +00:00"
+        },
+        "rank_info": {
+         "page_rank": 91,
+         "main_domain_rank": 343
+        }
+       },
+       "second_domain_serp_element": {
+        "se_type": "google",
+        "type": "organic",
+        "rank_group": 92,
+        "rank_absolute": 94,
+        "position": "left",
+        "xpath": "/html[1]/body[1]/div[3]/div[1]/div[13]/div[1]/div[2]/div[2]/div[1]/div[1]/div[3]/div[1]/div[1]",
+        "domain": "www.seopanel.org",
+        "title": "SEO Panel API Guide | Functions, Setup & Code Samples",
+        "url": "https://www.seopanel.org/docs/api.html",
+        "breadcrumb": "https://www.seopanel.org › docs › api",
+        "website_name": "Seo Panel",
+        "is_image": false,
+        "is_video": false,
+        "is_featured_snippet": false,
+        "is_malicious": false,
+        "checks": null,
+        "description": "The Seo Panel API provides an interface to allow you to access and perform actions in Seo Panel both from external applications and scripts as well as internal ... Read more",
+        "pre_snippet": null,
+        "extended_snippet": null,
+        "amp_version": false,
+        "rating": null,
+        "highlighted": [
+         "Seo",
+         "API"
+        ],
+        "links": [
+         {
+          "type": "link_element",
+          "title": "Read more",
+          "description": null,
+          "url": "https://www.seopanel.org/docs/api.html#:~:text=The%20Seo%20Panel%20API%20provides,as%20internal%20modules%20and%20addons."
+         }
+        ],
+        "about_this_result": null,
+        "main_domain": "seopanel.org",
+        "relative_url": "/docs/api.html",
+        "etv": 0.08399999886751175,
+        "estimated_paid_traffic_cost": null,
+        "clickstream_etv": 0,
+        "rank_changes": {
+         "previous_rank_absolute": null,
+         "is_new": true,
+         "is_up": false,
+         "is_down": false
+        },
+        "backlinks_info": null,
+        "rank_info": {
+         "page_rank": 0,
+         "main_domain_rank": 298
+        }
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -40,6 +40,12 @@ npm run smoke:sandbox                     # zweites Terminal
 | POST | `/api/v1/ranked-keywords` | 0.04 | Top 25 Keywords, für die eine Domain rankt |
 | POST | `/api/v1/keyword-difficulty` | 0.04 | Keyword-Difficulty 0–100, bis 100 Keywords |
 | POST | `/api/v1/domain-overview` | 0.04 | Traffic, Keyword-Anzahl und Ranking-Verteilung einer Domain |
+| POST | `/api/v1/keyword-gap` | 0.045 | Keywords, für die ein Konkurrent rankt und du nicht (Top 25) |
+| POST | `/api/v1/google-trends` | 0.025 | Google-Trends-Verlauf, bis 5 Keywords, 12 Monate |
+| POST | `/api/v1/local-business` | 0.03 | Google-Maps-Firmen (20) zu einer Suche: Adresse, Telefon, Bewertung |
+| POST | `/api/v1/bing-serp` | 0.02 | Top 10 organische Bing-Ergebnisse |
+| POST | `/api/v1/page-audit` | 0.02 | Technischer SEO-Schnellcheck einer Seite (ohne JavaScript) |
+| POST | `/api/v1/domain-technologies` | 0.03 | Technologien einer Website (CMS, Analytics, Server …) |
 | POST | `/api/v1/ai-keyword-demand` | 0.04 | **geschätzte** AI-Search-Nachfrage, bis 10 Keywords |
 | POST | `/mcp` | frei/bezahlt | MCP (Streamable HTTP): 4 kostenlose + 6 Bezahl-Tools (x402-fähiger Client nötig) |
 | GET | `/openapi.json` | frei | OpenAPI 3.1 inkl. x402-Preisangaben |

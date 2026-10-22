@@ -88,11 +88,19 @@ describe("OpenAPI 3.1", () => {
       "ranked-keywords": "labs-ranked-keywords.json",
       "keyword-difficulty": "labs-bulk-keyword-difficulty.json",
       "domain-overview": "labs-domain-rank-overview.json",
+      "keyword-gap": "labs-domain-intersection.json",
+      "google-trends": "keywords-google-trends.json",
+      "local-business": "serp-google-maps.json",
+      "bing-serp": "serp-bing-organic.json",
+      "page-audit": "onpage-instant-pages.json",
+      "domain-technologies": "domain-technologies.json",
     };
     const keys = (v: unknown): string[] => {
       const out: string[] = [];
       const walk = (x: unknown, path: string) => {
         if (Array.isArray(x)) return x.forEach((el) => walk(el, path + "[]"));
+        // Technology groups/categories are open-ended maps (keys vary per domain): compare only down to the map itself.
+        if (path.endsWith(".technologies")) return;
         if (x && typeof x === "object") for (const [k, y] of Object.entries(x)) { out.push(path + "." + k); walk(y, path + "." + k); }
       };
       walk(v, "");

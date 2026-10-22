@@ -169,7 +169,7 @@ describe("x402 payments (testnet config, simulated facilitator)", () => {
 // ---------------------------------------------------------------------------------------------
 // All six services through the same payment architecture
 // ---------------------------------------------------------------------------------------------
-describe("all nine services over x402", () => {
+describe("all fifteen services over x402", () => {
   it("every route issues a v2 402 for exactly its configured price and payTo", async () => {
     const events: Event[] = [];
     const up = routedUpstream(events);
@@ -230,7 +230,7 @@ describe("all nine services over x402", () => {
     const { app } = buildTestApp({ fetchImpl: up.impl, facilitator: fakeFacilitator(events) });
     const base = await start(app);
     const localized = SERVICES.filter((s) => "location_code" in (s.example as object));
-    expect(localized.map((s) => s.id).sort()).toEqual(["ai-keyword-demand", "competitors", "domain-overview", "google-serp", "keyword-difficulty", "keyword-ideas", "keyword-metrics", "ranked-keywords"]);
+    expect(localized.map((s) => s.id).sort()).toEqual(["ai-keyword-demand", "bing-serp", "competitors", "domain-overview", "google-serp", "google-trends", "keyword-difficulty", "keyword-gap", "keyword-ideas", "keyword-metrics", "local-business", "ranked-keywords"]);
     for (const s of localized) {
       const res = await fetch(base + s.route, post({ ...(s.example as object), location_code: 99999 }));
       expect(res.status, s.id).toBe(422);

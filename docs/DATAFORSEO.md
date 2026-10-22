@@ -31,6 +31,14 @@ damit Dummy-Daten nie als echte Daten durchgehen.
 | ranked-keywords | `/v3/dataforseo_labs/google/ranked_keywords/live` | $0.012 / Task + $0.00012 / Zeile (Allgemeintarif, nicht pro Endpoint gelistet; mit `tasks[0].cost` bestätigen) | 25 Zeilen |
 | keyword-difficulty | `/v3/dataforseo_labs/google/bulk_keyword_difficulty/live` | wie oben, pro Keyword | 100 Keywords |
 | domain-overview | `/v3/dataforseo_labs/google/domain_rank_overview/live` | wie oben, 1 Zeile | 1 Domain |
+| keyword-gap | `/v3/dataforseo_labs/google/domain_intersection/live` | wie oben, pro Zeile (ohne Clickstream, sonst doppelt) | 25 Zeilen |
+| google-trends | `/v3/keywords_data/google_trends/explore/live` | $0.011 / Task | 5 Keywords |
+| local-business | `/v3/serp/google/maps/live/advanced` | $0.002 je 100 Ergebnisse (Tiefe wird aufgerundet) | Tiefe 20 |
+| bing-serp | `/v3/serp/bing/organic/live/advanced` | $0.002 je 10 Ergebnisse | Tiefe 10 |
+| page-audit | `/v3/on_page/instant_pages` | $0.00015 / Seite; Zusätze (JS, Ressourcen, Browser) werden nie angefordert | 1 URL |
+| domain-technologies | `/v3/domain_analytics/technologies/domain_technologies/live` | $0.012 / Task | 1 Domain |
+
+Preise der fünf letzten Zeilen laut Preisseiten am 2026-10-22 gelesen, noch nicht gegen echte `tasks[0].cost` bestätigt.
 | ai-keyword-demand | `/v3/ai_optimization/ai_keyword_data/keywords_search_volume/live` | $0.01 / Task + $0.0001 / Keyword | 10 Keywords |
 
 Implementiert in Phase 1: **keyword-metrics**. Die übrigen fünf folgen in Phase 3 über denselben Adapter.

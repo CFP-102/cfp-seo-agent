@@ -1,0 +1,121 @@
+{
+ "_fixture_note": "SANDBOX RESPONSE captured 2026-10-22 from sandbox.dataforseo.com (structure identical to live; values are DataForSEO dummy data). Test fixture only.",
+ "version": "0.1.20260917",
+ "status_code": 20000,
+ "status_message": "Ok.",
+ "time": "0 sec.",
+ "cost": 0,
+ "tasks_count": 1,
+ "tasks_error": 0,
+ "tasks": [
+  {
+   "id": "10221430-2869-0483-2000-2efff9857694",
+   "status_code": 20000,
+   "status_message": "Ok.",
+   "time": "0 sec.",
+   "cost": 0,
+   "result_count": 1,
+   "path": [
+    "v3",
+    "domain_analytics",
+    "technologies",
+    "domain_technologies",
+    "live"
+   ],
+   "data": {
+    "api": "domain_analytics",
+    "function": "domain_technologies",
+    "se": "technologies",
+    "target": "example.com"
+   },
+   "result": [
+    {
+     "type": "domain_technology_item",
+     "domain": "dataforseo.com",
+     "title": "Powerful API Stack For Data-Driven SEO Tools – DataForSEO",
+     "description": "We provide comprehensive data solutions for SEO and SEM analytics via API. DataForSEO is a trusted partner for 750+ SEO software companies and agencies.",
+     "meta_keywords": [
+      "eretur"
+     ],
+     "domain_rank": 341,
+     "last_visited": "2026-09-22 13:26:26 +00:00",
+     "country_iso_code": "US",
+     "language_code": "en",
+     "content_language_code": "en",
+     "phone_numbers": [
+      "+3726027642"
+     ],
+     "emails": [
+      "info@dataforseo.com"
+     ],
+     "social_graph_urls": null,
+     "technologies": {
+      "servers": {
+       "cdn": [
+        "Cloudflare"
+       ],
+       "web_servers": [
+        "Nginx"
+       ],
+       "reverse_proxies": [
+        "Nginx"
+       ],
+       "databases": [
+        "MySQL"
+       ]
+      },
+      "web_development": {
+       "javascript_libraries": [
+        "jQuery",
+        "jQuery Migrate",
+        "OWL Carousel",
+        "Underscore.js"
+       ],
+       "page_builders": [
+        "wpBakery"
+       ],
+       "programming_languages": [
+        "PHP"
+       ]
+      },
+      "add_ons": {
+       "wordpress_plugins": [
+        "Responsive Lightbox & Gallery",
+        "wpBakery"
+       ]
+      },
+      "content": {
+       "photo_galleries": [
+        "Responsive Lightbox & Gallery"
+       ],
+       "cms": [
+        "WordPress"
+       ],
+       "blogs": [
+        "WordPress"
+       ]
+      },
+      "media": {
+       "photo_galleries": [
+        "Responsive Lightbox & Gallery"
+       ]
+      },
+      "marketing": {
+       "marketing_automation": [
+        "SendPulse"
+       ],
+       "email": [
+        "SendPulse"
+       ]
+      },
+      "communication": {
+       "email": [
+        "SendPulse"
+       ]
+      }
+     }
+    }
+   ]
+  }
+ ]
+}

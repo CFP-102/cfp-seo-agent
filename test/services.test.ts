@@ -1,5 +1,5 @@
 /**
- * Adapter tests for all nine services. Fixtures are sandbox responses or explicitly
+ * Adapter tests for all fifteen services. Fixtures are sandbox responses or explicitly
  * marked derived live fixtures — see _fixture_note in each file.
  */
 import { describe, expect, it } from "vitest";
@@ -15,15 +15,21 @@ import { searchIntent } from "../src/services/searchIntent.js";
 import { domainOverview } from "../src/services/domainOverview.js";
 import { keywordDifficulty } from "../src/services/keywordDifficulty.js";
 import { rankedKeywords } from "../src/services/rankedKeywords.js";
+import { bingSerp } from "../src/services/bingSerp.js";
+import { domainTechnologies } from "../src/services/domainTechnologies.js";
+import { googleTrends } from "../src/services/googleTrends.js";
+import { keywordGap } from "../src/services/keywordGap.js";
+import { localBusiness } from "../src/services/localBusiness.js";
+import { pageAudit } from "../src/services/pageAudit.js";
 import { fixture } from "./helpers.js";
 
 const task = (name: string) => fixture(name).tasks[0];
 const US = { location_code: 2840, language_code: "en" };
 
 describe("registry", () => {
-  it("has all nine services, matching config, unique ids and routes", () => {
+  it("has all fifteen services, matching config, unique ids and routes", () => {
     expect(SERVICES.map((s) => s.id).sort()).toEqual(Object.keys(SERVICE_CONFIG).sort());
-    expect(new Set(SERVICES.map((s) => s.route)).size).toBe(9);
+    expect(new Set(SERVICES.map((s) => s.route)).size).toBe(15);
     for (const s of SERVICES) {
       expect(s.route).toBe(SERVICE_CONFIG[s.id]!.route);
       expect(s.priceUsdc).toBe(SERVICE_CONFIG[s.id]!.priceUsdc);
@@ -53,6 +59,12 @@ describe("registry", () => {
       "ranked-keywords": { domain: "example.com" },
       "keyword-difficulty": { keywords: kw(100) },
       "domain-overview": { domain: "example.com" },
+      "keyword-gap": { domain: "example.com", competitor: "competitor.com" },
+      "google-trends": { keywords: kw(5) },
+      "local-business": { keyword: "coffee shop" },
+      "bing-serp": { keyword: "running shoes" },
+      "page-audit": { url: "https://example.com/" },
+      "domain-technologies": { domain: "example.com" },
     };
     for (const s of SERVICES) {
       const parsed = s.inputSchema.parse(maxInputs[s.id]);
@@ -209,6 +221,11 @@ describe("price list sanity", () => {
       serpLivePerPage: 0.002,
       aiKeywordPerTask: 0.01,
       aiKeywordPerItem: 0.0001,
+      trendsLivePerTask: 0.011,
+      mapsLivePer100: 0.002,
+      bingLivePerPage: 0.002,
+      instantPagesPerPage: 0.00015,
+      domainTechPerTask: 0.012,
     });
   });
 });
@@ -243,5 +260,59 @@ describe("ranked-keywords, keyword-difficulty, domain-overview", () => {
     expect(out.organic.keywords_count).toEqual(expect.any(Number));
     expect(out.organic.positions.top_1).toEqual(expect.any(Number));
     expect(out.paid).toHaveProperty("traffic_cost_usd");
+  });
+});
+
+describe("keyword-gap, google-trends, local-business, bing-serp, page-audit, domain-technologies", () => {
+  it("keyword-gap sends the competitor as target1 with intersections=false and rejects identical domains", () => {
+    const i = keywordGap.inputSchema.parse({ domain: "mine.com", competitor: "theirs.com" });
+    const req = keywordGap.buildRequest(i)[0] as any;
+    expect(req).toMatchObject({ target1: "theirs.com", target2: "mine.com", intersections: false, limit: 25, include_clickstream_data: false });
+    expect(keywordGap.inputSchema.safeParse({ domain: "a.com", competitor: "www.a.com" }).success).toBe(false);
+    const out = keywordGap.mapResult(task("labs-domain-intersection.json"), i);
+    expect(out.keywords.length).toBeGreaterThan(0);
+    expect(out.keywords[0]).toHaveProperty("competitor_position");
+  });
+
+  it("google-trends maps the graph and sends one task with at most 5 keywords", () => {
+    const i = googleTrends.inputSchema.parse({ keywords: ["a", "b"] });
+    expect((googleTrends.buildRequest(i)[0] as any).item_types).toEqual(["google_trends_graph"]);
+    expect(googleTrends.inputSchema.safeParse({ keywords: ["a", "b", "c", "d", "e", "f"] }).success).toBe(false);
+    const out = googleTrends.mapResult(task("keywords-google-trends.json"), i);
+    expect(out.points.length).toBeGreaterThan(10);
+    expect(out.points[0]!.values.length).toBeGreaterThan(0);
+  });
+
+  it("local-business and bing-serp map results, cap them and refuse search operators", () => {
+    const lb = localBusiness.mapResult(task("serp-google-maps.json"), localBusiness.inputSchema.parse({ keyword: "pizza" }));
+    expect(lb.businesses.length).toBe(20);
+    expect(lb.businesses[0]!.name).toBeTruthy();
+    expect(localBusiness.inputSchema.safeParse({ keyword: "site:example.com" }).success).toBe(false);
+    const bing = bingSerp.mapResult(task("serp-bing-organic.json"), bingSerp.inputSchema.parse({ keyword: "pizza" }));
+    expect(bing.results.length).toBeGreaterThan(0);
+    expect(bing.results.length).toBeLessThanOrEqual(10);
+    expect(bingSerp.inputSchema.safeParse({ keyword: '"pizza"' }).success).toBe(false);
+    expect(bingSerp.validateInput?.({ keyword: "x", location_code: 2840, language_code: "en" })).toBeNull();
+    expect(bingSerp.validateInput?.({ keyword: "x", location_code: 2840, language_code: "xx" })).not.toBeNull();
+  });
+
+  it("page-audit only accepts public http(s) page URLs and never asks for paid add-ons", () => {
+    for (const bad of ["http://127.0.0.1/", "https://10.0.0.1/x", "https://localhost/", "ftp://example.com/", "https://user:pw@example.com/", "https://example.com:8080/", "javascript:alert(1)", "https://[::1]/"]) {
+      expect(pageAudit.inputSchema.safeParse({ url: bad }).success, bad).toBe(false);
+    }
+    const i = pageAudit.inputSchema.parse({ url: "example.com/pricing#top" });
+    expect(i.url).toBe("https://example.com/pricing");
+    const req = pageAudit.buildRequest(i)[0] as any;
+    expect(req).toMatchObject({ enable_javascript: false, load_resources: false, enable_browser_rendering: false });
+    const out = pageAudit.mapResult(task("onpage-instant-pages.json"), i);
+    expect(out.fetched).toBe(true);
+    expect(out.http_status).toBe(200);
+  });
+
+  it("domain-technologies groups technologies and does not return contact details", () => {
+    const out = domainTechnologies.mapResult(task("domain-technologies.json"), domainTechnologies.inputSchema.parse({ domain: "example.com" }));
+    expect(out.found).toBe(true);
+    expect(Object.keys(out.technologies).length).toBeGreaterThan(0);
+    expect(JSON.stringify(out)).not.toMatch(/@|phone/);
   });
 });

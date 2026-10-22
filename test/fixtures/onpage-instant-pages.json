@@ -1,0 +1,307 @@
+{
+ "_fixture_note": "SANDBOX RESPONSE captured 2026-10-22 from sandbox.dataforseo.com (structure identical to live; values are DataForSEO dummy data). Test fixture only.",
+ "version": "0.1.20260917",
+ "status_code": 20000,
+ "status_message": "Ok.",
+ "time": "0 sec.",
+ "cost": 0,
+ "tasks_count": 1,
+ "tasks_error": 0,
+ "tasks": [
+  {
+   "id": "10221430-2869-0275-2000-e1b676855a83",
+   "status_code": 20000,
+   "status_message": "Ok.",
+   "time": "0 sec.",
+   "cost": 0,
+   "result_count": 1,
+   "path": [
+    "v3",
+    "on_page",
+    "instant_pages"
+   ],
+   "data": {
+    "api": "on_page",
+    "function": "instant_pages",
+    "url": "https://example.com/"
+   },
+   "result": [
+    {
+     "crawl_progress": "finished",
+     "crawl_status": null,
+     "crawl_gateway_address": "168.119.141.170",
+     "items_count": 1,
+     "items": [
+      {
+       "resource_type": "html",
+       "status_code": 200,
+       "location": null,
+       "url": "https://dataforseo.com/blog",
+       "meta": {
+        "title": "DataForSEO Blog – The Brightest SEO Data Insights",
+        "charset": 65001,
+        "follow": true,
+        "generator": "Powered by WPBakery Page Builder - drag and drop page builder for WordPress.",
+        "htags": {
+         "h1": [
+          "Blog"
+         ],
+         "h2": [
+          "From Custom Reports to Competitor Analysis: 5 LLM Mentions API Use Cases",
+          "Building a Functioning SEO Tool From Scratch: Architecture, Costs & Lessons Learned",
+          "AI Visibility for Local Businesses: Why Food, Travel, and Hospitality Face the Highest AI Competition",
+          "Track AI Visibility Over Time with Historical LLM Mentions Data API",
+          "The Gap Between AI Search Visibility and AI Citation",
+          "Fan-Out Queries: The Hidden Layer of AI Search You Need to Optimize For",
+          "LLM Scraper vs LLM Responses: How to Choose the Right AI Data Solution",
+          "Budget-Friendly Rank Tracking Strategies with DataForSEO SERP API",
+          "SEO vs GEO: Key Differences and Shared Principles in Data and Optimization",
+          "Get Data-Driven AI Visibility and Mentions Insights with DataForSEO LLM Mentions API",
+          "New DataForSEO\n Research Paper"
+         ],
+         "h4": [
+          "APIs",
+          "Databases",
+          "Solutions",
+          "Knowledge Base",
+          "Resources",
+          "Legal information",
+          "Payment Methods:"
+         ]
+        },
+        "description": "DataForSEO Blog is dedicated to SEO API best practices, software development use cases, and the latest martech industry insights",
+        "favicon": "https://dataforseo.com/wp-content/uploads/2022/04/cropped-favicon_512-1-32x32.png",
+        "meta_keywords": null,
+        "canonical": "https://dataforseo.com/blog",
+        "internal_links_count": 140,
+        "external_links_count": 13,
+        "inbound_links_count": 0,
+        "images_count": 19,
+        "images_size": 0,
+        "scripts_count": 4,
+        "scripts_size": 0,
+        "stylesheets_count": 0,
+        "stylesheets_size": 0,
+        "title_length": 49,
+        "description_length": 128,
+        "render_blocking_scripts_count": 0,
+        "render_blocking_stylesheets_count": 0,
+        "cumulative_layout_shift": 0,
+        "meta_title": null,
+        "content": {
+         "plain_text_size": 3300,
+         "plain_text_rate": 0.006841065464850398,
+         "plain_text_word_count": 550,
+         "automated_readability_index": 6.595847771836006,
+         "coleman_liau_readability_index": 9.711345454545455,
+         "dale_chall_readability_index": 8.372483778966131,
+         "flesch_kincaid_readability_index": 53.69905347593584,
+         "smog_readability_index": 11.168442561648273,
+         "description_to_content_consistency": 0.5789473652839661,
+         "title_to_content_consistency": 0.7142857313156128,
+         "meta_keywords_to_content_consistency": null
+        },
+        "deprecated_tags": null,
+        "duplicate_meta_tags": null,
+        "spell": null,
+        "social_media_tags": {
+         "og:locale": "en_US",
+         "og:type": "article",
+         "og:title": "DataForSEO Blog – The Brightest SEO Data Insights",
+         "og:description": "DataForSEO Blog is dedicated to SEO API best practices, software development use cases, and the latest martech industry insights",
+         "og:url": "https://dataforseo.com/blog",
+         "og:site_name": "DataForSEO",
+         "og:updated_time": "2026-07-02T08:18:13+03:00",
+         "article:published_time": "2017-05-11T11:01:40+03:00",
+         "article:modified_time": "2026-07-02T08:18:13+03:00",
+         "twitter:card": "summary_large_image",
+         "twitter:title": "DataForSEO Blog – The Brightest SEO Data Insights",
+         "twitter:description": "DataForSEO Blog is dedicated to SEO API best practices, software development use cases, and the latest martech industry insights",
+         "twitter:label1": "Time to read",
+         "twitter:data1": "Less than a minute"
+        }
+       },
+       "page_timing": {
+        "time_to_interactive": 222,
+        "dom_complete": 222,
+        "largest_contentful_paint": 0,
+        "first_input_delay": 0,
+        "connection_time": 7,
+        "time_to_secure_connection": 46,
+        "request_sent_time": 0,
+        "waiting_time": 0,
+        "download_time": 169,
+        "duration_time": 222,
+        "fetch_start": 0,
+        "fetch_end": 222
+       },
+       "onpage_score": 97.07,
+       "total_dom_size": 482416,
+       "custom_js_response": {
+        "url": "https://dataforseo.com/blog"
+       },
+       "custom_js_client_exception": null,
+       "resource_errors": {
+        "errors": [
+         {
+          "line": 229,
+          "column": 1,
+          "message": "The closing tag and the currently open tag do not match.",
+          "status_code": 501
+         },
+         {
+          "line": 232,
+          "column": 1,
+          "message": "The closing tag and the currently open tag do not match.",
+          "status_code": 501
+         },
+         {
+          "line": 252,
+          "column": 1,
+          "message": "The closing tag and the currently open tag do not match.",
+          "status_code": 501
+         },
+         {
+          "line": 278,
+          "column": 1,
+          "message": "The closing tag and the currently open tag do not match.",
+          "status_code": 501
+         },
+         {
+          "line": 290,
+          "column": 1,
+          "message": "The closing tag and the currently open tag do not match.",
+          "status_code": 501
+         },
+         {
+          "line": 301,
+          "column": 1,
+          "message": "The closing tag and the currently open tag do not match.",
+          "status_code": 501
+         },
+         {
+          "line": 318,
+          "column": 1,
+          "message": "The closing tag and the currently open tag do not match.",
+          "status_code": 501
+         },
+         {
+          "line": 328,
+          "column": 1,
+          "message": "The closing tag and the currently open tag do not match.",
+          "status_code": 501
+         },
+         {
+          "line": 340,
+          "column": 1,
+          "message": "The closing tag and the currently open tag do not match.",
+          "status_code": 501
+         },
+         {
+          "line": 343,
+          "column": 1,
+          "message": "The closing tag and the currently open tag do not match.",
+          "status_code": 501
+         },
+         {
+          "line": 444,
+          "column": 1,
+          "message": "The closing tag and the currently open tag do not match.",
+          "status_code": 501
+         }
+        ],
+        "warnings": [
+         {
+          "line": 3,
+          "column": 1,
+          "message": "Has node with more than 60 childs.",
+          "status_code": 1
+         }
+        ]
+       },
+       "broken_resources": false,
+       "broken_links": false,
+       "duplicate_title": false,
+       "duplicate_description": false,
+       "duplicate_content": false,
+       "click_depth": 0,
+       "size": 482416,
+       "encoded_size": 0,
+       "total_transfer_size": 0,
+       "fetch_time": "2026-10-21 17:40:07 +00:00",
+       "cache_control": {
+        "cachable": false,
+        "ttl": 0
+       },
+       "checks": {
+        "no_content_encoding": false,
+        "high_loading_time": false,
+        "from_sitemap": false,
+        "is_redirect": false,
+        "is_4xx_code": false,
+        "is_5xx_code": false,
+        "is_broken": false,
+        "is_www": false,
+        "is_https": true,
+        "is_http": false,
+        "high_waiting_time": false,
+        "has_micromarkup": false,
+        "has_micromarkup_errors": false,
+        "no_doctype": false,
+        "has_html_doctype": true,
+        "canonical": true,
+        "no_encoding_meta_tag": false,
+        "no_h1_tag": false,
+        "https_to_http_links": false,
+        "size_greater_than_3mb": false,
+        "meta_charset_consistency": false,
+        "has_meta_refresh_redirect": false,
+        "has_render_blocking_resources": false,
+        "low_content_rate": true,
+        "high_content_rate": false,
+        "low_character_count": false,
+        "high_character_count": false,
+        "small_page_size": false,
+        "large_page_size": false,
+        "low_readability_rate": false,
+        "irrelevant_description": false,
+        "irrelevant_title": false,
+        "irrelevant_meta_keywords": false,
+        "title_too_long": false,
+        "has_meta_title": false,
+        "title_too_short": false,
+        "deprecated_html_tags": false,
+        "duplicate_meta_tags": false,
+        "duplicate_title_tag": false,
+        "no_image_alt": true,
+        "no_image_title": true,
+        "no_description": false,
+        "no_title": false,
+        "no_favicon": false,
+        "seo_friendly_url": true,
+        "flash": false,
+        "frame": false,
+        "lorem_ipsum": false,
+        "seo_friendly_url_characters_check": true,
+        "seo_friendly_url_dynamic_check": true,
+        "seo_friendly_url_keywords_check": true,
+        "seo_friendly_url_relative_length_check": true
+       },
+       "content_encoding": "br",
+       "media_type": "text/html",
+       "server": "cloudflare",
+       "is_resource": false,
+       "url_length": 27,
+       "relative_url_length": 5,
+       "last_modified": {
+        "header": "2026-10-14 11:39:00 +00:00",
+        "sitemap": null,
+        "meta_tag": "2026-07-02 05:18:13 +00:00"
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

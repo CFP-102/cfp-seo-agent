@@ -92,6 +92,12 @@ export const FIXTURE_BY_ENDPOINT: Record<string, string> = {
   "/v3/dataforseo_labs/google/ranked_keywords/live": "labs-ranked-keywords.json",
   "/v3/dataforseo_labs/google/bulk_keyword_difficulty/live": "labs-bulk-keyword-difficulty.json",
   "/v3/dataforseo_labs/google/domain_rank_overview/live": "labs-domain-rank-overview.json",
+  "/v3/dataforseo_labs/google/domain_intersection/live": "labs-domain-intersection.json",
+  "/v3/keywords_data/google_trends/explore/live": "keywords-google-trends.json",
+  "/v3/serp/google/maps/live/advanced": "serp-google-maps.json",
+  "/v3/serp/bing/organic/live/advanced": "serp-bing-organic.json",
+  "/v3/on_page/instant_pages": "onpage-instant-pages.json",
+  "/v3/domain_analytics/technologies/domain_technologies/live": "domain-technologies.json",
 };
 
 export function routedUpstream(events: Event[]) {
