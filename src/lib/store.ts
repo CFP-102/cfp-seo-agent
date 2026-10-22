@@ -338,10 +338,75 @@ export class Store {
       .all(limit) as Record<string, string | number | null>[];
   }
 
+  /** Real-money (mainnet) figures per day for the last `days` days, oldest first, missing days filled with zeros. */
+  history(days = 30, now: Date = new Date()) {
+    const first = new Date(now.getTime() - (days - 1) * 86_400_000).toISOString().slice(0, 10);
+    const rows = this.db
+      .prepare(
+        `SELECT substr(created_at, 1, 10) AS day,
+                SUM(CASE WHEN tx_hash IS NOT NULL THEN 1 ELSE 0 END) AS paid,
+                SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed,
+                COALESCE(SUM(CASE WHEN tx_hash IS NOT NULL THEN price_usdc ELSE 0 END), 0) AS revenue_usdc,
+                COALESCE(SUM(upstream_cost_usd), 0) AS cost_usd
+         FROM requests WHERE created_at >= ? AND network = ? GROUP BY day`,
+      )
+      .all(first, MAINNET_NETWORK) as { day: string; paid: number; failed: number; revenue_usdc: number; cost_usd: number }[];
+    const byDay = new Map(rows.map((r) => [r.day, r]));
+    return Array.from({ length: days }, (_, i) => {
+      const day = new Date(now.getTime() - (days - 1 - i) * 86_400_000).toISOString().slice(0, 10);
+      return byDay.get(day) ?? { day, paid: 0, failed: 0, revenue_usdc: 0, cost_usd: 0 };
+    });
+  }
+
+  /** Margin and reliability per service on real money since `since` (ISO date). Only settled payments count as revenue. */
+  serviceMargins(since: string) {
+    return this.db
+      .prepare(
+        `SELECT service_id,
+                SUM(CASE WHEN tx_hash IS NOT NULL THEN 1 ELSE 0 END) AS paid,
+                SUM(CASE WHEN tx_hash IS NOT NULL AND status='completed' THEN 1 ELSE 0 END) AS delivered,
+                SUM(CASE WHEN tx_hash IS NOT NULL AND status='failed' THEN 1 ELSE 0 END) AS failed,
+                COALESCE(SUM(CASE WHEN tx_hash IS NOT NULL THEN price_usdc ELSE 0 END), 0) AS revenue_usdc,
+                COALESCE(SUM(upstream_cost_usd), 0) AS cost_usd
+         FROM requests WHERE created_at >= ? AND network = ? GROUP BY service_id ORDER BY revenue_usdc DESC, service_id`,
+      )
+      .all(since, MAINNET_NETWORK) as { service_id: string; paid: number; delivered: number; failed: number; revenue_usdc: number; cost_usd: number }[];
+  }
+
+  /** Buyers by wallet address (public chain data) on real money since `since`: totals plus the top spenders. */
+  buyers(since: string, top = 10) {
+    const totals = this.db
+      .prepare(
+        `SELECT COUNT(*) AS buyers, COALESCE(SUM(CASE WHEN calls >= 2 THEN 1 ELSE 0 END), 0) AS repeat_buyers
+         FROM (SELECT payer, COUNT(*) AS calls FROM requests WHERE created_at >= ? AND network = ? AND tx_hash IS NOT NULL AND payer IS NOT NULL GROUP BY payer)`,
+      )
+      .get(since, MAINNET_NETWORK) as { buyers: number; repeat_buyers: number };
+    const topBuyers = this.db
+      .prepare(
+        `SELECT payer, COUNT(*) AS calls, SUM(price_usdc) AS usdc, MAX(created_at) AS last_seen
+         FROM requests WHERE created_at >= ? AND network = ? AND tx_hash IS NOT NULL AND payer IS NOT NULL
+         GROUP BY payer ORDER BY usdc DESC, calls DESC LIMIT ?`,
+      )
+      .all(since, MAINNET_NETWORK, top) as { payer: string; calls: number; usdc: number; last_seen: string }[];
+    return { ...totals, top: topBuyers };
+  }
+
+  /** Settled real-money payments of one month ("YYYY-MM") for bookkeeping, oldest first. */
+  paymentsOfMonth(month: string) {
+    return this.db
+      .prepare(
+        `SELECT created_at, service_id, price_usdc, network, payer, tx_hash, status
+         FROM requests WHERE substr(created_at, 1, 7) = ? AND network = ? AND tx_hash IS NOT NULL ORDER BY created_at LIMIT 100000`,
+      )
+      .all(month, MAINNET_NETWORK) as { created_at: string; service_id: string; price_usdc: number; network: string; payer: string | null; tx_hash: string; status: string }[];
+  }
+
   close(): void {
     this.db.close();
   }
 }
+
+const MAINNET_NETWORK = "eip155:8453";
 
 export function today(): string {
   return new Date().toISOString().slice(0, 10);

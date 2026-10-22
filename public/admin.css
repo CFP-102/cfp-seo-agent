@@ -4,3 +4,12 @@ th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--lin
 th { color: var(--muted); font-weight: 600; background: var(--panel); }
 tr:last-child td { border-bottom: 0; }
 main h3 { margin-top: 20px; font-size: 0.95rem; color: var(--muted); }
+
+.chart { width: 100%; max-width: 760px; height: auto; margin: 8px 0; }
+.chart .bar-rev { fill: var(--accent, #2a7); opacity: 0.55; }
+.chart .bar-cost { fill: var(--warn, #c63); }
+.chart .axis { stroke: var(--line); }
+.chart .axis-label { fill: var(--muted); font-size: 11px; }
+.key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 4px 0 10px; }
+.key-rev { background: var(--accent, #2a7); opacity: 0.55; }
+.key-cost { background: var(--warn, #c63); }

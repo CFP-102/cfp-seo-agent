@@ -28,6 +28,31 @@ const esc = (v: unknown) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "
 const usd = (n: unknown) => Number(n ?? 0).toFixed(4);
 const MAINNET = "eip155:8453";
 
+/** Per service, this month, real money: revenue vs DataForSEO cost, plus reliability. Flags services that lose money or fail often. */
+function margins(store: Store, pipeline: Pipeline) {
+  const since = `${today().slice(0, 7)}-01`;
+  const byId = new Map(store.serviceMargins(since).map((r) => [r.service_id, r]));
+  return pipeline.services.map((s) => {
+    const r = byId.get(s.id);
+    const paid = r?.paid ?? 0;
+    const revenue = r?.revenue_usdc ?? 0;
+    const cost = r?.cost_usd ?? 0;
+    const failedPct = paid ? ((r?.failed ?? 0) / paid) * 100 : 0;
+    const avgCost = paid ? cost / paid : null;
+    return {
+      service_id: s.id,
+      price_usdc: s.priceUsdc,
+      paid,
+      revenue_usdc: revenue,
+      cost_usd: cost,
+      margin_usd: revenue - cost,
+      avg_cost_per_call_usd: avgCost,
+      failed_pct: failedPct,
+      flag: avgCost !== null && avgCost >= Number(s.priceUsdc) ? "cost >= price" : failedPct >= 10 ? "failure rate >= 10%" : "",
+    };
+  });
+}
+
 export function buildAdminStats(env: Env, store: Store, pipeline: Pipeline) {
   const period = (p: "day" | "month") => {
     const s = store.summary(p);
@@ -54,11 +79,32 @@ export function buildAdminStats(env: Env, store: Store, pipeline: Pipeline) {
     day: period("day"),
     month: period("month"),
     needs_attention: store.needsAttention(),
+    margins: margins(store, pipeline),
+    history: store.history(30),
+    buyers: store.buyers(`${today().slice(0, 7)}-01`),
     services: pipeline.services.map((s) => ({ id: s.id, price_usdc: s.priceUsdc, enabled: pipeline.isEnabled(s) })),
   };
 }
 
 type Stats = ReturnType<typeof buildAdminStats>;
+
+/** Inline SVG bar chart (no scripts): revenue bars with the DataForSEO cost as a narrower bar in front. Styled via admin.css classes. */
+function chart(history: Stats["history"]): string {
+  const w = 720;
+  const h = 140;
+  const max = Math.max(0.01, ...history.map((d) => Math.max(d.revenue_usdc, d.cost_usd)));
+  const step = w / history.length;
+  const y = (v: number) => (v / max) * (h - 10);
+  const bars = history
+    .map((d, i) => {
+      const x = i * step;
+      const title = `<title>${esc(d.day)}: revenue ${usd(d.revenue_usdc)} USDC, cost ${usd(d.cost_usd)} USD, ${d.paid} paid</title>`;
+      return `<g>${title}<rect class="bar-rev" x="${(x + 1).toFixed(1)}" y="${(h - y(d.revenue_usdc)).toFixed(1)}" width="${(step - 2).toFixed(1)}" height="${y(d.revenue_usdc).toFixed(1)}"/><rect class="bar-cost" x="${(x + step * 0.25).toFixed(1)}" y="${(h - y(d.cost_usd)).toFixed(1)}" width="${(step * 0.5).toFixed(1)}" height="${y(d.cost_usd).toFixed(1)}"/></g>`;
+    })
+    .join("");
+  return `<svg class="chart" viewBox="0 0 ${w} ${h + 18}" role="img" aria-label="Revenue and cost per day, last 30 days"><line class="axis" x1="0" y1="${h}" x2="${w}" y2="${h}"/>${bars}<text class="axis-label" x="0" y="${h + 14}">${esc(history[0]?.day)}</text><text class="axis-label" x="${w}" y="${h + 14}" text-anchor="end">${esc(history.at(-1)?.day)} · max ${max.toFixed(2)}</text></svg>
+  <p class="fine"><span class="key key-rev"></span> revenue (USDC, settled) <span class="key key-cost"></span> DataForSEO cost (USD) · real money only</p>`;
+}
 
 function table(head: string[], rows: unknown[][]): string {
   if (!rows.length) return '<p class="fine">No data yet.</p>';
@@ -107,6 +153,17 @@ function renderPage(env: Env, st: Stats): string {
     ["created", "service", "status", "error", "retries", "price USDC", "network", "payer", "tx", "request id"],
     st.needs_attention.map((r) => [r.created_at, r.service_id, r.status, r.error_code, r.retries, r.price_usdc, r.network, r.payer, r.tx_hash, r.id]),
   )}
+  <h2>Last 30 days <span class="fine">(real money)</span></h2>
+  ${chart(st.history)}
+  <h2>Margin and reliability per service <span class="fine">(this month, real money)</span></h2>
+  ${table(
+    ["service", "price USDC", "paid", "revenue USDC", "cost USD", "margin", "avg cost / call", "failed %", "flag"],
+    st.margins.map((m) => [m.service_id, m.price_usdc, m.paid, usd(m.revenue_usdc), usd(m.cost_usd), usd(m.margin_usd), m.avg_cost_per_call_usd === null ? "–" : usd(m.avg_cost_per_call_usd), m.failed_pct.toFixed(1), m.flag]),
+  )}
+  <h2>Buyers <span class="fine">(this month, by wallet address)</span></h2>
+  <p>Buyers: <strong>${esc(st.buyers.buyers)}</strong> · repeat buyers (2+ paid calls): <strong>${esc(st.buyers.repeat_buyers)}</strong></p>
+  ${table(["wallet", "paid calls", "USDC", "last seen"], st.buyers.top.map((b) => [b.payer, b.calls, usd(b.usdc), b.last_seen]))}
+  <p class="fine">Bookkeeping export: <a href="/admin/payments.csv">payments of this month (CSV)</a> · another month: /admin/payments.csv?month=YYYY-MM</p>
   ${section("Today", st.day)}
   ${section("This month", st.month)}
   <h2>Services</h2>
@@ -139,6 +196,18 @@ export function createAdminRouter(deps: { env: Env; store: Store; pipeline: Pipe
   router.get("/", (_req, res) => {
     res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'");
     res.type("html").send(renderPage(env, buildAdminStats(env, store, pipeline)));
+  });
+  router.get("/payments.csv", (req, res) => {
+    const asked = typeof req.query.month === "string" ? req.query.month : "";
+    const month = /^\d{4}-(0[1-9]|1[0-2])$/.test(asked) ? asked : today().slice(0, 7);
+    // Cells that could be read as spreadsheet formulas are prefixed; all values here are ours or hex/ids anyway.
+    const cell = (v: unknown) => {
+      const t = String(v ?? "");
+      return /^[=+\-@\t\r]/.test(t) ? `"'${t.replace(/"/g, '""')}"` : /[",\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
+    };
+    const rows = store.paymentsOfMonth(month).map((r) => [r.created_at, r.service_id, r.price_usdc, "USDC", r.network, r.payer, r.tx_hash, r.status].map(cell).join(","));
+    res.setHeader("Content-Disposition", `attachment; filename="payments-${month}.csv"`);
+    res.type("text/csv").send(["time_utc,service,amount,asset,network,payer,tx_hash,status", ...rows].join("\n") + "\n");
   });
   router.get("/stats.json", (_req, res) => {
     res.json(buildAdminStats(env, store, pipeline));

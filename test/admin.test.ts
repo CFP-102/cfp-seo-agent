@@ -109,6 +109,46 @@ describe("/admin", () => {
     expect(html).not.toMatch(/<script/i);
   });
 
+  it("shows history, margin per service, buyers and a CSV export for real money only", async () => {
+    const { app, store } = buildTestApp({ fetchImpl: routedUpstream([]).impl, env: adminEnv });
+    const base = await start(app);
+    const row = (id: string, service: string, price: number, payer: string, network: string, cost: number) => {
+      store.claim({ id, service_id: service, data_source: "live", price_usdc: price, payment_key: "pk-" + id, network, payer, input_hash: "h", input_json: "{}", result_token_hash: "t" });
+      store.setSettled(id, "0x" + id, payer);
+      store.complete(id, { resultJson: "{}", upstreamCostUsd: cost, cacheHit: false });
+    };
+    row("a1", "keyword-ideas", 0.025, "0xAAA", "eip155:8453", 0.0136);
+    row("a2", "keyword-ideas", 0.025, "0xAAA", "eip155:8453", 0.0136);
+    row("b1", "search-intent", 0.04, "0xBBB", "eip155:8453", 0.05); // loses money
+    row("t1", "keyword-ideas", 0.025, "0xTEST", "eip155:84532", 0);
+    const auth = { headers: { authorization: basic("boss", PASSWORD) } };
+    const json = await (await fetch(base + "/admin/stats.json", auth)).json();
+    expect(json.history).toHaveLength(30);
+    const todayRow = json.history.at(-1);
+    expect(todayRow.paid).toBe(3);
+    expect(todayRow.revenue_usdc).toBeCloseTo(0.09);
+    const ideas = json.margins.find((m: any) => m.service_id === "keyword-ideas");
+    expect(ideas).toMatchObject({ paid: 2, flag: "" });
+    expect(ideas.margin_usd).toBeCloseTo(0.05 - 0.0272);
+    expect(json.margins.find((m: any) => m.service_id === "search-intent").flag).toBe("cost >= price");
+    expect(json.buyers).toMatchObject({ buyers: 2, repeat_buyers: 1 });
+    expect(JSON.stringify(json.buyers)).not.toContain("0xTEST");
+
+    const html = await (await fetch(base + "/admin", auth)).text();
+    expect(html).toContain("<svg");
+    expect(html).toContain("Margin and reliability per service");
+    expect(html).not.toMatch(/<script|style=/i);
+
+    const csv = await fetch(base + "/admin/payments.csv", auth);
+    expect(csv.headers.get("content-type")).toContain("text/csv");
+    expect(csv.headers.get("content-disposition")).toContain("payments-");
+    const lines = (await csv.text()).trim().split("\n");
+    expect(lines[0]).toBe("time_utc,service,amount,asset,network,payer,tx_hash,status");
+    expect(lines).toHaveLength(4); // header + 3 mainnet payments, no test money
+    expect((await fetch(base + "/admin/payments.csv")).status).toBe(401);
+    expect((await fetch(base + "/admin/payments.csv?month=bad", auth)).status).toBe(200); // falls back to this month
+  });
+
   it("escapes values rendered in the admin page", async () => {
     const { app, store } = buildTestApp({ fetchImpl: routedUpstream([]).impl, env: adminEnv });
     const base = await start(app);

@@ -116,3 +116,6 @@ src/mcp/, src/discovery/, src/web/   MCP-Server, OpenAPI-Erzeugung, Website-Ausl
 - Eintrag in Verzeichnisse (alles manuelle Schritte): [docs/MARKETPLACES.md](docs/MARKETPLACES.md)
 - Sicherheit, Prüfung, Restrisiken: [docs/SECURITY.md](docs/SECURITY.md)
 - Rechtlicher Abgleich (Datenschutz, Nutzungsbedingungen, offene Punkte): [docs/LEGAL-CHECK.md](docs/LEGAL-CHECK.md)
+
+## Lizenz
+MIT, siehe [LICENSE](LICENSE). Die Datenlizenz von DataForSEO und die Nutzungsbedingungen des Dienstes (`public/legal.html`) bleiben davon unberührt.
