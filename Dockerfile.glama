@@ -1,21 +1,9 @@
-# Dockerfile for automated checks (e.g. Glama): starts the server in sandbox mode WITHOUT any secrets or payments
-# and exposes MCP over stdio via mcp-remote, so a checker can run `initialize` / `tools/list`.
-# Paid tools answer with an x402 payment requirement; no real data or money is involved.
-FROM node:24-bookworm-slim AS build
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts
-COPY tsconfig.json ./
-COPY src ./src
-RUN npm run build && npm ci --omit=dev --ignore-scripts && npm install --no-save --ignore-scripts mcp-remote@0.15.2
-
+# Dockerfile for automated MCP checks (e.g. Glama): MCP over stdio in sandbox mode, without secrets or payments.
 FROM node:24-bookworm-slim
 WORKDIR /app
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
+COPY package.json package-lock.json tsconfig.json ./
+COPY src ./src
 COPY public ./public
-COPY package.json ./
-ENV NODE_ENV=development PAYMENT_MODE=off DATAFORSEO_MODE=sandbox DB_PATH=/tmp/app.db PORT=3000 LOG_LEVEL=warn
+RUN npm ci --ignore-scripts && npm run build
 USER node
-# HTTP server in the background, stdio bridge in the foreground.
-CMD ["sh", "-c", "node dist/index.js >/dev/null 2>&1 & for i in $(seq 1 30); do node -e \"fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\" && break; sleep 1; done; exec node node_modules/mcp-remote/dist/proxy.js http://127.0.0.1:3000/mcp --allow-http"]
+CMD ["node", "dist/stdio.js"]

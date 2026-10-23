@@ -5,6 +5,11 @@ const order: Record<Level, number> = { debug: 10, info: 20, warn: 30, error: 40 
 const SECRET_KEYS = /pass(word)?|secret|token|authorization|signature|private|seed|mnemonic|api[-_]?key|cookie/i;
 
 let minLevel: Level = "info";
+let allToStderr = false;
+/** stdio MCP mode: stdout carries the protocol, so every log line must go to stderr. */
+export function logToStderr() {
+  allToStderr = true;
+}
 export function setLogLevel(level: Level) {
   minLevel = level;
 }
@@ -24,7 +29,7 @@ export function redact(value: unknown, depth = 0): unknown {
 function emit(level: Level, msg: string, fields?: Record<string, unknown>) {
   if (order[level] < order[minLevel]) return;
   const line = JSON.stringify({ t: new Date().toISOString(), level, msg, ...(fields ? (redact(fields) as object) : {}) });
-  (level === "error" || level === "warn" ? process.stderr : process.stdout).write(line + "\n");
+  (allToStderr || level === "error" || level === "warn" ? process.stderr : process.stdout).write(line + "\n");
 }
 
 export const log = {

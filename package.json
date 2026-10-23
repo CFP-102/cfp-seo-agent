@@ -16,7 +16,8 @@
     "test:watch": "vitest",
     "smoke:sandbox": "./scripts/sandbox-smoke.sh",
     "wallet:test": "tsx scripts/create-test-wallet.ts",
-    "e2e:testnet": "tsx --env-file=.env.buyer scripts/e2e-testnet.ts"
+    "e2e:testnet": "tsx --env-file=.env.buyer scripts/e2e-testnet.ts",
+    "start:stdio": "node dist/stdio.js"
   },
   "dependencies": {
     "@coinbase/x402": "2.1.0",
@@ -43,5 +44,8 @@
     "typescript": "7.0.2",
     "vitest": "5.0.5"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "bin": {
+    "cfp-seo-agent-stdio": "dist/stdio.js"
+  }
 }
