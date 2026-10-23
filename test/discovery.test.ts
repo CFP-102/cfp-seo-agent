@@ -232,7 +232,7 @@ describe("website and discovery files", () => {
 
     const legal = await (await fetch(base + "/legal.html")).text();
     expect(legal).toContain('name="robots" content="noindex"');
-    expect(legal).toContain("[TODO]");
+    expect(legal).not.toContain("TODO");
     expect(legal).toMatch(/Legal notice[\s\S]*Privacy policy[\s\S]*Terms of use/);
     expect(legal).toContain("§ 1 Scope; businesses only");
     expect(legal).toContain("automatically deleted after 30 days"); // must match RETENTION_DAYS default

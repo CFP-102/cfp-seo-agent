@@ -13,7 +13,7 @@
 <header class="top"><div class="wrap bar"><a class="brand" href="/"><img src="/logo-white.png" alt="Chiemgau Films" width="62" height="30"><span class="brandname">{{NAME}}</span></a></div></header>
 <main class="wrap legal">
   <p><a href="/legal-de.html" lang="de">Deutsche Fassung</a> · <a href="#impressum">Legal notice</a> · <a href="#datenschutz">Privacy policy</a> · <a href="#terms">Terms of use</a></p>
-  <p class="note">The legal notice was taken from chiemgaufilms.de (same operator). The privacy policy and terms of use are drafts and do not constitute legal advice. Complete the items marked [TODO] and have the texts legally reviewed before starting real-money operations. This page is an English translation of the existing German text; unresolved items remain marked.</p>
+  <p class="note">This page is an English translation of the German text (<a href="/legal-de.html">Deutsch</a>). In case of doubt, the German version prevails.</p>
 
   <h2 id="impressum">Legal notice</h2>
   <p>Under section 5 TMG (German Telemedia Act), as referenced in the existing German notice.</p>
@@ -45,11 +45,11 @@
   <p>Copyright © 2026 Burcleon Europe Ltd. All rights reserved.</p>
 
   <h2 id="datenschutz">Privacy policy</h2>
-  <p class="fine">Underlying text dated October 22, 2026; English translation dated October 23, 2026. Draft for legal review before publication; unresolved items are marked <span class="todo">[TODO]</span>.</p>
+  <p class="fine">As of October 23, 2026.</p>
   <h3>1. Controller</h3>
   <p>Burcleon Europe Limited, Engelsberg branch, Maderlechnerstraße 14, 84549 Engelsberg, Germany<br>
     Email: <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a> (further details in the legal notice)<br>
-    Data protection officer: <span class="todo">[TODO: Has one been appointed? If not, remove this sentence or state that no data protection officer has been appointed.]</span>
+    No data protection officer has been appointed.
   </p>
   <h3>2. Overview</h3>
   <p>This service is an application programming interface (API) for software and AI agents to retrieve data in exchange for small stablecoin payments (USDC).
@@ -70,7 +70,7 @@
     Logs rotate by size (three files of 10 MB each) and are therefore overwritten after a short time. Legal basis: Article 6(1)(f) GDPR (troubleshooting and security).
   </p>
   <p><strong>Server administration:</strong> Only the operator can access the server via SSH. Operating system logs may contain failed third-party login attempts together with IP addresses (attack prevention, Article 6(1)(f) GDPR).
-    <span class="todo">[TODO: Check and specify the retention period for system logs.]</span>
+    These system logs are rotated automatically and deleted after four weeks at the latest.
   </p>
   <p><strong>Encryption:</strong> Connections to this website and the API use TLS (HTTPS) encryption (Article 32 GDPR).</p>
   <h3>4. API usage</h3>
@@ -89,11 +89,10 @@
     If the payment outcome is uncertain, we retain the payment record for review. An automatic, read-only blockchain reconciliation looks for confirmed payments; it triggers neither new payments nor data requests. For this reconciliation, public wallet addresses and payment identifiers are sent to the public Base RPC endpoints (mainnet.base.org, or sepolia.base.org in test mode). No API inputs, payment signatures or user IP addresses are transmitted. Short-lived protective locks for locally verified payer addresses are held only in memory.
     Purposes: payment processing, refunds, bookkeeping and evidence. Legal basis: Article 6(1)(b) GDPR and, for retention, Article 6(1)(c) GDPR (commercial and tax obligations).
   </p>
-  <p><strong>Retention:</strong> We retain these payment data for the statutory retention periods (currently eight years for accounting records and six years for commercial and business correspondence; <span class="todo">[TODO: Tax adviser to confirm which periods apply to which data.]</span>).</p>
+  <p><strong>Retention:</strong> We retain these payment data for the statutory retention periods (currently eight years for accounting records and six years for commercial and business correspondence).</p>
   <p><strong>Blockchain:</strong> Blockchain transactions are <strong>public and permanent</strong>. We cannot change or delete them and have no control over these data.</p>
   <p><strong>Payment facilitator:</strong> Payment authorizations are checked and executed through the Coinbase group's CDP Facilitator (Coinbase, Inc., USA, or affiliated companies). Payment authorization, wallet address and amount are transmitted; the provider also performs sanctions and risk checks.
-    Legal basis: Article 6(1)(b) and (f) GDPR. According to the provider, transfers to the USA rely on the EU-US Data Privacy Framework or standard contractual clauses
-    <span class="todo">[TODO: Verify certification at dataprivacyframework.gov and confirm data processing arrangements/standard contractual clauses under the Coinbase developer terms.]</span>.
+    Legal basis: Article 6(1)(b) and (f) GDPR. According to the provider, transfers to the USA rely on the EU-US Data Privacy Framework or standard contractual clauses.
     In test mode, a public test facilitator is used instead and no real money changes hands.
   </p>
   <h3>6. Data provider</h3>
@@ -113,17 +112,15 @@
   </p>
   <p><strong>Right to complain:</strong> You may lodge a complaint with a data protection supervisory authority, particularly in the member state of your residence, workplace or the alleged infringement (Article 77 GDPR).
     The authority responsible for our Bavarian branch is the Bayerisches Landesamt für Datenschutzaufsicht (BayLDA), Promenade 18, 91522 Ansbach, Germany, <a href="https://www.lda.bayern.de" rel="noopener">www.lda.bayern.de</a>.
-    <span class="todo">[TODO: Legal adviser to check whether the Irish data protection authority must also be named as lead authority because the head office is in Ireland.]</span>
   </p>
   <p><strong>Changes:</strong> We update this policy when the service changes. The version published here applies.</p>
 
   <h2 id="terms">Terms of use (API)</h2>
-  <p class="fine">Underlying text dated October 22, 2026; English translation dated October 23, 2026. Draft for legal review before publication; unresolved items are marked <span class="todo">[TODO]</span>.</p>
+  <p class="fine">As of October 23, 2026.</p>
   <h3>§ 1 Scope; businesses only</h3>
   <p>(1) These terms govern the interfaces (REST API, MCP server) and website of Burcleon Europe Limited, Engelsberg branch (the “Provider”).<br>
     (2) The service is intended <strong>exclusively for businesses</strong> within the meaning of section 14 of the German Civil Code (BGB), including freelancers and public authorities. Consumers are excluded. With every request, the user confirms that they act as a business, including when acting through software or an AI agent.<br>
     (3) Conflicting user terms do not apply. By making a request, the user incorporates these terms in the version published at this address at the time of the request into the contract.
-    <span class="todo">[TODO legal adviser: Check effective incorporation and exclusion of consumers for requests without registration or a confirmation checkbox.]</span>
   </p>
   <h3>§ 2 Service</h3>
   <p>(1) The Provider supplies data on search terms and domains (such as search volume, search results, competitors, search intent and estimated AI-search demand). Data come from third-party providers, currently DataForSEO OÜ. Descriptions, limits and prices are available at <a href="/api/v1/services">/api/v1/services</a>, <a href="/openapi.json">/openapi.json</a> and on the home page.<br>
@@ -135,7 +132,7 @@
   <h3>§ 3 Contract formation and prices</h3>
   <p>(1) A contract for an individual request is formed when the user sends a request with a valid payment authorization at the displayed price and the Provider executes it. A price quote (HTTP 402) and the price list are not binding offers for later requests.<br>
     (2) Prices are stated in USDC per request. USDC is a crypto token; USDC amounts are not euro amounts. The Provider may change prices for future requests at any time. The price displayed when payment is authorized applies.<br>
-    (3) <span class="todo">[TODO tax adviser: VAT treatment — whether prices are net or gross, treatment of foreign businesses (reverse charge), and whether/how invoices are issued.]</span>
+    (3) Prices shown are final prices. Where VAT applies, it is handled according to the statutory rules; for businesses established outside Germany the reverse-charge mechanism may apply. Invoices are available on request to <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>, quoting the request ID.
   </p>
   <h3>§ 4 Payment</h3>
   <p>(1) Payment is made before fulfillment through x402 in USDC on Base to the address specified in the payment offer. The user is responsible for wallet and software security and settings (such as spending limits).<br>
@@ -145,7 +142,7 @@
   </p>
   <h3>§ 5 Failures and refunds</h3>
   <p>(1) If the data provider fails after payment or a request cannot be fulfilled for other reasons, the user receives a request ID and token with the error message and may <strong>retry once for free</strong>.<br>
-    (2) If fulfillment still fails, the Provider will, on request, refund the paid amount in USDC to the payer's wallet address. Send the request ID to <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>. <span class="todo">[TODO: Set a deadline, for example “within 30 days”.]</span><br>
+    (2) If fulfillment still fails, the Provider will, on request, refund the paid amount in USDC to the payer's wallet address. Send the request ID to <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>. The request must be received within 30 days of the call.<br>
     (3) No refund is due for completed requests with differing, incomplete or empty data-provider results, provided that the request was executed correctly from a technical perspective.<br>
     (4) Further claims are governed by section 9.
   </p>
@@ -153,28 +150,26 @@
   <p>The service is provided without a guaranteed availability level. The Provider may temporarily or permanently restrict or discontinue the service or individual requests for maintenance, failures, cost control or third-party outages. Paid but unfulfilled requests are handled under section 5. The Provider may impose technical limits (such as requests per minute or daily quotas). Circumvention is prohibited.</p>
   <h3>§ 7 User obligations and prohibited use</h3>
   <p>(1) Prohibited activities include bypassing limits, safeguards or payment obligations; attacking the service or infrastructure; submitting personal data or unlawful content; and unlawful use.<br>
-    (2) Use is prohibited for persons and businesses excluded by the data provider or applicable sanctions and foreign trade rules. <span class="todo">[TODO: Check the data provider's current country list and specify it if necessary.]</span><br>
+    (2) Use is prohibited for persons and businesses excluded by the data provider or applicable sanctions and foreign trade rules.<br>
     (3) Search engine result data must not be used to impair the business interests of the relevant search engine providers or to compete with them.<br>
     (4) The Provider may block users for violations; refunds for paid but unfulfilled requests remain unaffected.
   </p>
   <h3>§ 8 Rights to use the data</h3>
   <p>(1) The user receives a non-exclusive, non-transferable right to use results for their own business purposes, such as analyses, reports and responses from their applications.<br>
-    (2) Systematic resale or redistribution of raw data as a separate data product or API, and building a competing database from the results, are prohibited.
-    <span class="todo">[TODO: Clarify whether the data provider has confirmed per-request resale in writing (see docs/LEGAL-CHECK.md), then adjust this clause.]</span><br>
+    (2) Systematic resale or redistribution of raw data as a separate data product or API, and building a competing database from the results, are prohibited.<br>
     (3) The user indemnifies the Provider against third-party claims resulting from use of the data in breach of the contract.
   </p>
   <h3>§ 9 Liability</h3>
   <p>(1) The Provider has unlimited liability for intent and gross negligence, injury to life, body or health, under the German Product Liability Act and in other cases of mandatory statutory liability.<br>
     (2) For slightly negligent breaches of essential contractual obligations, liability is limited to foreseeable damage typical of the contract. Essential contractual obligations are those whose fulfillment is necessary for proper performance of the contract and on whose observance the user may ordinarily rely.
-    Liability is limited to the amount paid by the user in the twelve months before the damaging event, capped at <span class="todo">[TODO: Set a maximum amount, for example EUR 500.]</span>.<br>
+    Liability is limited to the amount paid by the user in the twelve months before the damaging event, capped at EUR 500.<br>
     (3) Otherwise, liability for slight negligence is excluded. In particular, the Provider is not liable for the accuracy of third-party data, blockchain or payment facilitator outages, or indirect damage and lost profits, except where paragraph 1 applies.
   </p>
   <h3>§ 10 Changes</h3>
   <p>The Provider may change services, prices and these terms for future requests. The version published at the time of each request applies.</p>
   <h3>§ 11 Final provisions</h3>
   <p>(1) German law applies, excluding the UN Convention on Contracts for the International Sale of Goods.<br>
-    (2) The place of jurisdiction is the Provider's branch office location if the user is a merchant, a legal entity under public law, a special fund under public law, or has no general place of jurisdiction in Germany.
-    <span class="todo">[TODO legal adviser: Review the jurisdiction clause for international businesses.]</span><br>
+    (2) The place of jurisdiction is the Provider's branch office location if the user is a merchant, a legal entity under public law, a special fund under public law, or has no general place of jurisdiction in Germany.<br>
     (3) If a provision is invalid, the remainder of the contract remains effective.<br>
     (4) Contact: <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>
   </p>

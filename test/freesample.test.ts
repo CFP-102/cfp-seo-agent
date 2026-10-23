@@ -178,3 +178,19 @@ describe("per-service free samples", () => {
     await c.close();
   });
 });
+
+describe("temporary free-sample boost", () => {
+  it("uses the boost limit until the end time, then the normal limit again", async () => {
+    const { createFreeSample } = await import("../src/freeSample.js");
+    const { pipeline, store } = buildTestApp({ fetchImpl: routedUpstream([]).impl }) as any;
+    let now = new Date("2026-10-24T10:00:00Z");
+    const fs = createFreeSample({ pipeline, store, dailyLimit: 1, boost: { limit: 3, until: new Date("2026-10-26T23:59:59Z") }, now: () => now });
+    const serp = { keyword: "coffee", location_code: 2840, language_code: "en" };
+    const codes = [];
+    for (const ip of ["1.1.1.1", "2.2.2.2", "3.3.3.3", "4.4.4.4"]) codes.push((await fs.runService(ip, "google-serp", { ...serp, keyword: "coffee " + ip.slice(0, 1) })).status);
+    expect(codes).toEqual([200, 200, 200, 429]);
+    now = new Date("2026-10-27T10:00:00Z"); // boost over, new day
+    expect((await fs.runService("5.5.5.5", "google-serp", { ...serp, keyword: "tea" })).status).toBe(200);
+    expect((await fs.runService("6.6.6.6", "google-serp", { ...serp, keyword: "milk" })).status).toBe(429);
+  });
+});

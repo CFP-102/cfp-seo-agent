@@ -75,7 +75,12 @@ export function createApp(deps: AppDeps) {
   });
 
   // Free sample: one keyword per client per day, hard daily cap (see src/freeSample.ts). Off unless FREE_SAMPLE_DAILY_LIMIT > 0.
-  const freeSample = createFreeSample({ pipeline, store, dailyLimit: env.FREE_SAMPLE_DAILY_LIMIT });
+  const freeSample = createFreeSample({
+    pipeline,
+    store,
+    dailyLimit: env.FREE_SAMPLE_DAILY_LIMIT,
+    boost: env.FREE_SAMPLE_BOOST_UNTIL ? { limit: env.FREE_SAMPLE_BOOST_LIMIT, until: new Date(env.FREE_SAMPLE_BOOST_UNTIL) } : undefined,
+  });
   app.post("/api/v1/free-sample", limiter, async (req, res) => {
     const out = await freeSample.run(req.ip, req.body);
     res.status(out.status).json(out.body);

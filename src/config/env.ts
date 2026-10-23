@@ -56,6 +56,9 @@ const EnvSchema = z
 
     // Free sample (1 keyword, no payment). 0 = off. Real upstream calls per UTC day in total; 1 per client per day.
     FREE_SAMPLE_DAILY_LIMIT: z.coerce.number().int().min(0).max(1000).default(0),
+    // Temporary higher limit (e.g. for a launch), used until FREE_SAMPLE_BOOST_UNTIL (ISO time), then the normal limit applies again.
+    FREE_SAMPLE_BOOST_LIMIT: z.coerce.number().int().min(0).max(1000).default(0),
+    FREE_SAMPLE_BOOST_UNTIL: z.union([z.string().datetime(), z.literal("")]).default(""),
 
     // Abuse protection
     RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(1).default(60),

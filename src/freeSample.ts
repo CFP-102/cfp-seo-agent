@@ -29,6 +29,8 @@ export interface FreeSampleDeps {
   store: Store;
   /** 0 = feature off. Real upstream calls per UTC day, in total. */
   dailyLimit: number;
+  /** Optional temporary limit that applies while `now < boostUntil`. */
+  boost?: { limit: number; until: Date };
   now?: () => Date;
 }
 
@@ -36,8 +38,9 @@ export interface FreeSampleDeps {
 export const FREE_SAMPLE_MAX_PRICE_USDC = 0.05;
 
 export function createFreeSample(deps: FreeSampleDeps) {
-  const { pipeline, store, dailyLimit } = deps;
+  const { pipeline, store } = deps;
   const clock = deps.now ?? (() => new Date());
+  const limit = () => (deps.boost && deps.boost.limit > 0 && clock() < deps.boost.until ? deps.boost.limit : deps.dailyLimit);
   let day = "";
   let used = new Set<string>();
   let inflight = new Set<string>();
@@ -52,7 +55,7 @@ export function createFreeSample(deps: FreeSampleDeps) {
     }
   };
   const service = () => pipeline.services.find((s) => s.id === FREE_SAMPLE_SERVICE_ID);
-  const on = () => dailyLimit > 0;
+  const on = () => limit() > 0;
   const eligible = (s: ServiceDefinition) => pipeline.isEnabled(s) && !s.extraSteps?.length && Number(s.priceUsdc) <= FREE_SAMPLE_MAX_PRICE_USDC;
   const eligibleIds = () => pipeline.services.filter(eligible).map((s) => s.id);
 
@@ -68,7 +71,7 @@ export function createFreeSample(deps: FreeSampleDeps) {
     }
     if (inflight.has(key)) return { status: 429, body: { error: "sample_in_progress", message: "A sample for this client is already running." } };
     const cached = prep.prepared.cached;
-    if (!cached && upstreamToday >= dailyLimit) {
+    if (!cached && upstreamToday >= limit()) {
       store.bump(svc.id, "free_sample_refused_exhausted");
       return { status: 429, body: { error: "sample_exhausted", message: "Today's free samples are used up (UTC). Try again tomorrow or use a paid call." } };
     }
@@ -110,7 +113,7 @@ export function createFreeSample(deps: FreeSampleDeps) {
         per_service_path: "/api/v1/free-sample/{service-id}",
         per_service_max_price_usdc: String(FREE_SAMPLE_MAX_PRICE_USDC),
         per_service_eligible: eligibleIds(),
-        available_today: upstreamToday < dailyLimit,
+        available_today: upstreamToday < limit(),
       }
     ),
     isEligible: (id: string) => {

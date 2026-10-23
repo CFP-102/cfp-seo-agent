@@ -56,3 +56,9 @@ EOF
 
 echo "== done"
 [ -f /var/run/reboot-required ] && echo "NOTE: reboot required (kernel update)" || echo "no reboot required"
+
+# Log retention promised in the privacy policy: system logs at most about four weeks.
+mkdir -p /etc/systemd/journald.conf.d
+printf "[Journal]\nMaxRetentionSec=4week\n" > /etc/systemd/journald.conf.d/retention.conf
+systemctl restart systemd-journald
+sed -i "0,/rotate [0-9]*/s//rotate 3/" /etc/logrotate.d/rsyslog
