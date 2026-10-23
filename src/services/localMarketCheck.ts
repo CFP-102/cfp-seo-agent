@@ -17,12 +17,18 @@ export interface LocalMarketCheckOutput {
   keyword: string;
   location_code: number;
   language_code: string;
-  organic: { position: number | null; domain: string | null; url: string | null; title: string | null }[];
+  /** Google's own (rough) estimate of the total organic result count. */
+  total_results_estimate: number | null;
+  /** Result types Google showed besides plain organic results, e.g. local_pack, ai_overview, people_also_ask. */
+  serp_features: string[];
+  organic: { position: number | null; domain: string | null; url: string | null; title: string | null; description: string | null }[];
+  /** The map box inside the normal Google results ("local pack"). */
+  local_pack: { position: number | null; name: string | null; domain: string | null; rating: number | null; reviews_count: number | null }[];
   maps: { position: number | null; name: string | null; category: string | null; rating: number | null; reviews_count: number | null; domain: string | null; address: string | null; phone: string | null }[];
   /** Domains seen in the organic and/or Maps results of this check, with their positions there. */
-  competitor_domains: { domain: string; organic_position: number | null; maps_position: number | null }[];
+  competitor_domains: { domain: string; organic_position: number | null; local_pack_position: number | null; maps_position: number | null }[];
   /** Only when `domain` was given: positions of that domain within this sample (null = not in the returned results). */
-  your_domain: { domain: string; organic_position: number | null; maps_position: number | null } | null;
+  your_domain: { domain: string; organic_position: number | null; local_pack_position: number | null; maps_position: number | null } | null;
   /** Short, rule-based observations derived from the returned results (not advice). */
   observations: string[];
 }
@@ -40,7 +46,7 @@ const sameSite = (a: string | null, b: string) => !!a && (a === b || a.endsWith(
 export const localMarketCheck: ServiceDefinition<Input, LocalMarketCheckOutput> = {
   id: cfg.id,
   name: cfg.name,
-  summary: `Package for one local search: top ${cfg.maxResults} organic Google results plus top ${cfg.maxResults} Google Maps businesses, the competitor domains seen in both, optional position check for your domain and short observations (DataForSEO SERP Google Organic + Maps Live, one payment).`,
+  summary: `Package for one local search: top ${cfg.maxResults} organic Google results with the map box (local pack) and search features, plus top ${cfg.maxResults} Google Maps businesses, the competitor domains seen in them, optional position check for your domain and short observations (DataForSEO SERP Google Organic + Maps Live, one payment).`,
   route: cfg.route,
   priceUsdc: cfg.priceUsdc,
   enabled: cfg.enabled,
@@ -55,9 +61,12 @@ export const localMarketCheck: ServiceDefinition<Input, LocalMarketCheckOutput> 
     keyword: "zahnarzt rosenheim",
     location_code: 2276,
     language_code: "de",
-    organic: [{ position: 1, domain: "example-praxis.de", url: "https://www.example-praxis.de/", title: "Zahnarzt in Rosenheim" }],
+    total_results_estimate: 1250000,
+    serp_features: ["local_pack", "people_also_ask"],
+    organic: [{ position: 1, domain: "example-praxis.de", url: "https://www.example-praxis.de/", title: "Zahnarzt in Rosenheim", description: "Ihre Zahnarztpraxis in Rosenheim ..." }],
+    local_pack: [{ position: 1, name: "Zahnarztpraxis Beispiel", domain: "example-praxis.de", rating: 4.8, reviews_count: 212 }],
     maps: [{ position: 1, name: "Zahnarztpraxis Beispiel", category: "Zahnarzt", rating: 4.8, reviews_count: 212, domain: "example-praxis.de", address: "Musterstraße 1, 83022 Rosenheim", phone: "+49 8031 000000" }],
-    competitor_domains: [{ domain: "example-praxis.de", organic_position: 1, maps_position: 1 }],
+    competitor_domains: [{ domain: "example-praxis.de", organic_position: 1, local_pack_position: 1, maps_position: 1 }],
     your_domain: null,
     observations: ["1 domain appears in both the organic and the Maps results."],
   },
@@ -77,15 +86,22 @@ export const localMarketCheck: ServiceDefinition<Input, LocalMarketCheckOutput> 
         .filter((x) => x.type === type)
         .sort((a, b) => (num(a.rank_absolute) ?? Infinity) - (num(b.rank_absolute) ?? Infinity))
         .slice(0, cfg.maxResults);
-    const organic = items(tasks[0], "organic").map((x) => ({ position: num(x.rank_group), domain: host(str(x.url)) ?? str(x.domain), url: str(x.url), title: str(x.title) }));
+    const serp = obj(arr(tasks[0]?.result)[0]);
+    const serpTypes = arr(serp.items).map((x) => str(obj(x).type)).filter((t): t is string => !!t && t !== "organic");
+    const organic = items(tasks[0], "organic").map((x) => ({ position: num(x.rank_group), domain: host(str(x.url)) ?? str(x.domain), url: str(x.url), title: str(x.title), description: str(x.description) }));
+    const local_pack = items(tasks[0], "local_pack").map((x) => {
+      const rating = obj(x.rating);
+      return { position: num(x.rank_group), name: str(x.title), domain: host(str(x.url)) ?? str(x.domain)?.replace(/^www\./, "") ?? null, rating: num(rating.value), reviews_count: num(rating.votes_count) };
+    });
     const maps = items(tasks[1], "maps_search").map((x) => {
       const rating = obj(x.rating);
       return { position: num(x.rank_group), name: str(x.title), category: str(x.category), rating: num(rating.value), reviews_count: num(rating.votes_count), domain: host(str(x.url)), address: str(x.address), phone: str(x.phone) };
     });
 
-    const byDomain = new Map<string, { domain: string; organic_position: number | null; maps_position: number | null }>();
-    const entry = (d: string) => byDomain.get(d) ?? (byDomain.set(d, { domain: d, organic_position: null, maps_position: null }), byDomain.get(d)!);
+    const byDomain = new Map<string, { domain: string; organic_position: number | null; local_pack_position: number | null; maps_position: number | null }>();
+    const entry = (d: string) => byDomain.get(d) ?? (byDomain.set(d, { domain: d, organic_position: null, local_pack_position: null, maps_position: null }), byDomain.get(d)!);
     for (const o of organic) if (o.domain) entry(o.domain).organic_position ??= o.position;
+    for (const l of local_pack) if (l.domain) entry(l.domain).local_pack_position ??= l.position;
     for (const m of maps) if (m.domain) entry(m.domain).maps_position ??= m.position;
     const competitor_domains = [...byDomain.values()].filter((d) => !i.domain || !sameSite(d.domain, i.domain));
 
@@ -93,11 +109,14 @@ export const localMarketCheck: ServiceDefinition<Input, LocalMarketCheckOutput> 
       ? {
           domain: i.domain,
           organic_position: organic.find((o) => sameSite(o.domain, i.domain!))?.position ?? null,
+          local_pack_position: local_pack.find((l) => sameSite(l.domain, i.domain!))?.position ?? null,
           maps_position: maps.find((m) => sameSite(m.domain, i.domain!))?.position ?? null,
         }
       : null;
 
     const observations: string[] = [];
+    if (local_pack.length) observations.push(`Google shows a map box (local pack) with ${local_pack.length} businesses in the normal results, so a maintained business profile matters for this search.`);
+    if (serpTypes.includes("ai_overview")) observations.push("Google shows an AI overview for this search.");
     const both = competitor_domains.filter((d) => d.organic_position !== null && d.maps_position !== null).length;
     if (both) observations.push(`${both} domain${both === 1 ? "" : "s"} appear${both === 1 ? "s" : ""} in both the organic and the Maps results.`);
     const rated = maps.filter((m) => m.rating !== null && m.reviews_count !== null);
@@ -112,6 +131,18 @@ export const localMarketCheck: ServiceDefinition<Input, LocalMarketCheckOutput> 
       observations.push(your_domain.organic_position === null ? "Your domain is not among the organic results returned." : `Your domain ranks at organic position ${your_domain.organic_position}.`);
       observations.push(your_domain.maps_position === null ? "Your domain is not among the Maps results returned." : `Your domain appears at Maps position ${your_domain.maps_position}.`);
     }
-    return { keyword: i.keyword, location_code: i.location_code, language_code: i.language_code, organic, maps, competitor_domains, your_domain, observations };
+    return {
+      keyword: i.keyword,
+      location_code: i.location_code,
+      language_code: i.language_code,
+      total_results_estimate: num(serp.se_results_count),
+      serp_features: [...new Set(serpTypes)].sort(),
+      organic,
+      local_pack,
+      maps,
+      competitor_domains,
+      your_domain,
+      observations,
+    };
   },
 };

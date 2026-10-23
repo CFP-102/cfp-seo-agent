@@ -42,3 +42,14 @@ describe("local-market-check package", () => {
     expect(row.upstream_cost_usd).toBeGreaterThanOrEqual(0.002);
   });
 });
+
+describe("local-market-check extras", () => {
+  it("reports local pack, search features and total results from the same organic call", () => {
+    const out = localMarketCheck.mapPackage!(tasks(), localMarketCheck.inputSchema.parse({ keyword: "pizza london" }));
+    expect(out.local_pack.length).toBeGreaterThan(0);
+    expect(out.serp_features).toContain("local_pack");
+    expect(out.serp_features).not.toContain("organic");
+    expect(out.organic[0]).toHaveProperty("description");
+    expect(out.observations.join(" ")).toMatch(/local pack/);
+  });
+});
