@@ -185,6 +185,8 @@ export class Pipeline {
       this.deps.store.fail(requestId, "settlement_uncertain");
       return { status: 503, body: { error: "payment_pending", message: "Payment outcome is being checked. Do not send a new payment.", request_id: requestId, result_token: resultToken } };
     }
+    // Channel statistics for the admin insights (no caller data).
+    this.deps.store.bump(p.service.id, `${opts.paid ? "paid" : "free"}_call_${opts.via}`);
     try {
       const response = await this.execute(p, requestId);
       return { status: 200, body: { ...response, result_token: resultToken } };

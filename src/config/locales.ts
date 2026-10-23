@@ -33,6 +33,7 @@ const dachLocations: DachLocation[] = (dach.rows as [number, string, string, str
 const dachByCode = new Map(dachLocations.map((l) => [l.location_code, l]));
 // Folded names computed once (search runs on every lookup request).
 export const isDachLocation = (code: number) => dachByCode.has(code);
+export const dachLocationName = (code: number) => dachByCode.get(code)?.name;
 
 /** Lowercase, umlauts folded (ü -> u, ß -> ss) so "Zürich" finds "Zurich". */
 const fold = (s: string) => s.toLowerCase().replace(/ß/g, "ss").normalize("NFD").replace(/[\u0300-\u036f]/g, "");

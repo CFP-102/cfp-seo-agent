@@ -172,7 +172,36 @@ describe("/admin", () => {
       const text = await res.text();
       expect(text.length, file).toBeLessThan(20_000);
       expect(text, file).not.toContain(PASSWORD);
-      expect(text, file).not.toMatch(/0x[0-9a-fA-F]{40}|fetch\(|XMLHttpRequest/);
+      expect(text, file).not.toMatch(/0x[0-9a-fA-F]{40}|XMLHttpRequest|sendBeacon|https?:\/\/(?!www\.w3\.org\/2000\/svg)/);
+      // The only network call allowed: the same-origin insights JSON (behind the same Basic auth).
+      expect([...text.matchAll(/fetch\(([^,)]*)/g)].map((m) => m[1]!.trim()), file).toEqual(file === "/admin.js" ? ['"/admin/insights.json"'] : []);
     }
+  });
+});
+
+describe("/admin insights", () => {
+  it("serves daily trends, 7-day comparisons, services and locations behind auth, excluding test wallets", async () => {
+    const { app, store } = buildTestApp({ fetchImpl: routedUpstream([]).impl, env: { ...adminEnv, ADMIN_EXCLUDE_PAYERS: "0xTEST" } });
+    const base = await start(app);
+    const row = (id: string, payer: string, loc: number) => {
+      store.claim({ id, service_id: "google-serp", data_source: "live", price_usdc: 0.025, payment_key: "pk" + id, network: "eip155:8453", payer, input_hash: "h", input_json: JSON.stringify({ keyword: "x", location_code: loc }), result_token_hash: "t" });
+      store.setSettled(id, "0x" + id, payer);
+      store.complete(id, { resultJson: "{}", upstreamCostUsd: 0.002, cacheHit: false });
+    };
+    row("c1", "0xCUSTOMER", 1004269);
+    row("c2", "0xTEST", 2276);
+    store.bump("google-serp", "payment_required");
+    store.bump("google-serp", "free_sample");
+    expect((await fetch(base + "/admin/insights.json")).status).toBe(401);
+    const d = await (await fetch(base + "/admin/insights.json", { headers: { authorization: basic("boss", PASSWORD) } })).json();
+    expect(d.series).toHaveLength(30);
+    const today = d.series.at(-1);
+    expect(today).toMatchObject({ paid_calls: 1, buyers: 1, new_buyers: 1, quotes: 1, free_samples: 1 });
+    expect(d.kpis.find((k: any) => k.key === "paid_calls")).toMatchObject({ last_7d: 1, prev_7d: 0, change_pct: null });
+    expect(d.services[0]).toMatchObject({ id: "google-serp", paid_7d: 1, quotes_7d: 1, quote_to_paid_pct: 100 });
+    expect(d.locations.find((l: any) => l.location_code === 1004269).name).toMatch(/Rosenheim/);
+    expect(JSON.stringify(d)).not.toMatch(/0xCUSTOMER|0xTEST/);
+    const html = await (await fetch(base + "/admin", { headers: { authorization: basic("boss", PASSWORD) } })).text();
+    expect(html).toContain("Insights (live)");
   });
 });

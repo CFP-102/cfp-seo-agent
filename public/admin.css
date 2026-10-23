@@ -116,3 +116,13 @@ td.negative { color: var(--bad); font-weight: 600; }
 @keyframes grow-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 @media (max-width: 640px) { .toolbar { position: static; } .toolbar .fine { margin-left: 0; width: 100%; } }
+
+/* Live insights */
+.ins-charts { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin: 6px 0 18px; }
+.ins-chart { background: var(--s1, #111618); border: 1px solid var(--line); padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.spark { width: 100%; height: 60px; display: block; margin-top: 6px; }
+.spark .sp { fill: var(--accent); }
+.spark .sp.zero { fill: var(--line); }
+.spark .sp:hover { fill: var(--warn); }
+.ksub.up { color: var(--ok, #3fb27f); }
+.ksub.down { color: var(--bad); }

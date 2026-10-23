@@ -436,6 +436,43 @@ export class Store {
     return { ...totals, top: topBuyers };
   }
 
+  /** Admin insights: event counters per UTC day and kind since `since` (YYYY-MM-DD). */
+  countersDaily(since: string) {
+    return this.db.prepare(`SELECT day, kind, SUM(n) AS n FROM counters WHERE day >= ? GROUP BY day, kind`).all(since) as { day: string; kind: string; n: number }[];
+  }
+
+  /** Admin insights: event counters per service and kind in [from, to) (YYYY-MM-DD). */
+  countersByService(from: string, to: string) {
+    return this.db.prepare(`SELECT service_id, kind, SUM(n) AS n FROM counters WHERE day >= ? AND day < ? GROUP BY service_id, kind`).all(from, to) as { service_id: string; kind: string; n: number }[];
+  }
+
+  /** Admin insights: real-money paid calls per day, service and payer since `since` (ISO). */
+  paidRows(since: string) {
+    return this.db
+      .prepare(
+        `SELECT substr(created_at, 1, 10) AS day, service_id, payer, price_usdc, upstream_cost_usd, status
+         FROM requests WHERE created_at >= ? AND network = ? AND tx_hash IS NOT NULL`,
+      )
+      .all(since, MAINNET_NETWORK) as { day: string; service_id: string; payer: string | null; price_usdc: number; upstream_cost_usd: number; status: string }[];
+  }
+
+  /** First real-money payment per payer (for "new buyers per day"). */
+  firstPayments() {
+    return this.db
+      .prepare(`SELECT payer, MIN(created_at) AS first FROM requests WHERE network = ? AND tx_hash IS NOT NULL AND payer IS NOT NULL GROUP BY payer`)
+      .all(MAINNET_NETWORK) as { payer: string; first: string }[];
+  }
+
+  /** Requested locations (paid and free calls) since `since`, from stored inputs (kept for the retention period only). */
+  locationCounts(since: string) {
+    return this.db
+      .prepare(
+        `SELECT json_extract(input_json, '$.location_code') AS loc, COUNT(*) AS n FROM requests
+         WHERE created_at >= ? AND input_json IS NOT NULL AND json_valid(input_json) GROUP BY loc ORDER BY n DESC LIMIT 15`,
+      )
+      .all(since) as { loc: number | null; n: number }[];
+  }
+
   /** Settled real-money payments of one month ("YYYY-MM") for bookkeeping, oldest first. */
   paymentsOfMonth(month: string) {
     return this.db

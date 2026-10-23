@@ -73,6 +73,9 @@ const EnvSchema = z
     SMTP_PASSWORD: z.string().default(""),
     SMTP_FROM: z.string().default(""),
 
+    // Wallets excluded from admin insights (comma separated, e.g. own test wallets), so trends show real customers only.
+    ADMIN_EXCLUDE_PAYERS: z.string().default(""),
+
     // Abuse protection
     RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(1).default(60),
   })

@@ -2,6 +2,7 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import express, { type RequestHandler, type Router } from "express";
 import type { Env } from "./config/env.js";
 import { FACILITATOR_FEE_USD } from "./config/services.js";
+import { buildInsights } from "./adminInsights.js";
 import { FailureThrottle } from "./lib/rateLimit.js";
 import { today, type Store } from "./lib/store.js";
 import type { Pipeline } from "./services/pipeline.js";
@@ -190,6 +191,15 @@ function renderPage(env: Env, st: Stats): string {
         ),
       { badge: attention ? String(attention) : "all clear", tone: attention ? "bad" : "" },
     ),
+    panel(
+      "Insights (live)",
+      `<p class="fine">Trends from counters and the payment ledger. Real money only; own test wallets are excluded via ADMIN_EXCLUDE_PAYERS. Updates every 60 seconds. <span id="ins-updated"></span></p>
+      <div id="ins-kpis" class="kpis"></div>
+      <div id="ins-charts" class="ins-charts"></div>
+      <h3>Services, last 7 days</h3><div id="ins-services"></div>
+      <h3>Requested locations, last 30 days</h3><div id="ins-locations"></div>
+      <noscript><p class="fine">Enable JavaScript for live insights, or open <a href="/admin/insights.json">insights.json</a>.</p></noscript>`,
+    ),
     panel("Last 30 days", chart(st.history) + `<p class="fine">Hover a bar for the numbers.</p>`),
     panel(
       "Margin and reliability per service",
@@ -280,6 +290,9 @@ export function createAdminRouter(deps: { env: Env; store: Store; pipeline: Pipe
     const rows = store.paymentsOfMonth(month).map((r) => [r.created_at, r.service_id, r.price_usdc, "USDC", r.network, r.payer, r.tx_hash, r.status].map(cell).join(","));
     res.setHeader("Content-Disposition", `attachment; filename="payments-${month}.csv"`);
     res.type("text/csv").send(["time_utc,service,amount,asset,network,payer,tx_hash,status", ...rows].join("\n") + "\n");
+  });
+  router.get("/insights.json", (_req, res) => {
+    res.json(buildInsights(env, store, pipeline));
   });
   router.get("/stats.json", (_req, res) => {
     res.json(buildAdminStats(env, store, pipeline));
