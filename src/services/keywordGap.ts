@@ -5,7 +5,10 @@ import { arr, domainString, localeValidator, num, obj, round2, str, withLocale }
 
 const cfg = serviceConfig("keyword-gap");
 
-const input = withLocale({ domain: domainString, competitor: domainString }).refine((v) => v.domain !== v.competitor, {
+const input = withLocale({
+  domain: domainString.describe("Your domain, e.g. example.com: keywords it already ranks for are excluded."),
+  competitor: domainString.describe("The competitor's domain, e.g. competitor.com: the keywords it ranks for are returned."),
+}).refine((v) => v.domain !== v.competitor, {
   message: "domain and competitor must be different domains",
   path: ["competitor"],
 });
