@@ -76,7 +76,7 @@ const FREE_TOOLS: Tool[] = [
       "FREE. Look up city/region location codes in Germany, Austria and Switzerland (e.g. Rosenheim, Wien, Zürich). These codes work for google_serp, local_business, news_search, image_search and local_market_check; all other tools take country codes (2276, 2040, 2756).",
     inputSchema: {
       type: "object",
-      properties: { query: { type: "string", description: "Part of the place name, at least 2 characters.", minLength: 2, maxLength: 60 }, country: { type: "string", enum: ["DE", "AT", "CH"] } },
+      properties: { query: { type: "string", description: "Part of the place name, at least 2 characters.", minLength: 2, maxLength: 60 }, country: { type: "string", enum: ["DE", "AT", "CH"], description: "Optional: restrict the search to Germany (DE), Austria (AT) or Switzerland (CH)." } },
       required: ["query"],
       additionalProperties: false,
     },
