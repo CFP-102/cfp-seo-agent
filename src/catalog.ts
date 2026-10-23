@@ -23,6 +23,7 @@ export function buildCatalog(deps: { env: Env; pipeline: Pipeline; network?: str
       max_inputs: s.limits.maxInputs,
       max_results: s.limits.maxResults,
       ...(s.notice ? { notice: s.notice } : {}),
+      ...(deps.freeSample ? { free_sample: ((deps.freeSample.per_service_eligible as string[] | undefined) ?? []).includes(s.id) } : {}),
       example_request: s.example,
     })),
   };

@@ -326,6 +326,22 @@ export const SERVICE_CONFIG: Record<string, ServiceConfig> = {
     cacheTtlSeconds: 6 * 3600,
     upstreamPerMinute: 60,
   },
+  "local-market-check": {
+    id: "local-market-check",
+    name: "Local Market Check (package)",
+    route: "/api/v1/local-market-check",
+    // Package: one Google organic SERP page + one Google Maps page (two upstream calls per payment, fixed).
+    worstCaseUsd: DFS_PRICES.serpLivePerPage + DFS_PRICES.mapsLivePer100,
+    priceUsdc: "0.1",
+    referencePriceUsdc: null,
+    enabled: true,
+    maxInputs: 1,
+    maxResults: 10,
+    dataforseoEndpoint: "/v3/serp/google/organic/live/advanced",
+    maxUpstreamCostUsd: 0.02,
+    cacheTtlSeconds: 6 * 3600,
+    upstreamPerMinute: 30,
+  },
   "search-intent": {
     id: "search-intent",
     name: "Search Intent",

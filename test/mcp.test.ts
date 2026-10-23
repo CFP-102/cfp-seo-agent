@@ -115,9 +115,9 @@ describe("MCP server", () => {
       const body = parse(out);
       expect(body, s.id).toMatchObject({ service: s.id, data_source: "sandbox", cached: false });
       expect(body.result_token, s.id).toBeTruthy();
-      expect(events, s.id).toEqual(["settle", "upstream"]);
-      expect(up.calls, s.id).toHaveLength(1);
-      expect(up.calls[0]!.endpoint, s.id).toBe(s.upstream.endpoint);
+      const endpoints = [s.upstream.endpoint, ...(s.extraSteps ?? []).map((x) => x.endpoint)];
+      expect(events, s.id).toEqual(["settle", ...endpoints.map(() => "upstream")]);
+      expect(up.calls.map((c) => c.endpoint).sort(), s.id).toEqual([...endpoints].sort());
       expect(store.get(body.request_id), s.id).toMatchObject({ status: "completed", price_usdc: Number(s.priceUsdc) });
       if (s.id === "ai-keyword-demand") expect(body.result.estimate).toBe(true);
     }

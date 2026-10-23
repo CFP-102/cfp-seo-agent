@@ -31,6 +31,14 @@ export interface ServiceDefinition<I = any, O = any> {
   buildRequest(input: I): unknown[];
   /** Map one DataForSEO task into our public output. Must cap list lengths at limits.maxResults. */
   mapResult(task: DfsTask, input: I): O;
+  /**
+   * Packages only: further upstream calls made for the same payment, after the primary one (buildRequest/upstream.endpoint).
+   * The number of calls is fixed and their worst-case cost is part of estimateCostUsd, so a payment still triggers a bounded,
+   * known set of upstream calls.
+   */
+  extraSteps?: { endpoint: string; buildRequest(input: I): unknown[] }[];
+  /** Packages only: map all tasks, primary first, then extraSteps in order. */
+  mapPackage?(tasks: DfsTask[], input: I): O;
   /** Shown next to results, e.g. "AI search volumes are modeled estimates". */
   notice?: string;
   example: I;

@@ -76,6 +76,10 @@ export function createApp(deps: AppDeps) {
     const out = await freeSample.run(req.ip, req.body);
     res.status(out.status).json(out.body);
   });
+  app.post("/api/v1/free-sample/:serviceId", limiter, async (req, res) => {
+    const out = await freeSample.runService(req.ip, String(req.params.serviceId), req.body);
+    res.status(out.status).json(out.body);
+  });
 
   // Wishlist: visitors tell us which tool they would pay for (free, write-only, see src/wishlist.ts).
   const wishlist = createWishlist({ store });
@@ -196,7 +200,7 @@ export function createApp(deps: AppDeps) {
   app.use("/admin", createAdminRouter({ env, store, pipeline }));
 
   // Website, llms.txt, /openapi.json, /.well-known/x402 (compat) and static assets.
-  app.use(createSiteRouter({ env, pipeline, network: deps.payments?.network, freeSample: freeSample.enabled() }));
+  app.use(createSiteRouter({ env, pipeline, network: deps.payments?.network, freeSample: freeSample.enabled(), freeSampleEligible: freeSample.enabled() ? (freeSample.info().per_service_eligible as string[]) : [], store }));
 
   app.use((_req, res) => res.status(404).json({ error: "not_found" }));
   app.use((err: Error & { status?: number; statusCode?: number; type?: string }, _req: Request, res: Response, _next: express.NextFunction) => {

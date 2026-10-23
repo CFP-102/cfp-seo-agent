@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { buildTestApp, fakeFetch, fixture } from "./helpers.js";
-import { fakeFacilitator, start, upstream, type Event } from "./x402helpers.js";
+import { fakeFacilitator, routedUpstream, start, upstream, type Event } from "./x402helpers.js";
 
 const ENV = (limit: number) => ({ FREE_SAMPLE_DAILY_LIMIT: String(limit), TRUST_PROXY: "1" });
 const sample = (base: string, ip: string, body: unknown = { keyword: "running shoes" }) =>
@@ -124,6 +124,57 @@ describe("free sample", () => {
     const second = await c.callTool({ name: "free_sample", arguments: { keyword: "second" } });
     expect(second.isError).toBe(true);
     expect(events).toEqual([]); // no payment machinery involved
+    await c.close();
+  });
+});
+
+describe("per-service free samples", () => {
+  const svcSample = (base: string, ip: string, id: string, body: unknown) =>
+    fetch(base + "/api/v1/free-sample/" + id, { method: "POST", headers: { "content-type": "application/json", "x-forwarded-for": ip }, body: JSON.stringify(body) });
+
+  it("one per service per client per day, only cheap single-call services, shared daily cap, no token", async () => {
+    const events: Event[] = [];
+    const up = routedUpstream(events);
+    const { app, store } = buildTestApp({ fetchImpl: up.impl, env: ENV(3) });
+    const base = await start(app);
+    const serp = { keyword: "running shoes", location_code: 2840, language_code: "en" };
+    const first = await svcSample(base, "1.1.1.1", "google-serp", serp);
+    expect(first.status).toBe(200);
+    const body = await first.json();
+    expect(body).toMatchObject({ sample: true, service: "google-serp" });
+    expect(body.result_token).toBeUndefined();
+    expect(store.get(body.request_id)).toMatchObject({ status: "completed", price_usdc: 0 });
+    expect((await svcSample(base, "1.1.1.1", "google-serp", serp)).status).toBe(429);
+    // Another service is a separate sample for the same client.
+    expect((await svcSample(base, "1.1.1.1", "bing-serp", serp)).status).toBe(200);
+    // Not eligible: too expensive, or a package.
+    expect((await svcSample(base, "1.1.1.1", "keyword-metrics", { keywords: ["a"] })).status).toBe(403);
+    expect((await svcSample(base, "1.1.1.1", "local-market-check", { keyword: "pizza london" })).status).toBe(403);
+    expect((await svcSample(base, "1.1.1.1", "nope", {})).status).toBe(404);
+    // Invalid input is refused before anything is used up.
+    expect((await svcSample(base, "2.2.2.2", "google-serp", { keyword: "site:x.com" })).status).toBe(400);
+    // Shared daily cap (3): one more real call, then exhausted.
+    expect((await svcSample(base, "3.3.3.3", "news-search", serp)).status).toBe(200);
+    expect((await svcSample(base, "4.4.4.4", "image-search", serp)).status).toBe(429);
+    expect(up.calls).toHaveLength(3);
+    const catalog = await (await fetch(base + "/api/v1/services")).json();
+    expect(catalog.free_sample.per_service_eligible).toContain("google-serp");
+    expect(catalog.free_sample.per_service_eligible).not.toContain("keyword-metrics");
+    expect(catalog.free_sample.per_service_eligible).not.toContain("local-market-check");
+    expect(catalog.services.find((s: any) => s.id === "local-market-check").free_sample).toBe(false);
+    expect((await (await fetch(base + "/openapi.json")).json()).paths["/api/v1/free-sample/{serviceId}"]).toBeTruthy();
+  });
+
+  it("works through the MCP free_sample tool with service + input", async () => {
+    const up = routedUpstream([]);
+    const { app } = buildTestApp({ fetchImpl: up.impl, env: ENV(5) });
+    const base = await start(app);
+    const c = new Client({ name: "t", version: "1" });
+    await c.connect(new StreamableHTTPClientTransport(new URL(base + "/mcp")));
+    const out = await c.callTool({ name: "free_sample", arguments: { service: "google-trends", input: { keywords: ["running shoes"] } } });
+    expect(out.isError).toBeFalsy();
+    const pkg = await c.callTool({ name: "free_sample", arguments: { service: "local-market-check", input: { keyword: "pizza london" } } });
+    expect(pkg.isError).toBe(true);
     await c.close();
   });
 });

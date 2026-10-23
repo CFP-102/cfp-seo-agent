@@ -50,7 +50,11 @@ npm run smoke:sandbox                     # zweites Terminal
 | POST | `/api/v1/traffic-estimate` | 0.04 | Geschätzter Traffic für bis zu 10 Domains |
 | POST | `/api/v1/news-search` | 0.02 | Google-News-Ergebnisse (10) |
 | POST | `/api/v1/image-search` | 0.02 | Google-Bilder-Ergebnisse (20) |
+| POST | `/api/v1/local-market-check` | 0.1 | **Paket**: Google-Treffer + Maps-Betriebe + Wettbewerber-Domains + Beobachtungen für eine lokale Suche (2 Datenabrufe, keine Gratis-Probe) |
 | POST | `/api/v1/wishlist` | gratis | Wunsch für ein neues Werkzeug (nur schreibend) |
+| POST | `/api/v1/free-sample/{service-id}` | gratis | 1 Probe pro Dienst und Tag (Dienste bis 0,05 USDC, keine Pakete) |
+
+Weitere Seiten: `/de/` (deutsche Startseite), `/status` und `/de/status` (Verfügbarkeit, Zusagen), `/status.json`, `/.well-known/agent.json`, `/.well-known/mcp/server-card.json`.
 | POST | `/api/v1/ai-keyword-demand` | 0.04 | **geschätzte** AI-Search-Nachfrage, bis 10 Keywords |
 | POST | `/mcp` | frei/bezahlt | MCP (Streamable HTTP): 4 kostenlose + 6 Bezahl-Tools (x402-fähiger Client nötig) |
 | GET | `/openapi.json` | frei | OpenAPI 3.1 inkl. x402-Preisangaben |

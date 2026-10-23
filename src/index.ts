@@ -41,6 +41,9 @@ const purge = () => {
 };
 purge();
 setInterval(purge, 6 * 3600_000).unref();
+// Uptime heartbeat for the public status page (one row per minute, no request data).
+store.beat();
+setInterval(() => store.beat(), 60_000).unref();
 const dfs = createDataForSeoClient({
   mode: env.DATAFORSEO_MODE,
   login: env.DATAFORSEO_LOGIN,

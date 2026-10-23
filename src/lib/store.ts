@@ -84,6 +84,9 @@ export class Store {
         error_code TEXT
       );
       CREATE INDEX IF NOT EXISTS requests_created ON requests(created_at);
+      CREATE TABLE IF NOT EXISTS heartbeats (
+        minute TEXT PRIMARY KEY
+      );
       CREATE TABLE IF NOT EXISTS wishes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         created_at TEXT NOT NULL,
@@ -342,6 +345,33 @@ export class Store {
          ORDER BY created_at DESC LIMIT ?`,
       )
       .all(limit) as Record<string, string | number | null>[];
+  }
+
+  /** Uptime monitoring: the running server records each minute it was up (no request or caller data). */
+  beat(now: Date = new Date()): void {
+    this.db.prepare(`INSERT OR IGNORE INTO heartbeats (minute) VALUES (?)`).run(now.toISOString().slice(0, 16));
+    this.db.prepare(`DELETE FROM heartbeats WHERE minute < ?`).run(new Date(now.getTime() - 120 * 86_400_000).toISOString().slice(0, 16));
+  }
+
+  /** Minutes up between two ISO minute strings (inclusive start, exclusive end), and the first recorded minute ever. */
+  heartbeatsBetween(from: string, to: string): number {
+    return (this.db.prepare(`SELECT COUNT(*) AS n FROM heartbeats WHERE minute >= ? AND minute < ?`).get(from, to) as { n: number }).n;
+  }
+
+  firstHeartbeat(): string | null {
+    return (this.db.prepare(`SELECT MIN(minute) AS m FROM heartbeats`).get() as { m: string | null }).m;
+  }
+
+  /** Paid real-money calls per service since `since`: delivered vs failed (for the public status page, percentages only). */
+  deliveryStats(since: string) {
+    return this.db
+      .prepare(
+        `SELECT service_id,
+                SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END) AS delivered,
+                SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed
+         FROM requests WHERE created_at >= ? AND tx_hash IS NOT NULL AND network = ? GROUP BY service_id`,
+      )
+      .all(since, MAINNET_NETWORK) as { service_id: string; delivered: number; failed: number }[];
   }
 
   /** Wishlist: free text from visitors (no caller data). Deleted with the other payloads after the retention period. */

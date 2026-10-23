@@ -169,7 +169,7 @@ describe("x402 payments (testnet config, simulated facilitator)", () => {
 // ---------------------------------------------------------------------------------------------
 // All six services through the same payment architecture
 // ---------------------------------------------------------------------------------------------
-describe("all nineteen services over x402", () => {
+describe("all services over x402", () => {
   it("every route issues a v2 402 for exactly its configured price and payTo", async () => {
     const events: Event[] = [];
     const up = routedUpstream(events);
@@ -205,10 +205,11 @@ describe("all nineteen services over x402", () => {
       const res = await pay(base + s.route, post(s.example));
       expect(res.status, s.id).toBe(200);
       const body = await res.json();
-      expect(events, s.id).toEqual(["settle", "upstream"]);
-      expect(up.calls, s.id).toHaveLength(1);
-      expect(up.calls[0]!.endpoint, s.id).toBe(s.upstream.endpoint);
-      expect(Array.isArray(up.calls[0]!.body) && (up.calls[0]!.body as unknown[]).length, s.id).toBe(1);
+      // One upstream task per payment; packages: their fixed, priced set of steps.
+      const endpoints = [s.upstream.endpoint, ...(s.extraSteps ?? []).map((x) => x.endpoint)];
+      expect(events, s.id).toEqual(["settle", ...endpoints.map(() => "upstream")]);
+      expect(up.calls.map((c) => c.endpoint).sort(), s.id).toEqual([...endpoints].sort());
+      for (const c of up.calls) expect(Array.isArray(c.body) && (c.body as unknown[]).length, s.id).toBe(1);
       expect(body, s.id).toMatchObject({ service: s.id, data_source: "sandbox", cached: false });
       expect(body.result, s.id).toBeTruthy();
       expect(store.get(body.request_id), s.id).toMatchObject({ status: "completed", price_usdc: Number(s.priceUsdc) });
@@ -230,7 +231,7 @@ describe("all nineteen services over x402", () => {
     const { app } = buildTestApp({ fetchImpl: up.impl, facilitator: fakeFacilitator(events) });
     const base = await start(app);
     const localized = SERVICES.filter((s) => "location_code" in (s.example as object));
-    expect(localized.map((s) => s.id).sort()).toEqual(["ai-keyword-demand", "bing-serp", "competitors", "domain-overview", "google-serp", "google-trends", "image-search", "keyword-difficulty", "keyword-gap", "keyword-ideas", "keyword-metrics", "keywords-for-site", "local-business", "news-search", "ranked-keywords", "traffic-estimate"]);
+    expect(localized.map((s) => s.id).sort()).toEqual(["ai-keyword-demand", "bing-serp", "competitors", "domain-overview", "google-serp", "google-trends", "image-search", "keyword-difficulty", "keyword-gap", "keyword-ideas", "keyword-metrics", "keywords-for-site", "local-business", "local-market-check", "news-search", "ranked-keywords", "traffic-estimate"]);
     for (const s of localized) {
       const res = await fetch(base + s.route, post({ ...(s.example as object), location_code: 99999 }));
       expect(res.status, s.id).toBe(422);

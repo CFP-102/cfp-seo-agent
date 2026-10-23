@@ -31,9 +31,9 @@ const task = (name: string) => fixture(name).tasks[0];
 const US = { location_code: 2840, language_code: "en" };
 
 describe("registry", () => {
-  it("has all nineteen services, matching config, unique ids and routes", () => {
+  it("has all services, matching config, unique ids and routes", () => {
     expect(SERVICES.map((s) => s.id).sort()).toEqual(Object.keys(SERVICE_CONFIG).sort());
-    expect(new Set(SERVICES.map((s) => s.route)).size).toBe(19);
+    expect(new Set(SERVICES.map((s) => s.route)).size).toBe(SERVICES.length);
     for (const s of SERVICES) {
       expect(s.route).toBe(SERVICE_CONFIG[s.id]!.route);
       expect(s.priceUsdc).toBe(SERVICE_CONFIG[s.id]!.priceUsdc);
@@ -73,6 +73,7 @@ describe("registry", () => {
       "traffic-estimate": { domains: Array.from({ length: 10 }, (_, i) => `site${i}.com`) },
       "news-search": { keyword: "electric cars" },
       "image-search": { keyword: "red bicycle" },
+      "local-market-check": { keyword: "zahnarzt rosenheim", domain: "example.com" },
     };
     for (const s of SERVICES) {
       const parsed = s.inputSchema.parse(maxInputs[s.id]);

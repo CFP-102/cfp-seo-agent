@@ -3,7 +3,7 @@ import { cacheKey, TtlCache } from "../lib/cache.js";
 import type { CostGuard, Refusal } from "../lib/costGuard.js";
 import type { RequestRow, Store } from "../lib/store.js";
 import { log } from "../lib/log.js";
-import { DataForSeoError, type DataForSeoClient } from "../dataforseo/client.js";
+import { DataForSeoError, type DataForSeoClient, type DfsTask } from "../dataforseo/client.js";
 import { serviceConfig } from "../config/services.js";
 import type { ServiceDefinition, ServiceResponse } from "./types.js";
 
@@ -234,7 +234,7 @@ export class Pipeline {
     }
   }
 
-  /** Cache, then de-duplicate concurrent identical calls, then exactly one upstream POST. */
+  /** Cache, then de-duplicate concurrent identical calls, then exactly one upstream POST (packages: their fixed set of POSTs). */
   private async fetchOnce(service: ServiceDefinition, input: unknown, key: string) {
     const hit = this.cache.get(key);
     if (hit) return { result: hit.result, costUsd: 0, cached: true };
@@ -243,8 +243,7 @@ export class Pipeline {
     if (running) return { ...(await running), cached: true, costUsd: 0 };
 
     const promise = (async () => {
-      const { task, costUsd } = await this.deps.dfs.post(service.upstream.endpoint, service.buildRequest(input));
-      const result = service.mapResult(task, input);
+      const { task, costUsd, result } = service.extraSteps?.length ? await this.fetchPackage(service, input) : await this.fetchSingle(service, input);
       this.cache.set(key, { result, costUsd }, service.cacheTtlSeconds);
       return { result, costUsd, cached: false };
     })();
@@ -254,6 +253,30 @@ export class Pipeline {
     } finally {
       this.inflight.delete(key);
     }
+  }
+
+  private async fetchSingle(service: ServiceDefinition, input: unknown) {
+    const { task, costUsd } = await this.deps.dfs.post(service.upstream.endpoint, service.buildRequest(input));
+    return { task, costUsd, result: service.mapResult(task, input) };
+  }
+
+  /** Package: all steps in parallel. Every charged cost is booked, also when one step fails (then the whole call fails). */
+  private async fetchPackage(service: ServiceDefinition, input: unknown) {
+    const steps = [{ endpoint: service.upstream.endpoint, buildRequest: service.buildRequest }, ...service.extraSteps!];
+    const settled = await Promise.allSettled(steps.map((s) => this.deps.dfs.post(s.endpoint, s.buildRequest(input))));
+    let costUsd = 0;
+    let failure: DataForSeoError | undefined;
+    for (const r of settled) {
+      if (r.status === "fulfilled") costUsd += r.value.costUsd;
+      else {
+        const e = r.reason instanceof DataForSeoError ? r.reason : new DataForSeoError("internal error", "internal");
+        costUsd += e.costUsd;
+        failure ??= e;
+      }
+    }
+    if (failure) throw new DataForSeoError(failure.message, failure.code, costUsd);
+    const tasks = settled.map((r) => (r as PromiseFulfilledResult<{ task: DfsTask }>).value.task);
+    return { task: tasks[0]!, costUsd, result: service.mapPackage!(tasks, input) };
   }
 
   private ceilingOnly(service: ServiceDefinition, estimateUsd: number): Refusal | null {

@@ -52,19 +52,21 @@ const FREE_TOOLS: Tool[] = [
   {
     name: "free_sample",
     description:
-      "FREE (when enabled): one keyword-metrics lookup for ONE keyword, no payment, limited to one per day per client and a daily total. " +
-      "Use it to see the data format before buying. Returns an error when today's samples are used up.",
+      "FREE (when enabled): try a service without paying. Either one keyword-metrics lookup for ONE keyword (send keyword), " +
+      "or one call of any service up to 0.05 USDC (send service and input, the same arguments as the paid tool). " +
+      "One per service per day per client and a daily total; returns an error when used up. Packages have no sample.",
     inputSchema: {
       type: "object",
       properties: {
-        keyword: { type: "string", description: "One keyword, up to 60 characters." },
+        keyword: { type: "string", description: "Legacy keyword-metrics sample: one keyword, up to 60 characters." },
+        service: { type: "string", description: "Service id for a per-service sample, e.g. google-serp (see list_services, field free_sample)." },
+        input: { type: "object", description: "Arguments for that service, same as the paid tool." },
         location_code: { type: "integer", description: "Country code, default 2840 (United States)." },
         language_code: { type: "string", description: "Language code such as en or de." },
       },
-      required: ["keyword"],
       additionalProperties: false,
     },
-    annotations: { title: "Free sample (1 keyword)", readOnlyHint: true, openWorldHint: true },
+    annotations: { title: "Free sample", readOnlyHint: true, openWorldHint: true },
   },
   {
     name: "wishlist",
@@ -165,7 +167,10 @@ export function createMcpServer(deps: McpDeps, clientId = "unknown"): Server {
 
       case "free_sample": {
         if (!deps.freeSample?.enabled()) return text({ error: "not_found" }, true);
-        const out = await deps.freeSample.run(clientId, args);
+        const out =
+          typeof args.service === "string"
+            ? await deps.freeSample.runService(clientId, args.service, args.input)
+            : await deps.freeSample.run(clientId, { keyword: args.keyword, location_code: args.location_code, language_code: args.language_code });
         return text(out.body, out.status >= 400);
       }
 

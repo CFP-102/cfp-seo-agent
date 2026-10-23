@@ -2,7 +2,11 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import express, { type Router } from "express";
 import type { Env } from "../config/env.js";
+import { agentCard, mcpServerCard } from "../discovery/cards.js";
 import { buildOpenApi } from "../discovery/openapi.js";
+import type { Store } from "../lib/store.js";
+import { buildStatus } from "./status.js";
+import { renderStatusPage } from "./statusPage.js";
 import { toolNameOf } from "../services/common.js";
 import type { Pipeline } from "../services/pipeline.js";
 import type { ServiceDefinition } from "../services/types.js";
@@ -62,11 +66,11 @@ export function siteValues(env: Env, pipeline: Pipeline, network?: string): Reco
 }
 
 /** Website, llms.txt, OpenAPI document and the optional /.well-known/x402 compatibility file. */
-export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?: string; freeSample?: boolean }): Router {
+export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?: string; freeSample?: boolean; freeSampleEligible?: string[]; store?: Store }): Router {
   const { env, pipeline, network } = deps;
   const router = express.Router();
   const read = (name: string) => readFileSync(new URL(name, PUBLIC_DIR), "utf8");
-  const templates = { index: read("index.html"), llms: read("llms.txt"), legal: read("legal.html"), guide: read("quickstart.html") };
+  const templates = { index: read("index.html"), llms: read("llms.txt"), legal: read("legal.html"), legalDe: read("legal-de.html"), guide: read("quickstart.html"), indexDe: read("index-de.html") };
 
   // Test/sandbox deployments stay out of search engines; only a mainnet (real money) deployment is indexable.
   const indexable = env.PAYMENT_MODE === "mainnet";
@@ -84,8 +88,10 @@ export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?:
   };
 
   router.get(["/", "/index.html"], page(templates.index, "html"));
+  router.get(["/de", "/de/", "/index-de.html"], page(templates.indexDe, "html"));
   router.get("/llms.txt", page(templates.llms, "text/plain; charset=utf-8"));
   router.get("/legal.html", page(templates.legal, "html"));
+  router.get("/legal-de.html", page(templates.legalDe, "html"));
   router.get("/quickstart.html", page(templates.guide, "html"));
 
   router.get("/robots.txt", (_req, res) => {
@@ -98,6 +104,33 @@ export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?:
     res.setHeader("Cache-Control", "public, max-age=300");
     res.json(buildOpenApi({ env, pipeline, network, freeSample: deps.freeSample }));
   });
+
+  // Status and trust page (EN/DE) plus its JSON. Aggregates only.
+  if (deps.store) {
+    const store = deps.store;
+    const statusPage = (lang: "en" | "de"): express.RequestHandler => (_req, res) => {
+      res.setHeader("Cache-Control", "public, max-age=60");
+      res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'");
+      if (!indexable) res.setHeader("X-Robots-Tag", "noindex, nofollow");
+      const v = siteValues(env, pipeline, network);
+      res.type("html").send(renderStatusPage(buildStatus(store, pipeline), lang, { NAME: v.NAME!, BASE_URL: v.BASE_URL!, CONTACT_EMAIL: v.CONTACT_EMAIL!, PAY_TO_ADDRESS: v.PAY_TO_ADDRESS! }));
+    };
+    router.get(["/status", "/status.html"], statusPage("en"));
+    router.get(["/de/status", "/de/status.html"], statusPage("de"));
+    router.get("/status.json", (_req, res) => {
+      res.setHeader("Cache-Control", "public, max-age=60");
+      res.json(buildStatus(store, pipeline));
+    });
+  }
+
+  // Machine-readable business cards for agents and crawlers.
+  const cardJson = (build: () => unknown): express.RequestHandler => (_req, res) => {
+    res.setHeader("Cache-Control", "public, max-age=300");
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.json(build());
+  };
+  router.get(["/.well-known/agent.json", "/agent.json"], cardJson(() => agentCard({ env, pipeline, network, freeSampleEligible: deps.freeSampleEligible ?? [] })));
+  router.get(["/.well-known/mcp/server-card.json", "/.well-known/mcp.json"], cardJson(() => mcpServerCard(env)));
 
   // Optional compatibility file (x402scan documents this shape, but its current crawler reads /openapi.json only).
   router.get("/.well-known/x402", (_req, res) => {

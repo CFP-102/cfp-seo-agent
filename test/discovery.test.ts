@@ -98,6 +98,7 @@ describe("OpenAPI 3.1", () => {
       "traffic-estimate": "labs-bulk-traffic-estimation.json",
       "news-search": "serp-google-news.json",
       "image-search": "serp-google-images.json",
+      "local-market-check": "serp-google-organic.json",
     };
     const keys = (v: unknown): string[] => {
       const out: string[] = [];
@@ -112,7 +113,7 @@ describe("OpenAPI 3.1", () => {
     };
     for (const s of SERVICES) {
       const input = s.inputSchema.parse(s.example);
-      const real = s.mapResult(fixture(fixtures[s.id]!).tasks[0], input as never);
+      const real = s.mapPackage ? s.mapPackage([fixture("serp-google-organic.json").tasks[0], fixture("serp-google-maps.json").tasks[0]], input as never) : s.mapResult(fixture(fixtures[s.id]!).tasks[0], input as never);
       expect(keys(s.outputExample), s.id).toEqual(keys(real));
     }
   });
@@ -232,9 +233,9 @@ describe("website and discovery files", () => {
     const legal = await (await fetch(base + "/legal.html")).text();
     expect(legal).toContain('name="robots" content="noindex"');
     expect(legal).toContain("[TODO]");
-    expect(legal).toMatch(/Impressum[\s\S]*Datenschutzerklärung[\s\S]*Nutzungsbedingungen/);
-    expect(legal).toContain("§ 1 Geltungsbereich, nur Unternehmer");
-    expect(legal).toContain("nach 30 Tagen automatisch gelöscht"); // must match RETENTION_DAYS default
+    expect(legal).toMatch(/Legal notice[\s\S]*Privacy policy[\s\S]*Terms of use/);
+    expect(legal).toContain("§ 1 Scope; businesses only");
+    expect(legal).toContain("automatically deleted after 30 days"); // must match RETENTION_DAYS default
     expect(legal).toContain("Falkenstein");
 
     const robots = await (await fetch(base + "/robots.txt")).text();

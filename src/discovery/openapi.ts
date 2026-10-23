@@ -96,6 +96,28 @@ export function buildOpenApi({ env, pipeline, network, freeSample }: OpenApiDeps
         },
       },
     },
+    ...(freeSample
+      ? {
+          "/api/v1/free-sample/{serviceId}": {
+            post: {
+              operationId: "freeSampleService",
+              summary: "Free sample of one service (limited)",
+              description:
+                "One free call of a single-call service priced up to 0.05 USDC, with the same JSON body as the paid route. One per service per day per client and a shared daily total; returns 429 when used up and 403 for services without a sample (packages, higher prices). See free_sample in GET /api/v1/services.",
+              tags: ["free"],
+              security: [],
+              parameters: [{ name: "serviceId", in: "path", required: true, schema: { type: "string" }, example: "google-serp" }],
+              requestBody: { required: true, content: { "application/json": { schema: { type: "object" }, examples: { default: { value: { keyword: "running shoes", location_code: 2840, language_code: "en" } } } } } },
+              responses: {
+                "200": { description: "Sample result (sample: true)", content: { "application/json": { schema: { type: "object" } } } },
+                "403": errorResponse("No free sample for this service"),
+                "429": errorResponse("Sample already used today, or today's samples are used up"),
+                "400": errorResponse("Invalid input"),
+              },
+            },
+          },
+        }
+      : {}),
     "/api/v1/preflight/{serviceId}": {
       post: {
         operationId: "preflight",

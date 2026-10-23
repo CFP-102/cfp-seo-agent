@@ -117,6 +117,20 @@ main section.wrap { padding-top: var(--sec-y); padding-bottom: var(--sec-y); bor
 .dot.warn { background: var(--warn); }
 .dot.bad, .dot.err { background: var(--err); }
 
+/* Header extras: language switch */
+.navgroup { display: flex; align-items: center; gap: 28px; }
+.lang { color: var(--txt); font: 500 11px/1 var(--body); letter-spacing: 0.18em; text-transform: uppercase; border: 1px solid var(--line-strong); padding: 9px 12px; }
+.lang:hover { color: var(--or); border-color: var(--or); text-decoration: none; }
+
+/* Status page */
+.uptime { width: 100%; height: 36px; display: block; margin: 8px 0 12px; }
+.uptime .u.ok { fill: var(--ok); }
+.uptime .u.warn { fill: var(--warn); }
+.uptime .u.err { fill: var(--err); }
+.uptime .u.none { fill: var(--s2); }
+.tablewrap { overflow-x: auto; border-block: 1px solid var(--line); }
+tbody tr:hover { background: var(--s1); }
+
 /* Footer */
 footer { border-top: 1px solid var(--line); padding: 36px 0 44px; }
 .foot { display: flex; flex-wrap: wrap; gap: 16px 40px; justify-content: space-between; font-size: 15px; }
@@ -132,6 +146,8 @@ th { font: 500 10px/1.6 var(--body); letter-spacing: 0.2em; text-transform: uppe
 
 @media (max-width: 640px) {
   nav { gap: 16px; }
+  .navgroup { gap: 14px; }
+  .brandname { display: none; }
   nav a:nth-child(n+4) { display: none; }
   .bar { gap: 16px; }
 }

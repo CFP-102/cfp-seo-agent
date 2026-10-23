@@ -8,9 +8,12 @@
 - Free catalog with prices and limits: {{BASE_URL}}/api/v1/services
 - OpenAPI 3.1 (with x402 price metadata): {{BASE_URL}}/openapi.json
 - MCP server (Streamable HTTP): {{BASE_URL}}/mcp
-- Free sample (if enabled, see /api/v1/services "free_sample"): POST {{BASE_URL}}/api/v1/free-sample with {"keyword":"..."}, one keyword per client per day, limited daily total.
+- Free samples (if enabled, see /api/v1/services "free_sample"): POST {{BASE_URL}}/api/v1/free-sample/{service-id} with the same JSON body as the paid route, one per service per client per day, for single-call services up to 0.05 USDC; limited daily total. Legacy: POST {{BASE_URL}}/api/v1/free-sample with {"keyword":"..."} (keyword-metrics, one keyword).
 - Wishlist (free, write-only): POST {{BASE_URL}}/api/v1/wishlist with {"text":"which data tool you would pay for"}, 10 to 300 characters, 3 per day per client; MCP tool "wishlist".
 - Task recipes (free, machine-readable): {{BASE_URL}}/recipes.json
+- Agent card: {{BASE_URL}}/.well-known/agent.json · MCP server card: {{BASE_URL}}/.well-known/mcp/server-card.json
+- Status and trust (uptime, delivery success, how failures are handled): {{BASE_URL}}/status (German: /de/status), JSON: {{BASE_URL}}/status.json
+- German homepage for humans: {{BASE_URL}}/de/
 - Free input check, never charges: POST {{BASE_URL}}/api/v1/preflight/{service-id}
 - Paid calls: send the request without payment to get HTTP 402 with a PAYMENT-REQUIRED header, then retry with a PAYMENT-SIGNATURE header (x402 client, e.g. @x402/fetch). Network: {{NETWORK}}, asset: USDC.
 - Results can be fetched again with GET {{BASE_URL}}/api/v1/results/{request_id} and "Authorization: Bearer {result_token}".

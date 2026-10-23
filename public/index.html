@@ -8,6 +8,9 @@
 <link rel="canonical" href="{{BASE_URL}}/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="alternate" type="application/json" href="/openapi.json" title="OpenAPI 3.1">
+<link rel="alternate" hreflang="en" href="{{BASE_URL}}/">
+<link rel="alternate" hreflang="de" href="{{BASE_URL}}/de/">
+<link rel="alternate" type="application/json" href="/.well-known/agent.json" title="Agent card">
 <meta property="og:title" content="{{NAME}} – Pay-per-call data APIs for AI agents">
 <meta property="og:description" content="Pay per request in USDC with x402. No signup, no API key.">
 <meta property="og:type" content="website">
@@ -19,19 +22,22 @@
 <header class="top">
   <div class="wrap bar">
     <a class="brand" href="/"><img src="/logo-white.png" alt="Chiemgau Films" width="62" height="30"><span class="brandname">{{NAME}}</span></a>
-    <nav aria-label="Main">
-      <a href="#services">Services</a>
-      <a href="#how">How it works</a>
-      <a href="#docs">Docs</a>
-      <a href="#mcp">MCP</a>
-      <a href="#status">Status</a>
-    </nav>
+    <div class="navgroup">
+      <nav aria-label="Main">
+        <a href="#services">Services</a>
+        <a href="#how">How it works</a>
+        <a href="#docs">Docs</a>
+        <a href="#mcp">MCP</a>
+        <a href="/status">Status</a>
+      </nav>
+      <a class="lang" href="/de/" hreflang="de" lang="de">DE</a>
+    </div>
   </div>
 </header>
 
 <main>
 <section class="hero wrap">
-  <p class="eyebrow">x402 · USDC on Base · DataForSEO</p>
+  <p class="eyebrow">SEO data for agencies and AI agents · DACH · x402</p>
   <h1>Pay-per-call data APIs for AI agents</h1>
   <p class="lead">Keyword metrics, SERP results, competitor discovery, search intent and AI-search demand. One request, one small USDC payment. No account, no API key, no subscription.</p>
   <div class="cta">
@@ -41,6 +47,16 @@
   </div>
   {{MODE_NOTE}}
   <p class="fine">For businesses only (B2B). By calling a paid endpoint you confirm that you act as a business and accept the <a href="/legal.html#terms">terms of use</a>.</p>
+</section>
+
+<section id="why" class="wrap">
+  <h2>Built for agencies and agents in DACH</h2>
+  <p class="sub">Search data for Germany, Austria and Switzerland and 90+ other countries, with a GDPR-conscious setup.</p>
+  <ol class="steps">
+    <li><strong>German operator, server in Germany.</strong> Hosted at Hetzner in Falkenstein. No IP addresses stored, inputs and results deleted after 30 days. Details on the <a href="/status">status and trust page</a>.</li>
+    <li><strong>Try before you buy.</strong> One free sample per service and day for services up to 0.05 USDC, plus a free input check that never charges.</li>
+    <li><strong>Local Market Check.</strong> One payment for a local search such as "zahnarzt rosenheim": organic results, Google Maps businesses, competitor domains and short observations.</li>
+  </ol>
 </section>
 
 <section id="how" class="wrap">
@@ -85,7 +101,7 @@
 <section id="mcp" class="wrap">
   <h2>MCP (Model Context Protocol)</h2>
   <p class="sub">Streamable HTTP endpoint: <code>{{BASE_URL}}/mcp</code></p>
-  <p>Free tools work with any MCP client: <code>list_services</code>, <code>preflight</code>, <code>get_result</code>, <code>retry_request</code>.
+  <p>Free tools work with any MCP client: <code>list_services</code>, <code>preflight</code>, <code>free_sample</code>, <code>wishlist</code>, <code>get_result</code>, <code>retry_request</code>.
      The paid tools (one per service) need a client that supports x402 payments, for example one built with <code>@x402/mcp</code>.
      A client without payment support can still list and inspect the tools; a paid call then returns a "payment required" result and charges nothing.</p>
   <p><a class="btn" href="/quickstart.html#mcp">MCP connection and guarded purchase example</a></p>
@@ -94,7 +110,7 @@
 <section id="status" class="wrap">
   <h2>Status</h2>
   <p class="status"><span id="dot" class="dot"></span><span id="status-text">Checking…</span></p>
-  <p class="fine">Live check: <a href="/health">/health</a>. Per-service availability is shown on each card above.</p>
+  <p class="fine">Live check: <a href="/health">/health</a>. Uptime history and how we handle payments and failures: <a href="/status">status and trust page</a>. Per-service availability is shown on each card above.</p>
 </section>
 </main>
 
@@ -105,8 +121,8 @@
       <span class="fine">Contact: <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a></span>
     </div>
     <div class="fine">
-      <a href="/legal.html#impressum">Impressum</a> ·
-      <a href="/legal.html#datenschutz">Datenschutz / Privacy</a> ·
+      <a href="/legal.html#impressum">Legal notice</a> ·
+      <a href="/legal.html#datenschutz">Privacy</a> ·
       <a href="/legal.html#terms">Terms of use</a>
     </div>
   </div>
