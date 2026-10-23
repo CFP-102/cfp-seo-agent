@@ -73,6 +73,20 @@ export function buildOpenApi({ env, pipeline, network, freeSample }: OpenApiDeps
           },
         }
       : {}),
+    "/api/v1/locations": {
+      get: {
+        operationId: "findLocation",
+        summary: "Find city/region location codes in Germany, Austria and Switzerland (free)",
+        description: "City/region codes work for google-serp, local-business, news-search, image-search and local-market-check. All other services take country codes (2276 Germany, 2040 Austria, 2756 Switzerland).",
+        tags: ["free"],
+        security: [],
+        parameters: [
+          { name: "q", in: "query", required: true, schema: { type: "string", minLength: 2, maxLength: 60 }, example: "rosenheim" },
+          { name: "country", in: "query", required: false, schema: { type: "string", enum: ["DE", "AT", "CH"] } },
+        ],
+        responses: { "200": { description: "Matching locations", content: { "application/json": { schema: { type: "object" } } } }, "400": errorResponse("Query too short") },
+      },
+    },
     "/api/v1/wishlist": {
       post: {
         operationId: "wishlist",

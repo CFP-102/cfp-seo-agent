@@ -88,6 +88,10 @@
 <pre><code>curl -X POST {{BASE_URL}}/api/v1/free-sample/google-serp \
   -H 'content-type: application/json' \
   -d '{"keyword":"webdesign rosenheim","location_code":2276,"language_code":"de"}'</code></pre>
+  <h3>Stadt oder Region als Standort</h3>
+  <p>Google-Treffer, Maps, News, Bilder und der Local Market Check suchen auf Wunsch aus Sicht einer Stadt oder Region in Deutschland, Österreich oder der Schweiz. Den Ortscode finden Sie kostenlos:</p>
+<pre><code>curl '{{BASE_URL}}/api/v1/locations?q=rosenheim'</code></pre>
+  <p class="fine">Alle anderen Dienste nutzen Ländercodes: 2276 Deutschland, 2040 Österreich, 2756 Schweiz.</p>
   <p>Für bezahlte Abrufe folgen Sie der <a href="/quickstart.html">Anleitung für REST und MCP</a>.</p>
 </section>
 

@@ -95,7 +95,7 @@
   <p class="fine">If payment or delivery is unclear, keep the existing purchase record and retrieve its result. Do not create a new payment just to recover an answer.</p>
 
   <h3>Parameters</h3>
-  <p class="fine"><code>location_code</code> is a country-level DataForSEO code (2840 United States, 2276 Germany, 2826 United Kingdom). <code>language_code</code> is optional (<code>en</code>, <code>de</code>, …). Unsupported combinations are rejected with HTTP 422 before any payment is requested.</p>
+  <p class="fine"><code>location_code</code> is a country-level DataForSEO code (2840 United States, 2276 Germany, 2040 Austria, 2756 Switzerland, 2826 United Kingdom). Google SERP, Maps, News, Images and Local Market Check also take city/region codes in Germany, Austria and Switzerland: find them for free with <a href="/api/v1/locations?q=rosenheim">/api/v1/locations?q=rosenheim</a>. <code>language_code</code> is optional (<code>en</code>, <code>de</code>, …). Unsupported combinations are rejected with HTTP 422 before any payment is requested.</p>
 </section>
 
 <section id="mcp" class="wrap">

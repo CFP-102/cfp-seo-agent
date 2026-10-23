@@ -53,7 +53,7 @@ export const locationCode = z
   .min(1000)
   .max(99_999_999)
   .default(2840)
-  .describe("DataForSEO country code. 2840 = United States (default), 2276 = Germany, 2826 = United Kingdom. Country-level codes only.");
+  .describe("DataForSEO location code. Country level: 2840 = United States (default), 2276 = Germany, 2040 = Austria, 2756 = Switzerland. Google SERP, Maps, News, Images and Local Market Check also accept city/region codes in Germany, Austria and Switzerland (free lookup: GET /api/v1/locations?q=...).");
 
 /** DataForSEO language code, e.g. "en", "de", "zh-TW". If omitted, a default for the location is chosen. */
 const languageCodeOptional = z

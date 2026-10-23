@@ -9,6 +9,7 @@
 - OpenAPI 3.1 (with x402 price metadata): {{BASE_URL}}/openapi.json
 - MCP server (Streamable HTTP): {{BASE_URL}}/mcp
 - Free samples (if enabled, see /api/v1/services "free_sample"): POST {{BASE_URL}}/api/v1/free-sample/{service-id} with the same JSON body as the paid route, one per service per client per day, for single-call services up to 0.05 USDC; limited daily total. Legacy: POST {{BASE_URL}}/api/v1/free-sample with {"keyword":"..."} (keyword-metrics, one keyword).
+- Locations (free): GET {{BASE_URL}}/api/v1/locations?q=rosenheim (city/region codes in Germany, Austria, Switzerland for google-serp, local-business, news-search, image-search, local-market-check; MCP tool "find_location"). Other services take country codes (2276, 2040, 2756).
 - Wishlist (free, write-only): POST {{BASE_URL}}/api/v1/wishlist with {"text":"which data tool you would pay for"}, 10 to 300 characters, 3 per day per client; MCP tool "wishlist".
 - Task recipes (free, machine-readable): {{BASE_URL}}/recipes.json
 - Agent card: {{BASE_URL}}/.well-known/agent.json · MCP server card: {{BASE_URL}}/.well-known/mcp/server-card.json
@@ -23,7 +24,7 @@
 
 ## Notes
 - For businesses only (B2B). Calling a paid endpoint means you act as a business and accept the terms of use: {{BASE_URL}}/legal.html#terms
-- location_code is a country-level DataForSEO code (2840 United States, 2276 Germany, 2826 United Kingdom); unsupported location/language pairs are rejected with HTTP 422 before any payment is requested.
+- location_code is a country-level DataForSEO code (2840 United States, 2276 Germany, 2826 United Kingdom); the Google SERP family (google-serp, local-business, news-search, image-search, local-market-check) also takes DACH city/region codes from /api/v1/locations. Unsupported location/language pairs are rejected with HTTP 422 before any payment is requested.
 - AI keyword demand values are modeled estimates, not measured prompt counts.
 - Every response states data_source: "live" or "sandbox".
 - MCP paid tools need an x402-capable MCP client (for example built with @x402/mcp); free tools work with any MCP client.

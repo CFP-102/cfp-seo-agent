@@ -12,6 +12,7 @@ import type { ServiceDefinition } from "../services/types.js";
 import { toolResult, type McpCall } from "../payments/x402.js";
 import type { FreeSample } from "../freeSample.js";
 import type { Wishlist } from "../wishlist.js";
+import { searchDachLocations } from "../config/locales.js";
 
 export const MCP_SERVER_NAME = "agent-data-api";
 export const MCP_SERVER_VERSION = "0.1.0";
@@ -67,6 +68,18 @@ const FREE_TOOLS: Tool[] = [
       additionalProperties: false,
     },
     annotations: { title: "Free sample", readOnlyHint: true, openWorldHint: true },
+  },
+  {
+    name: "find_location",
+    description:
+      "FREE. Look up city/region location codes in Germany, Austria and Switzerland (e.g. Rosenheim, Wien, Zürich). These codes work for google_serp, local_business, news_search, image_search and local_market_check; all other tools take country codes (2276, 2040, 2756).",
+    inputSchema: {
+      type: "object",
+      properties: { query: { type: "string", description: "Part of the place name, at least 2 characters.", minLength: 2, maxLength: 60 }, country: { type: "string", enum: ["DE", "AT", "CH"] } },
+      required: ["query"],
+      additionalProperties: false,
+    },
+    annotations: { title: "Find a location code", readOnlyHint: true, openWorldHint: false },
   },
   {
     name: "wishlist",
@@ -172,6 +185,13 @@ export function createMcpServer(deps: McpDeps, clientId = "unknown"): Server {
             ? await deps.freeSample.runService(clientId, args.service, args.input)
             : await deps.freeSample.run(clientId, { keyword: args.keyword, location_code: args.location_code, language_code: args.language_code });
         return text(out.body, out.status >= 400);
+      }
+
+      case "find_location": {
+        const q = typeof args.query === "string" ? args.query.slice(0, 60) : "";
+        if (q.trim().length < 2) return text({ error: "invalid_input", message: "query needs at least 2 characters" }, true);
+        const country = typeof args.country === "string" && /^(DE|AT|CH)$/i.test(args.country) ? args.country : undefined;
+        return text({ locations: searchDachLocations(q, country).map((l) => ({ location_code: l.location_code, name: l.name, type: l.type, country_iso_code: l.country_iso_code })) });
       }
 
       case "wishlist": {

@@ -11,6 +11,10 @@ import { createWishlist } from "./wishlist.js";
 import { createFreeSample } from "./freeSample.js";
 import { createSiteRouter } from "./web/site.js";
 import { findService } from "./services/index.js";
+import { searchDachLocations } from "./config/locales.js";
+
+/** Services whose upstream (Google SERP family) accepts city/region codes. */
+export const SERP_FAMILY = ["google-serp", "local-business", "news-search", "image-search", "local-market-check"];
 import type { Pipeline, Prepared } from "./services/pipeline.js";
 import type { ServiceDefinition } from "./services/types.js";
 
@@ -86,6 +90,20 @@ export function createApp(deps: AppDeps) {
   app.post("/api/v1/wishlist", limiter, (req, res) => {
     const out = wishlist.run(req.ip, req.body);
     res.status(out.status).json(out.body);
+  });
+
+  // Free location lookup (city/region codes in DACH for the Google SERP family).
+  app.get("/api/v1/locations", limiter, (req, res) => {
+    const q = typeof req.query.q === "string" ? req.query.q.slice(0, 60) : "";
+    const country = typeof req.query.country === "string" && /^(de|at|ch)$/i.test(req.query.country) ? req.query.country : undefined;
+    if (q.trim().length < 2) return void res.status(400).json({ error: "invalid_input", message: "Send ?q= with at least 2 characters, optionally &country=DE|AT|CH." });
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    res.json({
+      query: q,
+      usable_for: SERP_FAMILY,
+      note: "City/region codes work only for these services; all other services take country-level codes (2276 Germany, 2040 Austria, 2756 Switzerland).",
+      locations: searchDachLocations(q, country).map((l) => ({ location_code: l.location_code, name: l.name, type: l.type, country_iso_code: l.country_iso_code, default_language_code: "de" })),
+    });
   });
 
   // Free preflight: validates input and checks budget/limits without paying or calling DataForSEO.
