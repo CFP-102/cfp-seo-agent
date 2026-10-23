@@ -53,6 +53,8 @@ const EnvSchema = z
 
     // Optional link to an independent public status page (e.g. UptimeRobot), shown on /status. Link only, nothing is embedded.
     EXTERNAL_STATUS_URL: z.union([z.string().url().startsWith("https://"), z.literal("")]).default(""),
+    // Optional read-only monitor-specific UptimeRobot API key: the server shows the independent uptime on /status itself.
+    UPTIMEROBOT_API_KEY: z.string().max(200).default(""),
 
     // Data minimization: request inputs and results are deleted after this many days (payment records are kept for bookkeeping).
     RETENTION_DAYS: z.coerce.number().int().min(1).max(365).default(30),

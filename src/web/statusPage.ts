@@ -1,3 +1,4 @@
+import type { ExternalUptime } from "../lib/externalUptime.js";
 import type { Status } from "./status.js";
 
 const esc = (v: unknown) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -32,6 +33,9 @@ const T = {
     contact: "Contact",
     json: "Machine-readable",
     external: "Independent monitoring by UptimeRobot (checks every 5 minutes from outside)",
+    extTitle: "Independent check (UptimeRobot)",
+    extNow: "Right now",
+    extStates: { up: "reachable", down: "not reachable", paused: "paused", unknown: "unknown" },
   },
   de: {
     title: "Status und Vertrauen",
@@ -62,10 +66,13 @@ const T = {
     contact: "Kontakt",
     json: "Maschinenlesbar",
     external: "Unabhängige Messung durch UptimeRobot (prüft alle 5 Minuten von außen)",
+    extTitle: "Unabhängige Prüfung (UptimeRobot)",
+    extNow: "Gerade jetzt",
+    extStates: { up: "erreichbar", down: "nicht erreichbar", paused: "pausiert", unknown: "unbekannt" },
   },
 };
 
-export function renderStatusPage(st: Status, lang: "en" | "de", values: { NAME: string; BASE_URL: string; CONTACT_EMAIL: string; PAY_TO_ADDRESS: string; EXTERNAL_STATUS_URL?: string }): string {
+export function renderStatusPage(st: Status, lang: "en" | "de", values: { NAME: string; BASE_URL: string; CONTACT_EMAIL: string; PAY_TO_ADDRESS: string; EXTERNAL_STATUS_URL?: string }, ext: ExternalUptime | null = null): string {
   const t = T[lang];
   const pct = (v: number | null) => (v === null ? t.nodata : `${v.toFixed(2)} %`);
   const bars = st.days
@@ -108,6 +115,17 @@ export function renderStatusPage(st: Status, lang: "en" | "de", values: { NAME: 
   <h3>${esc(t.days)}</h3>
   <svg class="uptime" viewBox="0 0 300 28" preserveAspectRatio="none" role="img" aria-label="${esc(t.days)}">${bars}</svg>
   <p class="fine">${esc(t.since)}: ${esc(st.monitoring_since ?? t.nodata)} · ${esc(t.json)}: <a href="/status.json">/status.json</a> · <a href="/health">/health</a></p>
+  ${
+    ext
+      ? `<h3>${esc(t.extTitle)}</h3>
+  <div class="grid">
+    <article class="card"><span class="price">${esc(t.extNow)}</span><h3><span class="status"><span class="dot ${ext.status === "up" ? "ok" : ext.status === "down" ? "err" : "warn"}"></span>${esc(t.extStates[ext.status])}</span></h3></article>
+    <article class="card"><span class="price">${esc(t.h24)}</span><h3>${esc(pct(ext.uptime_pct.last_24h))}</h3></article>
+    <article class="card"><span class="price">${esc(t.d7)}</span><h3>${esc(pct(ext.uptime_pct.last_7d))}</h3></article>
+    <article class="card"><span class="price">${esc(t.d30)}</span><h3>${esc(pct(ext.uptime_pct.last_30d))}</h3></article>
+  </div>`
+      : ""
+  }
   ${values.EXTERNAL_STATUS_URL ? `<p><a class="btn" href="${esc(values.EXTERNAL_STATUS_URL)}" rel="noopener" target="_blank">${esc(t.external)}</a></p>` : ""}
 </section>
 <section class="wrap">
