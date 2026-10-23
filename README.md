@@ -1,4 +1,4 @@
-# Agent Data API (Arbeitstitel)
+# CFP SEO Agent (Agent Data API)
 
 Pay-per-call SEO-Daten-APIs für KI-Agenten: DataForSEO als Datenquelle, Bezahlung per **x402 v2** in USDC auf Base.
 Ein Node.js-Service (Express + TypeScript) hinter Caddy, SQLite für Request-Ledger, kein LLM, keine GPU.

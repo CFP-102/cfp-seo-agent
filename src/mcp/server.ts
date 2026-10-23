@@ -143,7 +143,7 @@ export function createMcpServer(deps: McpDeps, clientId = "unknown"): Server {
       capabilities: { tools: {} },
       instructions:
         "Pay-per-call SEO data tools. Call list_services for prices. Paid tools need an x402-capable client (USDC on Base); " +
-        "free tools (list_services, preflight, get_result, retry_request) need no payment. Inputs are validated before any payment is requested. " +
+        "free tools (list_services, preflight, find_location, free_sample, wishlist, get_result, retry_request) need no payment. Inputs are validated before any payment is requested. " +
         `For businesses only (B2B): a paid call confirms that you act as a business and accept the terms of use at ${deps.env.PUBLIC_BASE_URL}/legal.html#terms.`,
     },
   );
