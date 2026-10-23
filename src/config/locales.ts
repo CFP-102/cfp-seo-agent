@@ -31,10 +31,12 @@ const dachLocations: DachLocation[] = (dach.rows as [number, string, string, str
   country_code: DACH_COUNTRY[cc]!,
 }));
 const dachByCode = new Map(dachLocations.map((l) => [l.location_code, l]));
+// Folded names computed once (search runs on every lookup request).
 export const isDachLocation = (code: number) => dachByCode.has(code);
 
 /** Lowercase, umlauts folded (ü -> u, ß -> ss) so "Zürich" finds "Zurich". */
 const fold = (s: string) => s.toLowerCase().replace(/ß/g, "ss").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const foldedNames = new Map(dachLocations.map((l) => [l.location_code, fold(l.name)]));
 /** DataForSEO names many DACH places in English; map common German names (after fold) to the stored name. */
 const GERMAN_NAMES: Record<string, string> = {
   munchen: "munich", koln: "cologne", wien: "vienna", nurnberg: "nuremberg", hannover: "hanover", genf: "geneva", bayern: "bavaria",
@@ -47,17 +49,15 @@ const GERMAN_NAMES: Record<string, string> = {
 /** Free location search for the SERP family: case-insensitive match on the location name (umlauts and German names understood), cities first. */
 export function searchDachLocations(query: string, country?: string, limit = 20): DachLocation[] {
   const folded = fold(query.trim());
-  const q = GERMAN_NAMES[folded] ?? folded;
+  const q = Object.hasOwn(GERMAN_NAMES, folded) ? GERMAN_NAMES[folded]! : folded;
   const cc = country?.toUpperCase();
   const rank: Record<string, number> = { City: 0, Municipality: 1, District: 2, State: 3, Canton: 3, Region: 3 };
   return dachLocations
-    .filter((l) => (!cc || l.country_iso_code === cc) && fold(l.name).includes(q))
-    .sort((a, b) => {
-      const aHead = fold(a.name).startsWith(q) ? 0 : 1;
-      const bHead = fold(b.name).startsWith(q) ? 0 : 1;
-      return aHead - bHead || (rank[a.type] ?? 9) - (rank[b.type] ?? 9) || a.name.length - b.name.length;
-    })
-    .slice(0, limit);
+    .filter((l) => (!cc || l.country_iso_code === cc) && foldedNames.get(l.location_code)!.includes(q))
+    .map((l) => ({ l, head: foldedNames.get(l.location_code)!.startsWith(q) ? 0 : 1 }))
+    .sort((a, b) => a.head - b.head || (rank[a.l.type] ?? 9) - (rank[b.l.type] ?? 9) || a.l.name.length - b.l.name.length)
+    .slice(0, limit)
+    .map((x) => x.l);
 }
 
 /** Default language for a location when the caller gives none: English if offered, else the first listed. */

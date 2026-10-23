@@ -57,8 +57,9 @@
   /**
    * Check a 402 quote against what the page expects and build the PAYMENT-SIGNATURE header with the wallet's signature.
    * expect: { payTo, network, priceUsdc }; wallet: { address, signTypedData(typedDataJson) -> Promise<signature> }.
+   * confirm(amountUsdc, payTo) is asked after all checks and BEFORE the wallet signs; returning false aborts.
    */
-  async function buildPayment(paymentRequiredB64, expect, wallet, nowSeconds, cryptoObj) {
+  async function buildPayment(paymentRequiredB64, expect, wallet, nowSeconds, cryptoObj, confirm) {
     var pr = JSON.parse(b64decode(paymentRequiredB64));
     if (pr.x402Version !== 2 || !Array.isArray(pr.accepts)) throw new Error(T.format);
     var req = pr.accepts.filter(function (a) { return a.scheme === "exact" && a.network === expect.network; })[0];
@@ -72,7 +73,7 @@
       to: req.payTo,
       value: String(req.amount),
       validAfter: "0",
-      validBefore: String(nowSeconds + (req.maxTimeoutSeconds || 120)),
+      validBefore: String(nowSeconds + Math.min(Number(req.maxTimeoutSeconds) || 120, 600)),
       nonce: randomNonce(cryptoObj),
     };
     var typed = {
@@ -96,6 +97,7 @@
       domain: { name: req.extra.name, version: req.extra.version, chainId: CHAIN[expect.network], verifyingContract: req.asset },
       message: authorization,
     };
+    if (confirm && !(await confirm(Number(req.amount) / 1e6, req.payTo))) return null;
     var signature = await wallet.signTypedData(JSON.stringify(typed));
     var payload = { x402Version: 2, payload: { authorization: authorization, signature: signature }, extensions: pr.extensions, resource: pr.resource, accepted: req };
     return { header: b64encode(JSON.stringify(payload)), amountUsdc: Number(req.amount) / 1e6, payTo: req.payTo };
@@ -240,8 +242,8 @@
     var cols = Object.keys(rows[0]);
     var cell = function (v) {
       var s = v === null || v === undefined ? "" : typeof v === "object" ? JSON.stringify(v) : String(v);
-      if (/^[=+\-@]/.test(s)) s = "'" + s;
-      return /[";\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+      return /[";\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
     };
     return [cols.join(";")].concat(rows.map(function (r) { return cols.map(function (c) { return cell(r[c]); }).join(";"); })).join("\n");
   }
@@ -287,8 +289,10 @@
       var pay = await buildPayment(quote.headers.get("payment-required"), { payTo: payTo, network: network, priceUsdc: s.price_usdc }, {
         address: from,
         signTypedData: function (json) { return eth.request({ method: "eth_signTypedData_v4", params: [from, json] }); },
-      }, Math.floor(Date.now() / 1000), window.crypto);
-      if (!window.confirm(T.confirm.replace("{a}", String(pay.amountUsdc)).replace("{t}", pay.payTo))) return msg(T.cancelled);
+      }, Math.floor(Date.now() / 1000), window.crypto, function (amount, to) {
+        return window.confirm(T.confirm.replace("{a}", String(amount)).replace("{t}", to));
+      });
+      if (!pay) return msg(T.cancelled);
       msg(T.settling);
       var r = await fetch(s.path, { method: "POST", headers: { "content-type": "application/json", "payment-signature": pay.header }, body: JSON.stringify(b) });
       var j = await r.json();

@@ -131,6 +131,17 @@ export class Pipeline {
    */
   async execute(p: Prepared, requestId: string): Promise<ServiceResponse<unknown>> {
     const { service, input, inputHash } = p;
+    // A cache hit was decided at prepare time; if the entry expired meanwhile, reserve budget/rate now like any other call.
+    let late: { release: () => void } | null = null;
+    if (p.cached && !this.cache.get(inputHash)) {
+      const estimate = service.estimateCostUsd(input);
+      const r = this.deps.guard.reserve(service.id, estimate, service.upstream.maxCostUsd, serviceConfig(service.id).upstreamPerMinute);
+      if ("refusal" in r) {
+        this.deps.store.fail(requestId, "budget_refused", 0);
+        throw new DataForSeoError(r.refusal.message, "budget_refused");
+      }
+      late = r;
+    }
     try {
       const out = await this.fetchOnce(service, input, inputHash);
       const response: ServiceResponse<unknown> = {
@@ -154,6 +165,8 @@ export class Pipeline {
       this.deps.store.fail(requestId, String(e.code), cost);
       log.warn("upstream call failed", { requestId, service: service.id, code: e.code, cost });
       throw e;
+    } finally {
+      late?.release();
     }
   }
 
@@ -266,15 +279,18 @@ export class Pipeline {
     const settled = await Promise.allSettled(steps.map((s) => this.deps.dfs.post(s.endpoint, s.buildRequest(input))));
     let costUsd = 0;
     let failure: DataForSeoError | undefined;
+    let maybeBilled = false;
     for (const r of settled) {
       if (r.status === "fulfilled") costUsd += r.value.costUsd;
       else {
         const e = r.reason instanceof DataForSeoError ? r.reason : new DataForSeoError("internal error", "internal");
         costUsd += e.costUsd;
+        if (e.code === "timeout" || e.code === "network") maybeBilled = true;
         failure ??= e;
       }
     }
-    if (failure) throw new DataForSeoError(failure.message, failure.code, costUsd);
+    // A step that timed out or lost its connection may still have been billed: book the package worst case then.
+    if (failure) throw new DataForSeoError(failure.message, failure.code, maybeBilled ? Math.max(costUsd, service.estimateCostUsd(input)) : costUsd);
     const tasks = settled.map((r) => (r as PromiseFulfilledResult<{ task: DfsTask }>).value.task);
     return { task: tasks[0]!, costUsd, result: service.mapPackage!(tasks, input) };
   }

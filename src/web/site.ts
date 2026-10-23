@@ -118,7 +118,7 @@ export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?:
       if (!indexable) res.setHeader("X-Robots-Tag", "noindex, nofollow");
       const v = siteValues(env, pipeline, network);
       const ext = external ? await external.get() : null;
-      res.type("html").send(renderStatusPage(buildStatus(store, pipeline), lang, { NAME: v.NAME!, BASE_URL: v.BASE_URL!, CONTACT_EMAIL: v.CONTACT_EMAIL!, PAY_TO_ADDRESS: v.PAY_TO_ADDRESS!, EXTERNAL_STATUS_URL: env.EXTERNAL_STATUS_URL }, ext));
+      res.type("html").send(renderStatusPage(buildStatus(store, pipeline), lang, { NAME: v.NAME!, BASE_URL: v.BASE_URL!, CONTACT_EMAIL: v.CONTACT_EMAIL!, PAY_TO_ADDRESS: v.PAY_TO_ADDRESS!, EXTERNAL_STATUS_URL: env.EXTERNAL_STATUS_URL, NETWORK: network }, ext));
     };
     router.get(["/status", "/status.html"], statusPage("en"));
     router.get(["/de/status", "/de/status.html"], statusPage("de"));

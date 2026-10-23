@@ -36,6 +36,8 @@ export interface FreeSampleDeps {
 
 /** Per-service samples: any single-call service priced at or below this amount (packages never). */
 export const FREE_SAMPLE_MAX_PRICE_USDC = 0.05;
+/** Failed samples per client and UTC day before further samples are refused. */
+export const MAX_FAILED_SAMPLES_PER_CLIENT = 3;
 
 export function createFreeSample(deps: FreeSampleDeps) {
   const { pipeline, store } = deps;
@@ -44,6 +46,7 @@ export function createFreeSample(deps: FreeSampleDeps) {
   let day = "";
   let used = new Set<string>();
   let inflight = new Set<string>();
+  let failures = new Map<string, number>();
   let upstreamToday = 0;
 
   const roll = () => {
@@ -51,6 +54,7 @@ export function createFreeSample(deps: FreeSampleDeps) {
     if (d !== day) {
       day = d;
       used = new Set();
+      failures = new Map();
       upstreamToday = 0;
     }
   };
@@ -64,14 +68,20 @@ export function createFreeSample(deps: FreeSampleDeps) {
     const prep = pipeline.prepare(svc, rawInput);
     if (!prep.ok) return { status: prep.httpStatus, body: prep.body };
     roll();
-    const key = `${clientKey(ip)}|${kind}`;
+    const client = clientKey(ip);
+    const key = `${client}|${kind}`;
+    // Failed samples are not "used up", so cap them per client: otherwise failing requests could burn the shared budget.
+    if ((failures.get(client) ?? 0) >= MAX_FAILED_SAMPLES_PER_CLIENT) {
+      return { status: 429, body: { error: "sample_failures", message: "Too many failed samples today for this client. Try again tomorrow (UTC) or use a paid call." } };
+    }
     if (used.has(key)) {
       store.bump(svc.id, "free_sample_refused_client");
       return { status: 429, body: { error: "sample_used", message: "The free sample for this service is limited to one per day per client. Paid calls are not limited this way." } };
     }
     if (inflight.has(key)) return { status: 429, body: { error: "sample_in_progress", message: "A sample for this client is already running." } };
     const cached = prep.prepared.cached;
-    if (!cached && upstreamToday >= limit()) {
+    // Same answer for cached and uncached inputs, so the cap does not reveal what others asked for.
+    if (upstreamToday >= limit()) {
       store.bump(svc.id, "free_sample_refused_exhausted");
       return { status: 429, body: { error: "sample_exhausted", message: "Today's free samples are used up (UTC). Try again tomorrow or use a paid call." } };
     }
@@ -90,11 +100,16 @@ export function createFreeSample(deps: FreeSampleDeps) {
       if (out.status === 200) {
         used.add(key);
         store.bump(svc.id, "free_sample");
-        const { result_token: _t, ...rest } = out.body;
+        // No result_token (no redelivery for free calls) and no `cached` flag (it would reveal other callers' queries).
+        const { result_token: _t, cached: _c, ...rest } = out.body;
         return { status: 200, body: { ...rest, sample: true, sample_notice: "Free sample: one per service per day per client. Buy more with a paid call." } };
       }
-      if (!cached) upstreamToday--; // nothing delivered: do not burn the cap
-      return { status: out.status, body: out.body };
+      failures.set(client, (failures.get(client) ?? 0) + 1);
+      // Give the cap slot back only if the failed call cost nothing upstream.
+      const charged = store.get(claim.requestId)?.upstream_cost_usd ?? 0;
+      if (!cached && charged === 0) upstreamToday--;
+      const { cached: _c2, ...failBody } = out.body;
+      return { status: out.status, body: failBody };
     } finally {
       reservation.release();
       inflight.delete(key);

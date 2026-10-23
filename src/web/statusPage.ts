@@ -72,7 +72,7 @@ const T = {
   },
 };
 
-export function renderStatusPage(st: Status, lang: "en" | "de", values: { NAME: string; BASE_URL: string; CONTACT_EMAIL: string; PAY_TO_ADDRESS: string; EXTERNAL_STATUS_URL?: string }, ext: ExternalUptime | null = null): string {
+export function renderStatusPage(st: Status, lang: "en" | "de", values: { NAME: string; BASE_URL: string; CONTACT_EMAIL: string; PAY_TO_ADDRESS: string; EXTERNAL_STATUS_URL?: string; NETWORK?: string }, ext: ExternalUptime | null = null): string {
   const t = T[lang];
   const pct = (v: number | null) => (v === null ? t.nodata : `${v.toFixed(2)} %`);
   const bars = st.days
@@ -139,7 +139,7 @@ export function renderStatusPage(st: Status, lang: "en" | "de", values: { NAME: 
   <ol class="steps">
     ${t.p.map(([h, p]) => `<li><strong>${esc(h)}</strong> ${esc(p)}</li>`).join("\n    ")}
   </ol>
-  <p class="fine"><a href="https://basescan.org/address/${values.PAY_TO_ADDRESS}" rel="noopener">Basescan</a> · <a href="/legal.html#impressum">Impressum</a> · <a href="/legal.html#datenschutz">Datenschutz / Privacy</a> · ${esc(t.contact)}: <a href="mailto:${values.CONTACT_EMAIL}">${values.CONTACT_EMAIL}</a></p>
+  <p class="fine"><a href="https://${values.NETWORK === "eip155:84532" ? "sepolia." : ""}basescan.org/address/${values.PAY_TO_ADDRESS}" rel="noopener">Basescan</a> · <a href="/legal.html#impressum">Impressum</a> · <a href="/legal.html#datenschutz">Datenschutz / Privacy</a> · ${esc(t.contact)}: <a href="mailto:${values.CONTACT_EMAIL}">${values.CONTACT_EMAIL}</a></p>
   <h3>${esc(t.method)}</h3>
   <p class="fine">${esc(st.method)}</p>
 </section>

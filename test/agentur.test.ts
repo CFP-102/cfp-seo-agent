@@ -10,7 +10,7 @@ import { fakeFacilitator, post, routedUpstream, start, type Event } from "./x402
 function loadPay() {
   const window: Record<string, any> = {};
   runInNewContext(readFileSync(new URL("../public/agentur.js", import.meta.url), "utf8"), { window, TextEncoder, TextDecoder, btoa, atob, URL, console });
-  return window.AgenturPay as { buildPayment: (...a: any[]) => Promise<{ header: string; amountUsdc: number }> };
+  return window.AgenturPay as { buildPayment: (...a: any[]) => Promise<{ header: string; amountUsdc: number } | null> };
 }
 
 const walletOf = (account: ReturnType<typeof privateKeyToAccount>) => ({
@@ -31,7 +31,12 @@ describe("agency page browser payment", () => {
     const quote = await fetch(base + "/api/v1/google-serp", post({ keyword: "coffee" }));
     expect(quote.status).toBe(402);
     const account = privateKeyToAccount(generatePrivateKey());
-    const p = await pay.buildPayment(quote.headers.get("payment-required"), { payTo: PAY_TO, network: "eip155:84532", priceUsdc: "0.025" }, walletOf(account), Math.floor(Date.now() / 1000), webcrypto);
+    let confirmedBeforeSign = false;
+    const wallet = walletOf(account);
+    const signing = { ...wallet, signTypedData: async (j: string) => { expect(confirmedBeforeSign).toBe(true); return wallet.signTypedData(j); } };
+    const p = (await pay.buildPayment(quote.headers.get("payment-required"), { payTo: PAY_TO, network: "eip155:84532", priceUsdc: "0.025" }, signing, Math.floor(Date.now() / 1000), webcrypto, async () => (confirmedBeforeSign = true)))!;
+    const declined = await pay.buildPayment(quote.headers.get("payment-required"), { payTo: PAY_TO, network: "eip155:84532", priceUsdc: "0.025" }, { address: "0x1", signTypedData: async () => { throw new Error("must not sign"); } }, 0, webcrypto, async () => false);
+    expect(declined).toBeNull();
     expect(p.amountUsdc).toBe(0.025);
     const res = await fetch(base + "/api/v1/google-serp", { ...post({ keyword: "coffee" }), headers: { "content-type": "application/json", "payment-signature": p.header } });
     expect(res.status).toBe(200);

@@ -21,6 +21,8 @@ export function smtpSender(env: Env): Send | null {
     host: env.SMTP_HOST,
     port: env.SMTP_PORT,
     secure: env.SMTP_PORT === 465,
+    // Port 587: refuse to send the password unless the server upgrades to TLS (no silent downgrade).
+    requireTLS: env.SMTP_PORT !== 465,
     auth: { user: env.SMTP_USER, pass: env.SMTP_PASSWORD },
   });
   return async (subject, text) => {

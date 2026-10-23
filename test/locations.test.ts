@@ -18,6 +18,19 @@ describe("DACH city/region locations", () => {
     expect(searchDachLocations("München")[0]!.name).toMatch(/^Munich/);
     expect(searchDachLocations("Düsseldorf")[0]!.name).toMatch(/^Dusseldorf/);
     expect(searchDachLocations("köln")[0]!.name).toMatch(/^Cologne/);
+    expect(searchDachLocations("constructor")).toEqual([]);
+    expect(searchDachLocations("__proto__")).toEqual([]);
+    const t0 = performance.now();
+    for (let i = 0; i < 20; i++) searchDachLocations("an");
+    expect((performance.now() - t0) / 20).toBeLessThan(15); // folded names are precomputed
+  });
+
+  it("SERP_FAMILY matches exactly the services that accept city codes", () => {
+    const accepts = SERVICES.filter((s) => {
+      const parsed = s.inputSchema.safeParse({ ...(s.example as object), location_code: ROSENHEIM, language_code: "de" });
+      return parsed.success && s.validateInput && s.validateInput(parsed.data) === null;
+    }).map((s) => s.id).sort();
+    expect(accepts).toEqual([...SERP_FAMILY].sort());
   });
 
   it("city codes pass only for the Google SERP family; other families get a clear refusal", () => {

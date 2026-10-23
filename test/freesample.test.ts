@@ -52,18 +52,22 @@ describe("free sample", () => {
     expect(ff.calls).toHaveLength(1);
   });
 
-  it("stops at the global daily cap; cached answers do not use the cap", async () => {
+  it("stops at the global daily cap; cached answers do not use up a slot, but the cap answer never depends on the cache", async () => {
     const ff = fakeFetch(fx());
-    const { app } = buildTestApp({ fetchImpl: ff.impl, env: ENV(1) });
+    const { app } = buildTestApp({ fetchImpl: ff.impl, env: ENV(2) });
     const base = await start(app);
     expect((await sample(base, "1.1.1.1", { keyword: "alpha" })).status).toBe(200);
     // same keyword again from another client: served from cache, no new upstream call, cap untouched
     expect((await sample(base, "2.2.2.2", { keyword: "alpha" })).status).toBe(200);
     expect(ff.calls).toHaveLength(1);
+    expect((await sample(base, "4.4.4.4", { keyword: "gamma" })).status).toBe(200);
+    expect(ff.calls).toHaveLength(2);
+    // Cap reached: a cached keyword gets the same refusal as a new one (no leak of what others asked).
+    expect((await (await sample(base, "5.5.5.5", { keyword: "alpha" })).json()).error).toBe("sample_exhausted");
     const out = await sample(base, "3.3.3.3", { keyword: "beta" });
     expect(out.status).toBe(429);
     expect((await out.json()).error).toBe("sample_exhausted");
-    expect(ff.calls).toHaveLength(1);
+    expect(ff.calls).toHaveLength(2);
   });
 
   it("parallel requests from one client cause exactly one upstream call", async () => {
@@ -192,5 +196,36 @@ describe("temporary free-sample boost", () => {
     now = new Date("2026-10-27T10:00:00Z"); // boost over, new day
     expect((await fs.runService("5.5.5.5", "google-serp", { ...serp, keyword: "tea" })).status).toBe(200);
     expect((await fs.runService("6.6.6.6", "google-serp", { ...serp, keyword: "milk" })).status).toBe(429);
+  });
+});
+
+describe("free-sample abuse limits", () => {
+  it("failed samples are limited per client, charged failures keep the cap slot, and no cached flag is exposed", async () => {
+    let calls = 0;
+    const failing = (async () => {
+      calls++;
+      return new Response(JSON.stringify({ status_code: 20000, cost: 0.002, tasks: [{ status_code: 40501, status_message: "Invalid Field", cost: 0.002 }] }));
+    }) as unknown as typeof fetch;
+    const { app } = buildTestApp({ fetchImpl: failing, env: ENV(10) });
+    const base = await start(app);
+    const body = (k: string) => ({ keyword: k, location_code: 2840, language_code: "en" });
+    const codes: number[] = [];
+    for (const id of ["google-serp", "bing-serp", "news-search", "image-search"]) codes.push((await fetch(base + "/api/v1/free-sample/" + id, { method: "POST", headers: { "content-type": "application/json", "x-forwarded-for": "9.9.9.9" }, body: JSON.stringify(body("x " + id)) })).status);
+    expect(codes.slice(0, 3).every((c) => c >= 400 && c !== 429)).toBe(true);
+    expect(codes[3]).toBe(429); // 4th failure refused before any upstream call
+    expect(calls).toBe(3);
+    // The three charged failures used up 3 of 10 global slots.
+    const info = await (await fetch(base + "/api/v1/services")).json();
+    expect(info.free_sample.available_today).toBe(true);
+  });
+
+  it("successful samples do not reveal whether the input was cached", async () => {
+    const { app } = buildTestApp({ fetchImpl: routedUpstream([]).impl, env: ENV(10) });
+    const base = await start(app);
+    const req = (ip: string) => fetch(base + "/api/v1/free-sample/google-serp", { method: "POST", headers: { "content-type": "application/json", "x-forwarded-for": ip }, body: JSON.stringify({ keyword: "same thing", location_code: 2840, language_code: "en" }) });
+    const a = await (await req("1.2.3.4")).json();
+    const b = await (await req("5.6.7.8")).json();
+    expect(a.cached).toBeUndefined();
+    expect(b.cached).toBeUndefined();
   });
 });
