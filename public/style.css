@@ -71,6 +71,8 @@ pre code { background: none; border: 0; padding: 0; }
 .brand { display: flex; align-items: center; gap: 12px; color: var(--txt); font: 500 12px/1 var(--body); letter-spacing: 0.18em; text-transform: uppercase; }
 .brand:hover { color: var(--or); text-decoration: none; }
 .mark { width: 12px; height: 12px; background: var(--or); flex: none; }
+.brand img { height: 30px; width: auto; display: block; }
+.brandname { padding-left: 16px; border-left: 1px solid var(--line-strong); color: var(--mute); }
 nav { display: flex; gap: 28px; align-items: center; }
 nav a { color: var(--txt); font: 500 11px/1 var(--body); letter-spacing: 0.18em; text-transform: uppercase; padding: 8px 0; border-bottom: 1px solid transparent; }
 nav a:hover, nav a[aria-current] { color: var(--or); text-decoration: none; }

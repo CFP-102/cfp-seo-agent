@@ -224,7 +224,7 @@ function renderPage(env: Env, st: Stats): string {
 
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><title>Admin – ${esc(env.SITE_NAME)}</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/admin.css"><script src="/admin.js" defer></script></head>
-<body class="admin"><header class="top"><div class="wrap bar"><span class="brand"><span class="mark"></span>${esc(env.SITE_NAME)} · admin</span><span class="modes"><span class="pill">${esc(st.mode.payments)}</span><span class="pill">${esc(st.mode.data_source)} data</span></span></div></header>
+<body class="admin"><header class="top"><div class="wrap bar"><span class="brand"><img src="/logo-white.png" alt="Chiemgau Films" width="62" height="30"><span class="brandname">${esc(env.SITE_NAME)} · admin</span></span><span class="modes"><span class="pill">${esc(st.mode.payments)}</span><span class="pill">${esc(st.mode.data_source)} data</span></span></div></header>
 <main class="wrap wide">
   <div class="kpis">
     ${kpi("Paid today", String(realSum(st.day, "paid")), `${usd(realSum(st.day, "revenue_usdc"))} USDC`)}
