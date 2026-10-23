@@ -3,6 +3,7 @@ import { loadEnv } from "./config/env.js";
 import { FACILITATOR_FEE_USD, SERVICE_CONFIG } from "./config/services.js";
 import { createDataForSeoClient } from "./dataforseo/client.js";
 import { CostGuard } from "./lib/costGuard.js";
+import { createAlerts, smtpSender } from "./lib/alerts.js";
 import { log, setLogLevel } from "./lib/log.js";
 import { Store } from "./lib/store.js";
 import { SERVICES } from "./services/index.js";
@@ -68,6 +69,14 @@ if (env.PAYMENT_MODE !== "off") {
   setInterval(() => { void reconcile(); }, 60_000).unref();
 }
 const app = createApp({ env, store, pipeline, payments });
+
+// E-mail alerts (budget, payments needing attention, daily summary). Off unless configured.
+const send = smtpSender(env);
+if (send) {
+  const alerts = createAlerts({ env, store, pipeline, send });
+  setInterval(() => void alerts.check(), 5 * 60_000).unref();
+  log.info("e-mail alerts on", { to: env.ALERT_EMAIL_TO });
+}
 
 const server = app.listen(env.PORT, () => {
   log.info("listening", {

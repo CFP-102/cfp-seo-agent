@@ -61,3 +61,14 @@ describe("German homepage, status page and agent cards", () => {
     expect(mcp.transport).toMatchObject({ type: "streamable-http" });
   });
 });
+
+describe("fonts", () => {
+  it("every HTML page allows its own font files (CSP font-src 'self')", async () => {
+    const { app } = buildTestApp({ fetchImpl: routedUpstream([]).impl, env: ENV });
+    const base = await start(app);
+    for (const p of ["/", "/de/", "/de/agenturen", "/status", "/de/status", "/legal.html", "/legal-de.html", "/quickstart.html"]) {
+      const res = await fetch(base + p);
+      expect(res.headers.get("content-security-policy"), p).toContain("font-src 'self'");
+    }
+  });
+});

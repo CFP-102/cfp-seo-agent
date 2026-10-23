@@ -70,7 +70,7 @@ export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?:
   const { env, pipeline, network } = deps;
   const router = express.Router();
   const read = (name: string) => readFileSync(new URL(name, PUBLIC_DIR), "utf8");
-  const templates = { index: read("index.html"), llms: read("llms.txt"), legal: read("legal.html"), legalDe: read("legal-de.html"), guide: read("quickstart.html"), indexDe: read("index-de.html") };
+  const templates = { index: read("index.html"), llms: read("llms.txt"), legal: read("legal.html"), legalDe: read("legal-de.html"), guide: read("quickstart.html"), indexDe: read("index-de.html"), agentur: read("agentur-de.html"), agencies: read("agentur-en.html") };
 
   // Test/sandbox deployments stay out of search engines; only a mainnet (real money) deployment is indexable.
   const indexable = env.PAYMENT_MODE === "mainnet";
@@ -82,13 +82,15 @@ export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?:
     // The page loads only its own CSS/JS and makes same-origin requests.
     res.setHeader(
       "Content-Security-Policy",
-      "default-src 'none'; style-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+      "default-src 'none'; style-src 'self'; font-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
     );
     res.send(render(template, siteValues(env, pipeline, network)));
   };
 
   router.get(["/", "/index.html"], page(templates.index, "html"));
   router.get(["/de", "/de/", "/index-de.html"], page(templates.indexDe, "html"));
+  router.get(["/de/agenturen", "/agenturen", "/agentur-de.html"], page(templates.agentur, "html"));
+  router.get(["/agencies", "/agentur-en.html"], page(templates.agencies, "html"));
   router.get("/llms.txt", page(templates.llms, "text/plain; charset=utf-8"));
   router.get("/legal.html", page(templates.legal, "html"));
   router.get("/legal-de.html", page(templates.legalDe, "html"));
@@ -110,7 +112,7 @@ export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?:
     const store = deps.store;
     const statusPage = (lang: "en" | "de"): express.RequestHandler => (_req, res) => {
       res.setHeader("Cache-Control", "public, max-age=60");
-      res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'");
+      res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'self'; font-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'");
       if (!indexable) res.setHeader("X-Robots-Tag", "noindex, nofollow");
       const v = siteValues(env, pipeline, network);
       res.type("html").send(renderStatusPage(buildStatus(store, pipeline), lang, { NAME: v.NAME!, BASE_URL: v.BASE_URL!, CONTACT_EMAIL: v.CONTACT_EMAIL!, PAY_TO_ADDRESS: v.PAY_TO_ADDRESS! }));

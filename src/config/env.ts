@@ -60,6 +60,14 @@ const EnvSchema = z
     FREE_SAMPLE_BOOST_LIMIT: z.coerce.number().int().min(0).max(1000).default(0),
     FREE_SAMPLE_BOOST_UNTIL: z.union([z.string().datetime(), z.literal("")]).default(""),
 
+    // E-mail alerts to the operator (all optional; off unless ALERT_EMAIL_TO, SMTP_HOST, SMTP_USER and SMTP_PASSWORD are set).
+    ALERT_EMAIL_TO: z.union([z.string().email(), z.literal("")]).default(""),
+    SMTP_HOST: z.string().default(""),
+    SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(465),
+    SMTP_USER: z.string().default(""),
+    SMTP_PASSWORD: z.string().default(""),
+    SMTP_FROM: z.string().default(""),
+
     // Abuse protection
     RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(1).default(60),
   })

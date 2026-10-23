@@ -131,6 +131,31 @@ main section.wrap { padding-top: var(--sec-y); padding-bottom: var(--sec-y); bor
 .tablewrap { overflow-x: auto; border-block: 1px solid var(--line); }
 tbody tr:hover { background: var(--s1); }
 
+/* Agency tester form */
+.tester { display: grid; gap: 16px; max-width: 760px; }
+.field { display: grid; gap: 8px; }
+.field > span { font: 500 11px/1.4 var(--body); letter-spacing: 0.18em; text-transform: uppercase; color: var(--low); }
+.field input, .field select, .field textarea { width: 100%; background: var(--s1); color: var(--txt); border: 1px solid var(--line-strong); padding: 12px 14px; font: 400 16px/1.4 var(--body); border-radius: 0; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--or); outline-offset: 2px; border-color: transparent; }
+.field-row { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+.hits { list-style: none; margin: -8px 0 0; padding: 0; border: 1px solid var(--line); max-width: 760px; }
+.hits li + li { border-top: 1px solid var(--line); }
+.hit { width: 100%; text-align: left; background: var(--s1); color: var(--txt); border: 0; padding: 10px 14px; font: 400 15px var(--body); cursor: pointer; }
+.hit:hover { background: var(--s2); color: var(--or); }
+button.btn { cursor: pointer; font-family: var(--body); }
+button.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.fine.bad { color: var(--err); }
+
+/* FAQ (CI: line list, orange +/-) */
+details { border-bottom: 1px solid var(--line); padding: 22px 0; max-width: 900px; }
+details:first-of-type { border-top: 1px solid var(--line); }
+summary { cursor: pointer; font: 500 clamp(17px, 1.5vw, 20px)/1.4 var(--body); color: var(--txt); list-style: none; display: flex; justify-content: space-between; gap: 24px; transition: color 0.2s; }
+summary::-webkit-details-marker { display: none; }
+summary:hover { color: var(--or); }
+summary::after { content: "+"; color: var(--or); font-size: 25px; line-height: 1; }
+details[open] summary::after { content: "–"; }
+details p { margin: 14px 0 0; color: var(--mute); }
+
 /* Footer */
 footer { border-top: 1px solid var(--line); padding: 36px 0 44px; }
 .foot { display: flex; flex-wrap: wrap; gap: 16px 40px; justify-content: space-between; font-size: 15px; }

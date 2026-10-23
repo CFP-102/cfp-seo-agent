@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SEO data for agencies – no subscription, no account – {{NAME}}</title>
+<meta name="description" content="SEO data for agencies: keywords, Google rankings, competitors and local visibility, paid per request. Try it free, no account, no subscription. City-level for Germany, Austria and Switzerland.">
+<link rel="canonical" href="{{BASE_URL}}/agencies">
+<link rel="alternate" hreflang="de" href="{{BASE_URL}}/de/agenturen">
+<link rel="alternate" hreflang="en" href="{{BASE_URL}}/agencies">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body data-pay-to="{{PAY_TO_ADDRESS}}" data-network="{{NETWORK}}">
+<header class="top">
+  <div class="wrap bar">
+    <a class="brand" href="/"><img src="/logo-white.png" alt="Chiemgau Films" width="62" height="30"><span class="brandname">{{NAME}}</span></a>
+    <div class="navgroup">
+      <nav aria-label="Main">
+        <a href="#testen">Try it</a>
+        <a href="#einbinden">Integrate</a>
+        <a href="#faq">FAQ</a>
+        <a href="/status">Status</a>
+      </nav>
+      <a class="lang" href="/de/agenturen" hreflang="de" lang="de">DE</a>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="hero wrap">
+  <p class="eyebrow">For agencies and freelancers</p>
+  <h1>SEO data for your clients. No subscription.</h1>
+  <p class="lead">Keywords, Google rankings, competitors and local visibility, when you need them. You pay only for the single request, usually 2 to 10 cents. No account, no contract, no monthly fee.</p>
+  <div class="cta">
+    <a class="btn primary" href="#testen">Try it free</a>
+    <a class="btn" href="#faq">FAQ</a>
+  </div>
+  {{MODE_NOTE}}
+</section>
+
+<section class="wrap">
+  <h2>Why agencies use it</h2>
+  <div class="grid">
+    <article class="card"><h3>Instead of a $100 monthly plan</h3><p>Big SEO suites often cost $100 to $400 a month, even if you only need them now and then. Here you pay only for what you request.</p></article>
+    <article class="card"><h3>Local down to the city</h3><p>Results for Munich, Vienna or Zurich instead of just "Germany". Ideal for local clients such as trades, practices, restaurants and shops.</p></article>
+    <article class="card"><h3>Ready for AI assistants</h3><p>Your AI tools (for example Claude) can fetch the data directly, so client analyses and proposals get done faster.</p></article>
+    <article class="card"><h3>Data stays in Germany</h3><p>Server in Germany, no IP addresses stored, inputs deleted after 30 days. A German operator with a full imprint.</p></article>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>How it works</h2>
+  <ol class="steps">
+    <li><strong>Pick a service.</strong> For example "Local Market Check" for a client's local visibility or "Keyword Ideas" for content planning.</li>
+    <li><strong>Try it free.</strong> Enter a search term and a place and click "Try it free". There is one free sample per service and day.</li>
+    <li><strong>Buy when needed.</strong> With a browser wallet you pay for exactly this one request. Save the result as a table (CSV) for Excel or Google Sheets.</li>
+  </ol>
+</section>
+
+<section class="wrap">
+  <h2>Which service for which task?</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Task</th><th>Service</th><th>Price per request</th></tr></thead>
+    <tbody>
+      <tr><td>How visible is a local business (Google + Maps)?</td><td><a href="?service=local-market-check#testen">Local Market Check</a></td><td>0.10 USDC</td></tr>
+      <tr><td>Which topics and search terms are worth it?</td><td><a href="?service=keyword-ideas#testen">Keyword Ideas</a>, <a href="?service=keyword-difficulty#testen">Keyword Difficulty</a></td><td>0.025 / 0.04 USDC</td></tr>
+      <tr><td>How often is a term searched, what does a click cost?</td><td><a href="?service=keyword-metrics#testen">Keyword Metrics</a> (up to 1000 terms)</td><td>0.12 USDC</td></tr>
+      <tr><td>Who ranks at the top of Google?</td><td><a href="?service=google-serp#testen">Google SERP</a></td><td>0.025 USDC</td></tr>
+      <tr><td>What does the client rank for, what do competitors rank for?</td><td><a href="?service=ranked-keywords#testen">Ranked Keywords</a>, <a href="?service=keyword-gap#testen">Keyword Gap</a></td><td>0.04 / 0.045 USDC</td></tr>
+      <tr><td>How good is a page technically?</td><td><a href="?service=page-audit#testen">Page Audit</a></td><td>0.02 USDC</td></tr>
+    </tbody>
+  </table></div>
+  <p class="fine">All 20 services with prices are in the <a href="/#services">overview</a>. 1 USDC is about 1 US dollar.</p>
+</section>
+
+<section id="testen" class="wrap">
+  <h2>Try it now</h2>
+  <p class="sub">Services up to 0.05 USDC have one free sample per day. The "Local Market Check" package is paid only.</p>
+  <noscript><p class="note">Please allow JavaScript to try services in the browser. Without JavaScript, see the <a href="/#services">overview</a>.</p></noscript>
+  <form id="tester" class="tester" novalidate>
+    <label class="field"><span>Service</span><select id="svc" required></select></label>
+    <p id="svc-info" class="fine"></p>
+    <div id="fields"></div>
+    <div id="loc" class="field-row">
+      <label class="field"><span>Place (city or region)</span><input id="loc-q" type="search" placeholder="e.g. Munich, Vienna, Zurich" autocomplete="off"></label>
+      <label class="field"><span>Country</span>
+        <select id="country">
+          <option value="2276">Germany</option>
+          <option value="2040">Austria</option>
+          <option value="2756">Switzerland</option>
+          <option value="2840">United States</option>
+          <option value="2826">United Kingdom</option>
+        </select>
+      </label>
+    </div>
+    <ul id="loc-hits" class="hits" hidden></ul>
+    <p id="loc-chosen" class="fine"></p>
+    <div class="cta">
+      <button type="submit" class="btn primary" id="btn-free">Try it free</button>
+      <button type="button" class="btn" id="btn-buy">Buy with wallet</button>
+    </div>
+    <p id="msg" class="fine" role="status" aria-live="polite"></p>
+  </form>
+</section>
+
+<section id="ergebnis" class="wrap" hidden>
+  <h2>Result</h2>
+  <p id="res-meta" class="fine"></p>
+  <div id="res-tables"></div>
+  <div class="cta">
+    <button type="button" class="btn" id="dl-csv">Save as CSV (Excel)</button>
+    <button type="button" class="btn" id="dl-json">Save as JSON</button>
+  </div>
+  <p class="fine">For paid requests the JSON file contains the request ID and the result token. With them you can fetch the result again without paying again.</p>
+</section>
+
+<section id="einbinden" class="wrap">
+  <h2>Integrate: no account, no API key</h2>
+  <p class="sub">There is no sign-up. Paying per request replaces accounts and keys. Pick the way that suits you:</p>
+  <ol class="steps">
+    <li><strong>Right here in the browser.</strong> For occasional requests this page is enough. You only need a browser wallet (e.g. Coinbase Wallet or MetaMask) with a little USDC on the Base network, for example 5 USDC for 50 to 200 requests.</li>
+    <li><strong>In your AI assistant.</strong> Add this address as a connector in Claude (or another assistant with MCP): <code>{{BASE_URL}}/mcp</code>. The assistant then sees all services and prices and can use the free samples. Paid requests need an assistant with wallet support.</li>
+    <li><strong>In your own tools.</strong> Your developer or automation tool calls the services through the REST API. The <a href="/quickstart.html">guide</a> has ready example code; prices are machine-readable at <a href="/api/v1/services">/api/v1/services</a>.</li>
+  </ol>
+</section>
+
+<section id="faq" class="wrap">
+  <h2>FAQ</h2>
+  <details><summary>Do I need an account or an API key?</summary><p>No. Every request is paid individually, so there is no sign-up, no key and no subscription.</p></details>
+  <details><summary>What does it cost?</summary><p>Depending on the service 0.02 to 0.12 USDC per request; the "Local Market Check" package is 0.10 USDC. 1 USDC is about 1 US dollar. You see the exact price before every payment.</p></details>
+  <details><summary>What is USDC and how do I get it?</summary><p>USDC is a digital dollar (stablecoin). Buy it for example in the Coinbase app and send it to your wallet on the "Base" network. You pay no network fees for payments to us.</p></details>
+  <details><summary>Which wallet do I need?</summary><p>A browser wallet that supports Base, for example Coinbase Wallet or MetaMask as an extension for Chrome, Firefox or Edge. The wallet shows amount and recipient before every payment and asks for your confirmation.</p></details>
+  <details><summary>Do I get an invoice?</summary><p>Yes, on request to <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a> with the request ID. Every payment can also be verified publicly.</p></details>
+  <details><summary>What if something goes wrong?</summary><p>You are never charged twice for the same payment. A failed paid request gets one free retry. Paid results can be fetched again with the result token. If anything stays unresolved, we refund on request.</p></details>
+  <details><summary>Where does the data come from and how fresh is it?</summary><p>The data comes live from DataForSEO, a large provider of search engine data. Google results are fetched live (identical requests are cached for a few hours at most); keyword and domain data come from regularly updated databases.</p></details>
+  <details><summary>What about data protection?</summary><p>The service is set up with privacy in mind: server in Germany, no IP addresses stored, inputs deleted after 30 days. Please do not enter personal data. Details in the <a href="/legal.html#datenschutz">privacy policy</a>.</p></details>
+  <details><summary>May I use the data for my clients?</summary><p>Yes, for your own business purposes, including analyses, reports and proposals for your clients. Reselling the raw data as your own data product is not allowed. Details in the <a href="/legal.html#terms">terms of use</a>.</p></details>
+  <details><summary>Are there discounts for volume?</summary><p>Many services handle several items in one request, for example up to 1000 keywords or 10 domains. For larger volumes, just write to us.</p></details>
+</section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div><strong>{{NAME}}</strong><br><span class="fine">Contact: <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a></span></div>
+    <div class="fine"><a href="/legal.html#impressum">Legal notice</a> · <a href="/legal.html#datenschutz">Privacy</a> · <a href="/legal.html#terms">Terms of use</a></div>
+  </div>
+</footer>
+<script src="/agentur.js" defer></script>
+</body>
+</html>

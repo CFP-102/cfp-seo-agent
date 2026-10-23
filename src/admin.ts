@@ -266,7 +266,7 @@ export function createAdminRouter(deps: { env: Env; store: Store; pipeline: Pipe
   router.use(enabled, auth);
 
   router.get("/", (_req, res) => {
-    res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'");
+    res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'self'; font-src 'self'; img-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'");
     res.type("html").send(renderPage(env, buildAdminStats(env, store, pipeline)));
   });
   router.get("/payments.csv", (req, res) => {
