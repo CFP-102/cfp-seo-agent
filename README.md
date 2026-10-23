@@ -1,6 +1,6 @@
 # CFP SEO Agent (Agent Data API)
 
-[![TDQS](https://tdqs.dev/reports/blllaaojya/badge.svg)](https://tdqs.dev/reports/blllaaojya) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![TDQS](https://tdqs.dev/reports/akhiqdtjjd/badge.svg)](https://tdqs.dev/reports/akhiqdtjjd) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 Pay-per-call SEO-Daten-APIs für KI-Agenten: DataForSEO als Datenquelle, Bezahlung per **x402 v2** in USDC auf Base.
 Ein Node.js-Service (Express + TypeScript) hinter Caddy, SQLite für Request-Ledger, kein LLM, keine GPU.
