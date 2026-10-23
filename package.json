@@ -10,14 +10,14 @@
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "tsc -p tsconfig.json",
-    "start": "node --env-file-if-exists=.env dist/index.js",
+    "start": "node dist/stdio.js",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "smoke:sandbox": "./scripts/sandbox-smoke.sh",
     "wallet:test": "tsx scripts/create-test-wallet.ts",
     "e2e:testnet": "tsx --env-file=.env.buyer scripts/e2e-testnet.ts",
-    "start:stdio": "node dist/stdio.js"
+    "start:http": "node --env-file-if-exists=.env dist/index.js"
   },
   "dependencies": {
     "@coinbase/x402": "2.1.0",
