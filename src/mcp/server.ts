@@ -55,7 +55,8 @@ const FREE_TOOLS: Tool[] = [
     description:
       "FREE (when enabled): try a service without paying. Either one keyword-metrics lookup for ONE keyword (send keyword), " +
       "or one call of any service up to 0.05 USDC (send service and input, the same arguments as the paid tool). " +
-      "One per service per day per client and a daily total; returns an error when used up. Packages have no sample.",
+      "Returns the same JSON as the paid tool plus sample: true (no result_token). One sample per service per day per client, a shared daily total, and at most 3 failed samples per client and day; " +
+      "returns an error (sample_used, sample_exhausted or sample_failures) when a limit is hit. Packages such as local_market_check and services above 0.05 USDC have no sample: call list_services and check free_sample per service.",
     inputSchema: {
       type: "object",
       properties: {
@@ -95,10 +96,15 @@ const FREE_TOOLS: Tool[] = [
   },
   {
     name: "get_result",
-    description: "FREE. Fetch a result you already paid for (or its status) with the request_id and result_token from the original response.",
+    description:
+      "FREE and read-only. Fetch the stored result of a paid call (or its current status, e.g. completed or failed) using the request_id and result_token from the original response. " +
+      "Use it instead of paying again when an answer was lost. Results are deleted 30 days after the call; an expired result returns an 'expired' error. Retrieval never charges and never triggers a new data call.",
     inputSchema: {
       type: "object",
-      properties: { request_id: { type: "string" }, result_token: { type: "string" } },
+      properties: {
+        request_id: { type: "string", description: "The request_id from the original paid response (a UUID, e.g. 3f2b8c1e-...)." },
+        result_token: { type: "string", description: "The secret result_token returned with that response (about 32 characters). Without it the result is not shown." },
+      },
       required: ["request_id", "result_token"],
       additionalProperties: false,
     },
@@ -111,13 +117,23 @@ const FREE_TOOLS: Tool[] = [
       "using request_id and result_token from the error response.",
     inputSchema: {
       type: "object",
-      properties: { request_id: { type: "string" }, result_token: { type: "string" } },
+      properties: {
+        request_id: { type: "string", description: "The request_id from the error response of the failed paid call." },
+        result_token: { type: "string", description: "The result_token returned with that error response." },
+      },
       required: ["request_id", "result_token"],
       additionalProperties: false,
     },
     annotations: { title: "Retry failed paid request", readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
   },
 ];
+
+/** Top-level fields of the documented output example, so an agent knows what it will get without paying first. */
+function returnsOf(s: ServiceDefinition): string {
+  const o = s.outputExample;
+  const keys = o && typeof o === "object" ? Object.keys(o as object).filter((k) => k !== "location_code" && k !== "language_code") : [];
+  return keys.length ? `JSON with ${keys.join(", ")}` : "JSON";
+}
 
 function paidTool(s: ServiceDefinition, deps: McpDeps): Tool {
   const payNote = deps.payments
@@ -127,7 +143,7 @@ function paidTool(s: ServiceDefinition, deps: McpDeps): Tool {
     : "SANDBOX (development): returns dummy data, no payment.";
   return {
     name: toolNameOf(s.id),
-    description: `${s.summary} ${payNote}${s.notice ? ` NOTE: ${s.notice}` : ""}`,
+    description: `${s.summary} Returns: ${returnsOf(s)}. ${payNote}${s.notice ? ` NOTE: ${s.notice}` : ""}`,
     inputSchema: inputJsonSchema(s.inputSchema) as Tool["inputSchema"],
     annotations: { title: s.name, readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
   };

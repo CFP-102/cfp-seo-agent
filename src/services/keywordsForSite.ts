@@ -29,7 +29,7 @@ export interface KeywordsForSiteOutput {
 export const keywordsForSite: ServiceDefinition<Input, KeywordsForSiteOutput> = {
   id: cfg.id,
   name: cfg.name,
-  summary: `Up to ${cfg.maxResults} Google keywords relevant to a website, with search volume, CPC, competition, difficulty and intent (DataForSEO Labs Keywords For Site).`,
+  summary: `Up to ${cfg.maxResults} Google keywords relevant to a website, with search volume, CPC, competition, difficulty and intent (DataForSEO Labs Keywords For Site). Use it to find what a site should target; use ranked_keywords for what it already ranks for.`,
   route: cfg.route,
   priceUsdc: cfg.priceUsdc,
   enabled: cfg.enabled,

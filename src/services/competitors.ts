@@ -46,7 +46,7 @@ const sum = (...v: (number | null)[]): number | null => (v.every((x) => x === nu
 export const competitors: ServiceDefinition<Input, CompetitorsOutput> = {
   id: cfg.id,
   name: cfg.name,
-  summary: `Up to ${cfg.maxResults} organic search competitors of a domain with ranking overlap and traffic metrics (DataForSEO Labs Competitors Domain).`,
+  summary: `Up to ${cfg.maxResults} organic search competitors of a domain with ranking overlap and traffic metrics (DataForSEO Labs Competitors Domain). Use it to find who competes with a domain; use keyword_gap to see which keywords a known competitor ranks for that you do not.`,
   route: cfg.route,
   priceUsdc: cfg.priceUsdc,
   enabled: cfg.enabled,

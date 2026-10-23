@@ -34,7 +34,7 @@ export interface KeywordIdeasOutput {
 export const keywordIdeas: ServiceDefinition<Input, KeywordIdeasOutput> = {
   id: cfg.id,
   name: cfg.name,
-  summary: `Up to ${cfg.maxResults} keyword suggestions containing the words of one seed phrase, with search volume, CPC and competition (DataForSEO Labs Keyword Suggestions).`,
+  summary: `Up to ${cfg.maxResults} keyword suggestions containing the words of one seed phrase, with search volume, CPC and competition (DataForSEO Labs Keyword Suggestions). Use it to find new phrases around one seed; use keyword_metrics for exact volumes of keywords you already have and keyword_difficulty for ranking difficulty.`,
   route: cfg.route,
   priceUsdc: cfg.priceUsdc,
   enabled: cfg.enabled,

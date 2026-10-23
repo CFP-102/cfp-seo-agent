@@ -25,7 +25,7 @@ export interface DomainTechnologiesOutput {
 export const domainTechnologies: ServiceDefinition<Input, DomainTechnologiesOutput> = {
   id: cfg.id,
   name: cfg.name,
-  summary: "Technologies a website uses (CMS, analytics, servers, frameworks, marketing tools) grouped by category (DataForSEO Domain Analytics Technologies).",
+  summary: "Technologies a website uses (CMS, analytics, servers, frameworks, marketing tools) grouped by category (DataForSEO Domain Analytics Technologies). Use it to see which CMS, analytics or marketing tools a competitor or prospect runs.",
   route: cfg.route,
   priceUsdc: cfg.priceUsdc,
   enabled: cfg.enabled,

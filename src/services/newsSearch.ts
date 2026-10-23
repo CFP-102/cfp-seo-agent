@@ -30,7 +30,7 @@ export interface NewsSearchOutput {
 export const newsSearch: ServiceDefinition<Input, NewsSearchOutput> = {
   id: cfg.id,
   name: cfg.name,
-  summary: `Top ${cfg.maxResults} Google News results for a keyword: headline, source, URL, snippet and publish time (DataForSEO SERP Google News Live).`,
+  summary: `Top ${cfg.maxResults} Google News results for a keyword: headline, source, URL, snippet and publish time (DataForSEO SERP Google News Live). Use it for current coverage of a topic; use google_serp for regular web results.`,
   route: cfg.route,
   priceUsdc: cfg.priceUsdc,
   enabled: cfg.enabled,

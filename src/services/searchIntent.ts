@@ -38,7 +38,7 @@ const label = (raw: unknown): IntentLabel => {
 export const searchIntent: ServiceDefinition<Input, SearchIntentOutput> = {
   id: cfg.id,
   name: cfg.name,
-  summary: `Search intent (informational, navigational, commercial, transactional) with probability for up to ${cfg.maxInputs} keywords (DataForSEO Labs Search Intent).`,
+  summary: `Search intent (informational, navigational, commercial, transactional) with probability for up to ${cfg.maxInputs} keywords (DataForSEO Labs Search Intent). Use it to decide whether a keyword suits an informational, commercial or transactional page.`,
   route: cfg.route,
   priceUsdc: cfg.priceUsdc,
   enabled: cfg.enabled,
