@@ -115,7 +115,7 @@ export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?:
       res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'self'; font-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'");
       if (!indexable) res.setHeader("X-Robots-Tag", "noindex, nofollow");
       const v = siteValues(env, pipeline, network);
-      res.type("html").send(renderStatusPage(buildStatus(store, pipeline), lang, { NAME: v.NAME!, BASE_URL: v.BASE_URL!, CONTACT_EMAIL: v.CONTACT_EMAIL!, PAY_TO_ADDRESS: v.PAY_TO_ADDRESS! }));
+      res.type("html").send(renderStatusPage(buildStatus(store, pipeline), lang, { NAME: v.NAME!, BASE_URL: v.BASE_URL!, CONTACT_EMAIL: v.CONTACT_EMAIL!, PAY_TO_ADDRESS: v.PAY_TO_ADDRESS!, EXTERNAL_STATUS_URL: env.EXTERNAL_STATUS_URL }));
     };
     router.get(["/status", "/status.html"], statusPage("en"));
     router.get(["/de/status", "/de/status.html"], statusPage("de"));

@@ -72,3 +72,13 @@ describe("fonts", () => {
     }
   });
 });
+
+describe("external status link", () => {
+  it("links (never embeds) the independent status page when configured", async () => {
+    const { app } = buildTestApp({ fetchImpl: routedUpstream([]).impl, env: { ...ENV, EXTERNAL_STATUS_URL: "https://stats.uptimerobot.com/BJZGClEKRo" } });
+    const base = await start(app);
+    const html = await (await fetch(base + "/de/status")).text();
+    expect(html).toContain('href="https://stats.uptimerobot.com/BJZGClEKRo"');
+    expect(html).not.toMatch(/<img[^>]+uptimerobot|<iframe/);
+  });
+});

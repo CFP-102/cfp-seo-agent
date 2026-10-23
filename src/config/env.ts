@@ -51,6 +51,9 @@ const EnvSchema = z
     WELLKNOWN_MCP_REGISTRY_AUTH: z.string().max(4096).default(""),
     WELLKNOWN_GLAMA: z.string().max(4096).default(""),
 
+    // Optional link to an independent public status page (e.g. UptimeRobot), shown on /status. Link only, nothing is embedded.
+    EXTERNAL_STATUS_URL: z.union([z.string().url().startsWith("https://"), z.literal("")]).default(""),
+
     // Data minimization: request inputs and results are deleted after this many days (payment records are kept for bookkeeping).
     RETENTION_DAYS: z.coerce.number().int().min(1).max(365).default(30),
 
