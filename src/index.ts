@@ -94,6 +94,7 @@ const server = app.listen(env.PORT, () => {
 for (const sig of ["SIGINT", "SIGTERM"] as const) {
   process.on(sig, () => {
     server.close(() => {
+      app.locals.pageViews?.stop(); // write buffered page views before the database closes
       store.close();
       process.exit(0);
     });

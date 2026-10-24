@@ -34,7 +34,7 @@ async function main() {
       const out = await client.callTool(s.mcp_tool, s.example_request);
       const body = text(out);
       const receipt = out.paymentResponse;
-      if (out.isError || !out.paymentMade || receipt?.success !== true || receipt.network !== options.network || body.data_source !== options.source || typeof body.request_id !== "string") throw new Error("Paid tool failed or uncertain");
+      if (out.isError || !out.paymentMade || receipt?.success !== true || receipt.network !== options.network || body.data_source !== (s.data_source === "local" ? "local" : options.source) || typeof body.request_id !== "string") throw new Error("Paid tool failed or uncertain");
       const rc = await chain.waitForTransactionReceipt({ hash: receipt.transaction as `0x${string}` });
       const valid = rc.status === "success" && rc.logs.some((log) => {
         if (log.address.toLowerCase() !== options.asset.toLowerCase()) return false;
@@ -48,7 +48,12 @@ async function main() {
       const denied = await client.client.callTool({ name: "get_result", arguments: { request_id: body.request_id, result_token: "wrong-token" } });
       if (!denied.isError) throw new Error("Invalid result token accepted");
     }
-    const after = await balance();
+    // Public RPC nodes lag behind the settlement receipt: re-read the balance for up to ~20 s.
+    let after = await balance();
+    for (let i = 0; i < 10 && before - after !== expected; i++) {
+      await new Promise((r) => setTimeout(r, 2000));
+      after = await balance();
+    }
     if (before - after !== expected) throw new Error("Balance mismatch");
     console.log(`ALL CHECKS PASSED; spent ${formatUnits(before - after, 6)} USDC`);
   } finally { await client.close(); }

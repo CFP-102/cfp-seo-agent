@@ -522,7 +522,7 @@ import { parseOptions, PaymentGuard, selectServices, assertMode, type Service } 
 import { createBuyerWallet } from "../scripts/buyer-wallet.js";
 import type { PaymentRequirements } from "@x402/core/types";
 
-const e2eService: Service = { id: "keyword-metrics", path: ROUTE, mcp_tool: "keyword_metrics", enabled: true, price_usdc: PRICE, example_request: BODY };
+const e2eService: Service = { id: "keyword-metrics", path: ROUTE, mcp_tool: "keyword_metrics", enabled: true, price_usdc: PRICE, example_request: BODY, data_source: "sandbox" };
 function e2eRequirements(options = parseOptions([])): PaymentRequirements {
   return { scheme: "exact", network: options.network, asset: options.asset, amount: "120000", payTo: options.payTo, maxTimeoutSeconds: 60, extra: { name: "USDC", version: "2" } };
 }
@@ -1274,5 +1274,63 @@ describe("content planning safety", () => {
     expect(() => stationUrl("https://evil.example/a")).toThrow();
     expect(stationUrl("P875").host).toBe("opendata.dwd.de");
     expect(() => unzipKmz(Buffer.from("PK\u0003\u0004 not really a zip"))).toThrow();
+  });
+});
+
+import { createPageViewCounter, looksLikeBot } from "../src/lib/pageViews.js";
+
+describe("admin and page-counter safety", () => {
+  it("page views store only day, page group and visitor type; buffered, bounded and flushed in one write", async () => {
+    const calls: { day: string; items: { serviceId: string; kind: string; n: number }[] }[] = [];
+    const fakeStore = { bumpMany: (day: string, items: { serviceId: string; kind: string; n: number }[]) => calls.push({ day, items }) } as never;
+    const counter = createPageViewCounter(fakeStore, { flushMs: 3_600_000, now: () => new Date("2026-10-24T10:00:00Z") });
+    const fire = (path: string, ua: string, status = 200) => {
+      const handlers: Record<string, () => void> = {};
+      const req = { method: "GET", path, get: () => ua } as never;
+      const res = { statusCode: status, on: (ev: string, fn: () => void) => { handlers[ev] = fn; } } as never;
+      counter.middleware(req, res, () => undefined);
+      handlers.finish?.();
+    };
+    for (let i = 0; i < 500; i++) fire("/", "Mozilla/5.0 (Macintosh) Safari/605.1.15");
+    fire("/status", "Mozilla/5.0 (Macintosh) Safari/605.1.15", 304);
+    fire("/", "curl/8.4.0");
+    fire("/admin", "Mozilla/5.0 Safari");
+    fire("/does-not-exist", "Mozilla/5.0 Safari", 404);
+    expect(calls).toHaveLength(0); // nothing written per request
+    counter.stop();
+    expect(calls).toHaveLength(1);
+    expect(calls[0]!.day).toBe("2026-10-24");
+    expect(calls[0]!.items).toEqual(expect.arrayContaining([
+      { serviceId: "site", kind: "view_home_human", n: 500 },
+      { serviceId: "site", kind: "view_status_human", n: 1 },
+      { serviceId: "site", kind: "view_home_bot", n: 1 },
+    ]));
+    expect(calls[0]!.items).toHaveLength(3); // admin and unknown paths are never counted
+    expect(JSON.stringify(calls)).not.toMatch(/Mozilla|curl|Safari|127\.0\.0\.1/);
+  });
+
+  it("bot guess: browsers stay human, crawlers and HTTP libraries are bots", () => {
+    expect(looksLikeBot("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15")).toBe(false);
+    expect(looksLikeBot("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36 Claude/1.2")).toBe(false);
+    expect(looksLikeBot("Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")).toBe(true);
+    expect(looksLikeBot("Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.2)")).toBe(true);
+    expect(looksLikeBot("curl/8.4.0")).toBe(true);
+    expect(looksLikeBot(undefined)).toBe(true);
+  });
+
+  it("admin JSON (live, insights, stats) needs the password and is never cached", async () => {
+    const env = { ADMIN_USER: "boss", ADMIN_PASSWORD: "correct-horse-battery-staple-123", PAYMENT_MODE: "testnet", PAY_TO_ADDRESS: PAY_TO, DATAFORSEO_LOGIN: "l", DATAFORSEO_PASSWORD: "p" };
+    const { app } = buildTestApp({ fetchImpl: routedUpstream([]).impl, env });
+    const base = await start(app);
+    for (const p of ["/admin/live.json", "/admin/insights.json", "/admin/stats.json", "/admin"]) {
+      const res = await fetch(base + p);
+      expect(res.status, p).toBe(401);
+      expect(res.headers.get("cache-control"), p).toBe("no-store");
+    }
+    const ok = await fetch(base + "/admin", { headers: { authorization: "Basic " + Buffer.from("boss:" + env.ADMIN_PASSWORD).toString("base64") } });
+    const csp = ok.headers.get("content-security-policy") ?? "";
+    expect(csp).toContain("connect-src 'self'");
+    expect(csp).toContain("script-src 'self'");
+    expect(csp).not.toMatch(/unsafe-inline|unsafe-eval|\*/);
   });
 });

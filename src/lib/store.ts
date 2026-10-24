@@ -84,6 +84,7 @@ export class Store {
         error_code TEXT
       );
       CREATE INDEX IF NOT EXISTS requests_created ON requests(created_at);
+      CREATE INDEX IF NOT EXISTS requests_payer ON requests(payer);
       CREATE TABLE IF NOT EXISTS heartbeats (
         minute TEXT PRIMARY KEY
       );
@@ -530,13 +531,65 @@ export class Store {
     const rows = this.db
       .prepare(
         `SELECT CAST(substr(created_at, 12, 2) AS INTEGER) AS hour, COUNT(*) AS requests,
-                SUM(CASE WHEN tx_hash IS NOT NULL THEN 1 ELSE 0 END) AS paid,
+                SUM(CASE WHEN tx_hash IS NOT NULL AND network = ? THEN 1 ELSE 0 END) AS paid,
                 COALESCE(SUM(CASE WHEN tx_hash IS NOT NULL AND network = ? THEN price_usdc ELSE 0 END), 0) AS revenue_usdc
-         FROM admin_requests WHERE substr(created_at, 1, 10) = ? GROUP BY hour`,
+         FROM admin_requests WHERE created_at >= ? AND created_at < ? GROUP BY hour`,
       )
-      .all(MAINNET_NETWORK, day) as { hour: number; requests: number; paid: number; revenue_usdc: number }[];
+      .all(MAINNET_NETWORK, MAINNET_NETWORK, `${day}T00:00`, `${day}T24:00`) as { hour: number; requests: number; paid: number; revenue_usdc: number }[];
     const byHour = new Map(rows.map((r) => [r.hour, r]));
     return Array.from({ length: 24 }, (_, hour) => byHour.get(hour) ?? { hour, requests: 0, paid: 0, revenue_usdc: 0 });
+  }
+
+  /**
+   * Admin live panel: real-money totals of one UTC day in a single aggregate query (no rows loaded into JS).
+   * New buyers = payers whose first real payment ever falls on that day.
+   */
+  dayTotals(day: string) {
+    const from = `${day}T00:00`, to = `${day}T24:00`;
+    const t = this.db
+      .prepare(
+        `SELECT COUNT(*) AS paid_calls, COALESCE(SUM(price_usdc), 0) AS revenue_usdc,
+                COUNT(DISTINCT payer) AS buyers, SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed
+         FROM admin_requests WHERE created_at >= ? AND created_at < ? AND network = ? AND tx_hash IS NOT NULL`,
+      )
+      .get(from, to, MAINNET_NETWORK) as { paid_calls: number; revenue_usdc: number; buyers: number; failed: number | null };
+    const fresh = this.db
+      .prepare(
+        `SELECT COUNT(*) AS n FROM (SELECT DISTINCT payer FROM admin_requests
+           WHERE created_at >= ? AND created_at < ? AND network = ? AND tx_hash IS NOT NULL AND payer IS NOT NULL) d
+         WHERE NOT EXISTS (SELECT 1 FROM admin_requests e WHERE e.payer = d.payer AND e.network = ? AND e.tx_hash IS NOT NULL AND e.created_at < ?)`,
+      )
+      .get(from, to, MAINNET_NETWORK, MAINNET_NETWORK, from) as { n: number };
+    return { ...t, failed: t.failed ?? 0, new_buyers: fresh.n };
+  }
+
+  /** Real-money totals since an ISO date (month view of the live panel), aggregated in SQL. */
+  paidTotalsSince(since: string) {
+    return this.db
+      .prepare(`SELECT COUNT(*) AS paid_calls, COALESCE(SUM(price_usdc), 0) AS revenue_usdc FROM admin_requests WHERE created_at >= ? AND network = ? AND tx_hash IS NOT NULL`)
+      .get(since, MAINNET_NETWORK) as { paid_calls: number; revenue_usdc: number };
+  }
+
+  /** All live DataForSEO cost booked on one UTC day (paid calls, free samples, retries and own tests alike). */
+  upstreamSpendOn(day: string): number {
+    return (this.db.prepare(`SELECT COALESCE(SUM(cost_usd), 0) AS s FROM upstream_spend WHERE day = ? AND data_source = 'live'`).get(day) as { s: number }).s;
+  }
+
+  /** Add several counter increments in one transaction (used to flush buffered page views). */
+  bumpMany(day: string, items: { serviceId: string; kind: string; n: number }[]): void {
+    if (!items.length) return;
+    const stmt = this.db.prepare(
+      `INSERT INTO counters (day, service_id, kind, n) VALUES (?, ?, ?, ?)
+       ON CONFLICT(day, service_id, kind) DO UPDATE SET n = n + excluded.n`,
+    );
+    this.db.exec("BEGIN");
+    try {
+      for (const i of items) stmt.run(day, i.serviceId, i.kind, i.n);
+      this.db.exec("COMMIT");
+    } catch (e) {
+      this.db.exec("ROLLBACK");
+      throw e;
+    }
   }
 
   /** Admin live panel: the latest requests (no input, no result), newest first. */

@@ -40,6 +40,8 @@ export type Options = ReturnType<typeof parseOptions>;
 export const serviceSchema = z.object({
   id: z.string(), path: z.string(), mcp_tool: z.string(), price_usdc: z.string().regex(/^\d+(\.\d{1,6})?$/),
   enabled: z.boolean(), example_request: z.record(z.string(), z.unknown()),
+  /** "local" for services that calculate on our server; otherwise the server-wide data source. */
+  data_source: z.enum(["live", "sandbox", "local"]),
 });
 export type Service = z.infer<typeof serviceSchema>;
 

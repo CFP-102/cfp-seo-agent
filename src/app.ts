@@ -10,7 +10,7 @@ import { createAdminRouter } from "./admin.js";
 import { createWishlist } from "./wishlist.js";
 import { createFreeSample } from "./freeSample.js";
 import { createSiteRouter } from "./web/site.js";
-import { countPageViews } from "./lib/pageViews.js";
+import { createPageViewCounter } from "./lib/pageViews.js";
 import { findService } from "./services/index.js";
 import { searchDachLocations } from "./config/locales.js";
 
@@ -223,9 +223,11 @@ export function createApp(deps: AppDeps) {
   app.all("/mcp", limiter, createMcpHandler({ env, store, pipeline, payments: deps.payments, freeSample, wishlist }));
 
   // Internal monitoring (HTTP Basic auth; 404 unless ADMIN_PASSWORD is set).
-  app.use("/admin", createAdminRouter({ env, store, pipeline }));
+  const pageViews = createPageViewCounter(store);
+  app.locals.pageViews = pageViews;
+  app.use("/admin", createAdminRouter({ env, store, pipeline, beforeRead: pageViews.flush }));
 
-  app.use(countPageViews(store));
+  app.use(pageViews.middleware);
   // Website, llms.txt, /openapi.json, /.well-known/x402 (compat) and static assets.
   app.use(createSiteRouter({ env, pipeline, network: deps.payments?.network, freeSample: freeSample.enabled(), freeSampleEligible: freeSample.enabled() ? (freeSample.info().per_service_eligible as string[]) : [], store }));
 

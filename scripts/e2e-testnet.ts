@@ -41,7 +41,7 @@ async function main() {
     const json = await res.json();
     const header = res.headers.get("payment-response");
     const receipt = header ? decodePaymentResponseHeader(header) : null;
-    if (res.status !== 200 || receipt?.success !== true || receipt.network !== options.network || (json.data_source !== options.source && json.data_source !== "local") || typeof json.request_id !== "string" || !signature) throw new Error("Paid call failed or uncertain");
+    if (res.status !== 200 || receipt?.success !== true || receipt.network !== options.network || json.data_source !== (s.data_source === "local" ? "local" : options.source) || typeof json.request_id !== "string" || !signature) throw new Error("Paid call failed or uncertain");
     const rc = await chain.waitForTransactionReceipt({ hash: receipt.transaction as `0x${string}` });
     const valid = rc.status === "success" && rc.logs.some((log) => {
       if (log.address.toLowerCase() !== options.asset.toLowerCase()) return false;
@@ -60,7 +60,12 @@ async function main() {
     if (res.status !== 200 || replay.replayed !== true || replay.request_id !== first.requestId) throw new Error("Replay failed");
     console.log("OK replay: same request, no new authorization");
   }
-  const after = await balance();
+  // Public RPC nodes lag behind the settlement receipt: re-read the balance for up to ~20 s before calling it a mismatch.
+  let after = await balance();
+  for (let i = 0; i < 10 && before - after !== expected; i++) {
+    await new Promise((r) => setTimeout(r, 2000));
+    after = await balance();
+  }
   if (before - after !== expected) throw new Error("Balance mismatch");
   console.log(`ALL CHECKS PASSED; spent ${formatUnits(before - after, 6)} USDC`);
 }

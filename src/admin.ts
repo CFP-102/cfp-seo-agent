@@ -3,7 +3,7 @@ import express, { type RequestHandler, type Router } from "express";
 import type { Env } from "./config/env.js";
 import { FACILITATOR_FEE_USD } from "./config/services.js";
 import { buildInsights } from "./adminInsights.js";
-import { buildLive, type Live } from "./adminLive.js";
+import { liveSnapshots, type Live } from "./adminLive.js";
 import { FailureThrottle } from "./lib/rateLimit.js";
 import { today, type Store } from "./lib/store.js";
 import type { Pipeline } from "./services/pipeline.js";
@@ -156,7 +156,8 @@ const TILE_DEFS: { key: keyof Live["today"]; label: string; unit?: "usdc" | "usd
   { key: "buyers", label: "Buyers" },
   { key: "new_buyers", label: "New buyers" },
   { key: "requests", label: "Requests (all)" },
-  { key: "margin_usd", label: "Margin", unit: "usd" },
+  { key: "margin_usd", label: "Margin after all API cost", unit: "usd" },
+  { key: "upstream_cost_usd", label: "DataForSEO cost (all)", unit: "usd", good: "down" },
   { key: "quotes", label: "Price quotes (402)" },
   { key: "free_samples", label: "Free samples" },
   { key: "mcp_calls", label: "MCP calls" },
@@ -164,7 +165,8 @@ const TILE_DEFS: { key: keyof Live["today"]; label: string; unit?: "usdc" | "usd
   { key: "site_views_bot", label: "Bot / crawler visits" },
   { key: "failed", label: "Failed paid calls", good: "down" },
 ];
-const fmtTile = (v: number, unit?: string) => (unit ? (unit === "usdc" ? v.toFixed(3) : v.toFixed(3)) : String(Math.round(v)));
+/** Money with three decimals, counts as whole numbers (the same rule as fmt() in admin.js). */
+const fmtTile = (v: number, unit?: string) => (unit ? v.toFixed(3) : String(Math.round(v)));
 
 function livePanel(live: Live): string {
   const tile = (d: (typeof TILE_DEFS)[number]) => {
@@ -192,7 +194,7 @@ function livePanel(live: Live): string {
     <span class="pill ${live.needs_attention ? "alert" : ""}" id="lattention">${live.needs_attention ? `${live.needs_attention} need attention` : "all clear"}</span>
   </div>
   <div class="lhero">
-    <div class="lbig"><span class="klabel">Revenue today (USDC, settled)</span><span class="lbigval" id="lbigval" data-v="${live.today.revenue_usdc}">${esc(live.today.revenue_usdc.toFixed(3))}</span>
+    <div class="lbig"><span class="klabel">Revenue today, UTC day (USDC, settled)</span><span class="lbigval" id="lbigval" data-v="${live.today.revenue_usdc}">${esc(live.today.revenue_usdc.toFixed(3))}</span>
       <span class="lsub" id="lbigsub">this month ${esc(live.month.revenue_usdc.toFixed(3))} USDC · ${esc(live.month.paid_calls)} paid calls</span></div>
     <div class="lchart"><span class="klabel">Today by hour (UTC): revenue bars, requests behind</span>
       <svg class="hourly" id="lhourly" viewBox="0 0 288 60" preserveAspectRatio="none" role="img" aria-label="Revenue and requests per hour today">${bars}</svg>
@@ -338,8 +340,10 @@ function renderPage(env: Env, st: Stats, liveData: Live): string {
 </main></body></html>`;
 }
 
-export function createAdminRouter(deps: { env: Env; store: Store; pipeline: Pipeline }): Router {
+export function createAdminRouter(deps: { env: Env; store: Store; pipeline: Pipeline; beforeRead?: () => void }): Router {
   const { env, store, pipeline } = deps;
+  const live = liveSnapshots(env, store, pipeline);
+  const fresh = () => deps.beforeRead?.();
   const router = express.Router();
 
   // Disabled (looks like any unknown path) unless a password is configured: no open admin interface, ever.
@@ -362,7 +366,8 @@ export function createAdminRouter(deps: { env: Env; store: Store; pipeline: Pipe
 
   router.get("/", (_req, res) => {
     res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'self'; font-src 'self'; img-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'");
-    res.type("html").send(renderPage(env, buildAdminStats(env, store, pipeline), buildLive(env, store, pipeline)));
+    fresh();
+    res.type("html").send(renderPage(env, buildAdminStats(env, store, pipeline), live()));
   });
   router.get("/payments.csv", (req, res) => {
     const asked = typeof req.query.month === "string" ? req.query.month : "";
@@ -377,9 +382,11 @@ export function createAdminRouter(deps: { env: Env; store: Store; pipeline: Pipe
     res.type("text/csv").send(["time_utc,service,amount,asset,network,payer,tx_hash,status", ...rows].join("\n") + "\n");
   });
   router.get("/live.json", (_req, res) => {
-    res.json(buildLive(env, store, pipeline));
+    fresh();
+    res.json(live());
   });
   router.get("/insights.json", (_req, res) => {
+    fresh();
     res.json(buildInsights(env, store, pipeline));
   });
   router.get("/stats.json", (_req, res) => {

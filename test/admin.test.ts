@@ -244,6 +244,7 @@ describe("admin live panel and anonymous page counters", () => {
     expect((await fetch(base + "/status", { headers: { "user-agent": "curl/8.0" } })).status).toBe(200);
     await fetch(base + "/does-not-exist", { headers: browser });
     await fetch(base + "/admin/", { headers: browser }); // 401 and never a counted page
+    app.locals.pageViews.flush(); // views are buffered in memory and written in batches
     const rows = store.countersDaily(new Date().toISOString().slice(0, 10));
     const n = (k: string) => rows.filter((r) => r.kind === k).reduce((a, r) => a + Number(r.n), 0);
     expect(n("view_home_human")).toBe(2);
