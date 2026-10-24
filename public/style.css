@@ -177,3 +177,6 @@ th { font: 500 10px/1.6 var(--body); letter-spacing: 0.2em; text-transform: uppe
   .bar { gap: 16px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+
+/* Task guides keep copyable prose readable on narrow screens. */
+.task-page pre { white-space: pre-wrap; overflow-wrap: anywhere; }

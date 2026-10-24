@@ -5,6 +5,7 @@
 <main class="wrap legal"><p class="eyebrow">Your first call</p><h1>Buy data with REST or MCP</h1>
 <p class="lead">Preview for free, then approve a single purchase. You do not need a customer account or a DataForSEO API key.</p>
 {{MODE_NOTE}}<p>This example uses Google SERP: up to 10 organic Google results for one search query. Current price: <strong>{{SERP_PRICE}} USDC</strong>. The <a href="/api/v1/services">live catalog</a> and payment request specify the applicable network and price. This service is for <strong>businesses only (B2B)</strong> and is subject to the <a href="/legal.html#terms">terms of use</a>.</p>
+<p>Need to connect your application first? Use the <a href="/connect">MCP setup guide for Codex, Claude Code and Cursor</a> and its free connection check.</p>
 <h2>1. Browse and validate your input for free</h2><p>These commands do not make a payment. Preflight validates your input and checks the current price. HTTP 402 on an unpaid data request is a payment requirement.</p><pre><code>curl {{BASE_URL}}/api/v1/services
 
 curl -X POST {{BASE_URL}}/api/v1/preflight/google-serp \

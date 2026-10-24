@@ -2,7 +2,16 @@
 
 > Pay-per-call data APIs for AI agents: SEO data (keywords, SERP, competitors, search intent, AI-search demand) and, in a separate category, social media content planning for agencies and video teams (content month plan with linked dates, re-scheduling, shoot-day planning, shot lists, location check). Each call costs a small USDC amount paid with the x402 protocol. No account, no API key.
 
+## Task guides (free to read; no payment authority)
+- Worked content example (offline snapshot, no payment proof): {{BASE_URL}}/content-planning-example (German: /de/content-planung-beispiel); inputs and date-only results: {{BASE_URL}}/examples/content-case-study.json. The shift example has conflicts; do not apply it blindly.
+- Website keyword demand: {{BASE_URL}}/keyword-research (German: /de/keyword-recherche)
+- Local search visibility: {{BASE_URL}}/local-visibility (German: /de/lokale-sichtbarkeit)
+- Content month with linked dates: {{BASE_URL}}/content-planning (German: /de/content-planung)
+- Each guide includes an illustrative result and a bounded agent task. Check live availability and price, validate input and obtain explicit purchase approval.
+
 ## How to use
+- MCP client setup (Codex, Claude Code, Cursor): {{BASE_URL}}/connect (German: /de/einrichten)
+- Free MCP connection check script (no wallet or payment code): {{BASE_URL}}/examples/mcp-check.mjs; calls only tools/list, list_services and preflight.
 - REST and MCP purchase guide: {{BASE_URL}}/quickstart.html
 - Downloadable buyer example (free preview by default): {{BASE_URL}}/examples/buyer.mjs
 - Free catalog with prices and limits: {{BASE_URL}}/api/v1/services

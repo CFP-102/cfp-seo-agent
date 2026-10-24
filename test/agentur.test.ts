@@ -5,12 +5,19 @@ import { webcrypto } from "node:crypto";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 import { buildTestApp, PAY_TO } from "./helpers.js";
 import { fakeFacilitator, post, routedUpstream, start, type Event } from "./x402helpers.js";
+import { SERVICES } from "../src/services/index.js";
 
 /** Load the browser script in a sandbox (no DOM): it only exposes window.AgenturPay. */
 function loadPay() {
   const window: Record<string, any> = {};
   runInNewContext(readFileSync(new URL("../public/agentur.js", import.meta.url), "utf8"), { window, TextEncoder, TextDecoder, btoa, atob, URL, console });
-  return window.AgenturPay as { buildPayment: (...a: any[]) => Promise<{ header: string; amountUsdc: number } | null> };
+  return window.AgenturPay as {
+    buildPayment: (...a: any[]) => Promise<{ header: string; amountUsdc: number } | null>;
+    usesJsonEditor: (service: unknown) => boolean;
+    usesLocale: (service: unknown) => boolean;
+    parseJsonInput: (text: string) => Record<string, unknown>;
+    exampleInput: (service: unknown, language: string) => Record<string, unknown>;
+  };
 }
 
 const walletOf = (account: ReturnType<typeof privateKeyToAccount>) => ({
@@ -23,6 +30,38 @@ const walletOf = (account: ReturnType<typeof privateKeyToAccount>) => ({
 });
 
 describe("agency page browser payment", () => {
+  it("preserves typed content input and buys a local plan through the existing browser payment flow", async () => {
+    const events: Event[] = [];
+    const { app } = buildTestApp({ fetchImpl: routedUpstream(events).impl, facilitator: fakeFacilitator(events) });
+    const base = await start(app);
+    const pay = loadPay();
+    const catalog = await (await fetch(base + "/api/v1/services")).json();
+    for (const entry of catalog.services.filter((s: { category: string }) => s.category === "content")) {
+      const service = SERVICES.find(s => s.id === entry.id)!;
+      expect(pay.usesJsonEditor(entry)).toBe(true);
+      for (const language of ["de", "en"]) {
+        const input = pay.parseJsonInput(JSON.stringify(pay.exampleInput(entry, language)));
+        expect(service.inputSchema.safeParse(input).success, service.id).toBe(true);
+        expect(input).not.toHaveProperty("location_code");
+        if (entry.id === "shoot-location-check") expect(input).not.toHaveProperty("language");
+        else expect(input.language).toBe(language);
+      }
+    }
+    for (const raw of ["{bad", "null", "[]", '"hello"', " ".repeat(131073)]) expect(() => pay.parseJsonInput(raw)).toThrow();
+    expect(pay.usesLocale({ example_request: { keywords: ["seo"] } })).toBe(false);
+    expect(pay.usesLocale({ example_request: { keywords: ["seo"], location_code: 2276 } })).toBe(true);
+    const service = SERVICES.find(s => s.id === "content-month-plan")!;
+    const input = pay.parseJsonInput(JSON.stringify(service.example));
+    expect((await fetch(base + "/api/v1/preflight/" + service.id, post(input))).status).toBe(200);
+    const quote = await fetch(base + service.route, post(input));
+    expect(quote.status).toBe(402);
+    const payment = (await pay.buildPayment(quote.headers.get("payment-required"), { payTo: PAY_TO, network: "eip155:84532", priceUsdc: service.priceUsdc }, walletOf(privateKeyToAccount(generatePrivateKey())), Math.floor(Date.now() / 1000), webcrypto, async () => true))!;
+    const result = await fetch(base + service.route, { ...post(input), headers: { "content-type": "application/json", "payment-signature": payment.header } });
+    expect(result.status).toBe(200);
+    expect(await result.json()).toMatchObject({ data_source: "local", service: service.id });
+    expect(events).toEqual(["settle"]);
+  });
+
   it("builds a valid x402 payment from a wallet signature and buys exactly one call", async () => {
     const events: Event[] = [];
     const { app } = buildTestApp({ fetchImpl: routedUpstream(events).impl, facilitator: fakeFacilitator(events) });

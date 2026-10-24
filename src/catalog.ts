@@ -1,6 +1,6 @@
 import type { Env } from "./config/env.js";
 import type { Pipeline } from "./services/pipeline.js";
-import { toolNameOf } from "./services/common.js";
+import { inputJsonSchema, toolNameOf } from "./services/common.js";
 import { serviceConfig } from "./config/services.js";
 
 /** Public, free description of what we sell. Used by GET /api/v1/services and the MCP list_services tool. */
@@ -16,6 +16,7 @@ export function buildCatalog(deps: { env: Env; pipeline: Pipeline; network?: str
       id: s.id,
       name: s.name,
       category: serviceConfig(s.id).category ?? "data",
+      supports_language: Object.prototype.hasOwnProperty.call(inputJsonSchema(s.inputSchema).properties ?? {}, "language"),
       summary: s.summary,
       method: "POST",
       path: s.route,

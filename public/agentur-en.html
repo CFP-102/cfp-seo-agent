@@ -40,13 +40,17 @@
   {{MODE_NOTE}}
 </section>
 
+<section id="tasks" class="wrap"><p><a href="/connect">Set up MCP: Codex, Claude Code or Cursor</a></p><h2>Start with a task</h2><p class="sub">Explore the result and workflow, copy a task and approve one purchase.</p><div class="grid"><article class="card"><h3><a href="/keyword-research">Check keywords for your website</a></h3><p>Search volume, CPC and advertising competition for selected terms.</p></article><article class="card"><h3><a href="/local-visibility">Check local visibility</a></h3><p>Google and Maps for one service and location in one package.</p></article><article class="card"><h3><a href="/content-planning">Plan a content month</a></h3><p>Topics and linked dates from concept to publication.</p></article></div><p><a href="/content-planning-example">Worked example: from agency brief to content plan</a></p></section>
+
+
+
 <section class="wrap">
   <h2>Why agencies use it</h2>
   <div class="grid">
     <article class="card"><h3>Instead of a $100 monthly plan</h3><p>Big SEO suites often cost $100 to $400 a month, even if you only need them now and then. Here you pay only for what you request.</p></article>
     <article class="card"><h3>Local down to the city</h3><p>Results for Munich, Vienna or Zurich instead of just "Germany". Ideal for local clients such as trades, practices, restaurants and shops.</p></article>
     <article class="card"><h3>Ready for AI assistants</h3><p>Your AI tools (for example Claude) can fetch the data directly, so client analyses and proposals get done faster.</p></article>
-    <article class="card"><h3>Data stays in Germany</h3><p>Server in Germany, no IP addresses stored, inputs deleted after 30 days. A German operator with a full imprint.</p></article>
+    <article class="card"><h3>Server in Germany</h3><p>No IP addresses stored; our inputs and results are deleted after 30 days. Search requests go to DataForSEO; see the privacy policy for other sources and their retention periods.</p></article>
   </div>
 </section>
 
@@ -64,15 +68,15 @@
   <div class="tablewrap"><table>
     <thead><tr><th>Task</th><th>Service</th><th>Price per request</th></tr></thead>
     <tbody>
-      <tr><td>How visible is a local business (Google + Maps)?</td><td><a href="?service=local-market-check#testen">Local Market Check</a></td><td>0.10 USDC</td></tr>
-      <tr><td>Which topics and search terms are worth it?</td><td><a href="?service=keyword-ideas#testen">Keyword Ideas</a>, <a href="?service=keyword-difficulty#testen">Keyword Difficulty</a></td><td>0.025 / 0.04 USDC</td></tr>
-      <tr><td>How often is a term searched, what does a click cost?</td><td><a href="?service=keyword-metrics#testen">Keyword Metrics</a> (up to 1000 terms)</td><td>0.12 USDC</td></tr>
-      <tr><td>Who ranks at the top of Google?</td><td><a href="?service=google-serp#testen">Google SERP</a></td><td>0.025 USDC</td></tr>
-      <tr><td>What does the client rank for, what do competitors rank for?</td><td><a href="?service=ranked-keywords#testen">Ranked Keywords</a>, <a href="?service=keyword-gap#testen">Keyword Gap</a></td><td>0.04 / 0.045 USDC</td></tr>
-      <tr><td>How good is a page technically?</td><td><a href="?service=page-audit#testen">Page Audit</a></td><td>0.02 USDC</td></tr>
+      <tr><td>How visible is a local business (Google + Maps)?</td><td><a href="?service=local-market-check#testen">Local Market Check</a></td><td>{{LOCAL_MARKET_CHECK_PRICE}} USDC</td></tr>
+      <tr><td>Which topics and search terms are worth it?</td><td><a href="?service=keyword-ideas#testen">Keyword Ideas</a>, <a href="?service=keyword-difficulty#testen">Keyword Difficulty</a></td><td>{{KEYWORD_IDEAS_PRICE}} / {{KEYWORD_DIFFICULTY_PRICE}} USDC</td></tr>
+      <tr><td>How often is a term searched, what does a click cost?</td><td><a href="?service=keyword-metrics#testen">Keyword Metrics</a> (up to 1000 terms)</td><td>{{KEYWORD_METRICS_PRICE}} USDC</td></tr>
+      <tr><td>Who ranks at the top of Google?</td><td><a href="?service=google-serp#testen">Google SERP</a></td><td>{{GOOGLE_SERP_PRICE}} USDC</td></tr>
+      <tr><td>What does the client rank for, what do competitors rank for?</td><td><a href="?service=ranked-keywords#testen">Ranked Keywords</a>, <a href="?service=keyword-gap#testen">Keyword Gap</a></td><td>{{RANKED_KEYWORDS_PRICE}} / {{KEYWORD_GAP_PRICE}} USDC</td></tr>
+      <tr><td>How good is a page technically?</td><td><a href="?service=page-audit#testen">Page Audit</a></td><td>{{PAGE_AUDIT_PRICE}} USDC</td></tr>
     </tbody>
   </table></div>
-  <p class="fine">All 20 services with prices are in the <a href="/#services">overview</a>. 1 USDC is about 1 US dollar.</p>
+  <p class="fine">All {{SERVICE_COUNT}} services with prices are in the <a href="/#services">overview</a>. 1 USDC is about 1 US dollar.</p>
 </section>
 
 <section id="testen" class="wrap">
@@ -129,7 +133,7 @@
 <section id="faq" class="wrap">
   <h2>FAQ</h2>
   <details><summary>Do I need an account or an API key?</summary><p>No. Every request is paid individually, so there is no sign-up, no key and no subscription.</p></details>
-  <details><summary>What does it cost?</summary><p>Depending on the service 0.02 to 0.12 USDC per request; the "Local Market Check" package is 0.10 USDC. 1 USDC is about 1 US dollar. You see the exact price before every payment.</p></details>
+  <details><summary>What does it cost?</summary><p>Depending on the service {{MIN_SERVICE_PRICE}} to {{MAX_SERVICE_PRICE}} USDC per request; the "Local Market Check" package is {{LOCAL_MARKET_CHECK_PRICE}} USDC. 1 USDC is about 1 US dollar. You see the exact price before every payment.</p></details>
   <details><summary>What is USDC and how do I get it?</summary><p>USDC is a digital dollar (stablecoin). Buy it for example in the Coinbase app and send it to your wallet on the "Base" network. You pay no network fees for payments to us.</p></details>
   <details><summary>Which wallet do I need?</summary><p>A browser wallet that supports Base, for example Coinbase Wallet or MetaMask as an extension for Chrome, Firefox or Edge. The wallet shows amount and recipient before every payment and asks for your confirmation.</p></details>
   <details><summary>Do I get an invoice?</summary><p>Yes, on request to <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a> with the request ID. Every payment can also be verified publicly.</p></details>

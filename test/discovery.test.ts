@@ -12,6 +12,80 @@ import { render } from "../src/web/site.js";
 
 const paid = (events: Event[] = []) => buildTestApp({ fetchImpl: routedUpstream(events).impl, facilitator: fakeFacilitator(events), env: { PUBLIC_BASE_URL: "https://agent.example.com", CONTACT_EMAIL: "ops@example.com" } });
 
+describe("task entry pages", () => {
+  it("provides an indexable canonical sitemap and keeps current agency prices in sync", async () => {
+    const { app } = paid();
+    const base = await start(app);
+    const sitemap = await (await fetch(base + "/sitemap.xml")).text();
+    expect(sitemap).toContain("https://agent.example.com/de/content-planung-beispiel");
+    expect(sitemap).not.toContain("/admin");
+    for (const route of ["/agencies", "/de/agenturen"]) {
+      const html = await (await fetch(base + route)).text();
+      const service = SERVICES.find(s => s.id === "local-market-check")!;
+      expect(html).toContain(`${service.priceUsdc} USDC`);
+      expect(html).not.toContain("0.10 USDC");
+      expect(html).not.toMatch(/\{\{[A-Z_]+\}\}/);
+    }
+  });
+
+  it("serves localized client setup with rendered URLs and a downloadable free check", async () => {
+    const { app } = buildTestApp({ fetchImpl: routedUpstream([]).impl, env: { PUBLIC_BASE_URL: "https://agent.example.com" } });
+    const base = await start(app);
+    for (const route of ["/connect", "/de/einrichten"]) {
+      const response = await fetch(base + route);
+      const html = await response.text();
+      expect(response.status).toBe(200);
+      expect(html).not.toMatch(/\{\{[A-Z_]+\}\}/);
+      expect(html).toContain("codex mcp add agent-data-api --url https://agent.example.com/mcp");
+      expect(html).toContain("claude mcp add --transport http agent-data-api https://agent.example.com/mcp");
+      expect(html).toContain('data-copy-target="#cursor-config"');
+      expect(html).toContain("/examples/mcp-check.mjs");
+      expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
+    }
+    const script = await fetch(base + "/examples/mcp-check.mjs");
+    expect(script.status).toBe(200);
+    expect(await script.text()).toContain("export async function checkConnection");
+    const homepage = await (await fetch(base + "/")).text();
+    expect(homepage).toContain('href="/connect"');
+  });
+
+  it("renders both languages with current service prices and only free preparation", async () => {
+    const events: Event[] = [];
+    const upstream = routedUpstream(events);
+    const { app } = buildTestApp({ fetchImpl: upstream.impl });
+    const base = await start(app);
+    for (const [en, de, id] of [
+      ["keyword-research", "keyword-recherche", "keyword-metrics"],
+      ["local-visibility", "lokale-sichtbarkeit", "local-market-check"],
+      ["content-planning", "content-planung", "content-month-plan"],
+    ]) {
+      const service = SERVICES.find((s) => s.id === id)!;
+      for (const path of [`/${en}`, `/de/${de}`]) {
+        const response = await fetch(base + path);
+        const html = await response.text();
+        expect(response.status).toBe(200);
+        expect(html).not.toMatch(/\{\{[A-Z_]+\}\}/);
+        expect(html).toContain(`${service.priceUsdc} USDC`);
+        expect(html).toContain('id="agent-task"');
+        expect(html).toContain(`/api/v1/preflight/${id}`);
+        expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
+        expect(response.headers.get("content-security-policy")).toContain("script-src 'self'");
+      }
+    }
+    expect(events).toEqual([]);
+    expect((await (await fetch(base + "/")).text())).toContain('href="/keyword-research"');
+    expect((await (await fetch(base + "/de/agenturen")).text())).toContain('href="/de/content-planung"');
+    expect((await (await fetch(base + "/llms.txt")).text())).toContain("/local-visibility");
+  });
+
+  it("warns when the described service is disabled", async () => {
+    const { app } = buildTestApp({ fetchImpl: routedUpstream([]).impl, disabled: ["content-month-plan"] });
+    const base = await start(app);
+    expect(await (await fetch(base + "/content-planning")).text()).toContain("This service is currently unavailable");
+    expect(await (await fetch(base + "/de/content-planung")).text()).toContain("Dieser Dienst ist derzeit nicht verfügbar");
+  });
+});
+
 describe("public purchase guide", () => {
   it("renders current price and merchant with no unresolved placeholders and links the guarded example", async () => {
     const { app } = buildTestApp({ fetchImpl: routedUpstream([]).impl, env: { PAY_TO_ADDRESS: PAY_TO } });

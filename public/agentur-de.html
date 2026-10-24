@@ -40,13 +40,17 @@
   {{MODE_NOTE}}
 </section>
 
+<section id="tasks" class="wrap"><p><a href="/de/einrichten">MCP einrichten: Codex, Claude Code oder Cursor</a></p><h2>Mit einer Aufgabe starten</h2><p class="sub">Ergebnis und Ablauf ansehen, Auftrag kopieren und den Kauf gezielt freigeben.</p><div class="grid"><article class="card"><h3><a href="/de/keyword-recherche">Keywords für Ihre Website prüfen</a></h3><p>Suchvolumen, Klickpreise und Anzeigenwettbewerb für ausgewählte Begriffe.</p></article><article class="card"><h3><a href="/de/lokale-sichtbarkeit">Lokale Sichtbarkeit prüfen</a></h3><p>Google und Maps für eine Leistung an einem Ort in einem Paket.</p></article><article class="card"><h3><a href="/de/content-planung">Content-Monat planen</a></h3><p>Themen und verlinkte Termine vom Konzept bis zur Veröffentlichung.</p></article></div><p><a href="/de/content-planung-beispiel">Praxisbeispiel: vom Agenturbriefing zum Content-Plan</a></p></section>
+
+
+
 <section class="wrap">
   <h2>Ihr Vorteil</h2>
   <div class="grid">
     <article class="card"><h3>Statt 100 € Abo im Monat</h3><p>Große SEO-Tools kosten oft 100 bis 400 € im Monat, auch wenn Sie sie nur ab und zu brauchen. Hier zahlen Sie nur, was Sie abrufen.</p></article>
     <article class="card"><h3>Lokal bis auf die Stadt</h3><p>Ergebnisse für Rosenheim, Wien oder Zürich statt nur „Deutschland“. Ideal für Kunden aus Handwerk, Praxen, Gastronomie und Handel.</p></article>
     <article class="card"><h3>Fertig für KI-Assistenten</h3><p>Ihre KI-Tools (z. B. Claude) können die Daten direkt abrufen. So entstehen Analysen und Angebote für Kunden schneller.</p></article>
-    <article class="card"><h3>Daten bleiben in Deutschland</h3><p>Server in Deutschland, keine Speicherung von IP-Adressen, Eingaben werden nach 30 Tagen gelöscht. Betreiber mit deutschem Impressum.</p></article>
+    <article class="card"><h3>Server in Deutschland</h3><p>Keine Speicherung von IP-Adressen, Eingaben und Ergebnisse bei uns nach 30 Tagen gelöscht. Suchanfragen gehen an DataForSEO; weitere Quellen und deren Speicherfristen stehen in der Datenschutzerklärung.</p></article>
   </div>
 </section>
 
@@ -64,15 +68,15 @@
   <div class="tablewrap"><table>
     <thead><tr><th>Aufgabe</th><th>Dienst</th><th>Preis pro Abfrage</th></tr></thead>
     <tbody>
-      <tr><td>Wie sichtbar ist ein Betrieb vor Ort (Google + Maps)?</td><td><a href="?dienst=local-market-check#testen">Local Market Check</a></td><td>0,10 USDC</td></tr>
-      <tr><td>Welche Themen und Suchbegriffe lohnen sich?</td><td><a href="?dienst=keyword-ideas#testen">Keyword Ideas</a>, <a href="?dienst=keyword-difficulty#testen">Keyword Difficulty</a></td><td>0,025 / 0,04 USDC</td></tr>
-      <tr><td>Wie oft wird ein Begriff gesucht, was kostet ein Klick?</td><td><a href="?dienst=keyword-metrics#testen">Keyword Metrics</a> (bis 1000 Begriffe)</td><td>0,12 USDC</td></tr>
-      <tr><td>Wer steht bei Google oben?</td><td><a href="?dienst=google-serp#testen">Google SERP</a></td><td>0,025 USDC</td></tr>
-      <tr><td>Wofür rankt der Kunde, wofür der Wettbewerb?</td><td><a href="?dienst=ranked-keywords#testen">Ranked Keywords</a>, <a href="?dienst=keyword-gap#testen">Keyword Gap</a></td><td>0,04 / 0,045 USDC</td></tr>
-      <tr><td>Wie gut ist eine Seite technisch?</td><td><a href="?dienst=page-audit#testen">Page Audit</a></td><td>0,02 USDC</td></tr>
+      <tr><td>Wie sichtbar ist ein Betrieb vor Ort (Google + Maps)?</td><td><a href="?dienst=local-market-check#testen">Local Market Check</a></td><td>{{LOCAL_MARKET_CHECK_PRICE}} USDC</td></tr>
+      <tr><td>Welche Themen und Suchbegriffe lohnen sich?</td><td><a href="?dienst=keyword-ideas#testen">Keyword Ideas</a>, <a href="?dienst=keyword-difficulty#testen">Keyword Difficulty</a></td><td>{{KEYWORD_IDEAS_PRICE}} / {{KEYWORD_DIFFICULTY_PRICE}} USDC</td></tr>
+      <tr><td>Wie oft wird ein Begriff gesucht, was kostet ein Klick?</td><td><a href="?dienst=keyword-metrics#testen">Keyword Metrics</a> (bis 1000 Begriffe)</td><td>{{KEYWORD_METRICS_PRICE}} USDC</td></tr>
+      <tr><td>Wer steht bei Google oben?</td><td><a href="?dienst=google-serp#testen">Google SERP</a></td><td>{{GOOGLE_SERP_PRICE}} USDC</td></tr>
+      <tr><td>Wofür rankt der Kunde, wofür der Wettbewerb?</td><td><a href="?dienst=ranked-keywords#testen">Ranked Keywords</a>, <a href="?dienst=keyword-gap#testen">Keyword Gap</a></td><td>{{RANKED_KEYWORDS_PRICE}} / {{KEYWORD_GAP_PRICE}} USDC</td></tr>
+      <tr><td>Wie gut ist eine Seite technisch?</td><td><a href="?dienst=page-audit#testen">Page Audit</a></td><td>{{PAGE_AUDIT_PRICE}} USDC</td></tr>
     </tbody>
   </table></div>
-  <p class="fine">Alle 20 Dienste mit Preisen finden Sie in der <a href="/de/#services">Übersicht</a>. 1 USDC entspricht etwa 1 US-Dollar.</p>
+  <p class="fine">Alle {{SERVICE_COUNT}} Dienste mit Preisen finden Sie in der <a href="/de/#services">Übersicht</a>. 1 USDC entspricht etwa 1 US-Dollar.</p>
 </section>
 
 <section id="testen" class="wrap">
@@ -129,7 +133,7 @@
 <section id="faq" class="wrap">
   <h2>Häufige Fragen</h2>
   <details><summary>Brauche ich ein Konto oder einen API-Schlüssel?</summary><p>Nein. Jede Abfrage wird einzeln bezahlt, deshalb gibt es weder Registrierung noch Schlüssel noch Abo.</p></details>
-  <details><summary>Was kostet das?</summary><p>Je nach Dienst 0,02 bis 0,12 USDC pro Abfrage, das Paket „Local Market Check“ 0,10 USDC. 1 USDC entspricht etwa 1 US-Dollar. Den genauen Preis sehen Sie vor jeder Zahlung.</p></details>
+  <details><summary>Was kostet das?</summary><p>Je nach Dienst {{MIN_SERVICE_PRICE}} bis {{MAX_SERVICE_PRICE}} USDC pro Abfrage, das Paket „Local Market Check“ {{LOCAL_MARKET_CHECK_PRICE}} USDC. 1 USDC entspricht etwa 1 US-Dollar. Den genauen Preis sehen Sie vor jeder Zahlung.</p></details>
   <details><summary>Was ist USDC und wie bekomme ich es?</summary><p>USDC ist ein digitaler Dollar (Stablecoin). Sie kaufen ihn zum Beispiel in der Coinbase-App mit Euro und senden ihn an Ihre Wallet im Netzwerk „Base“. Netzwerkgebühren für die Zahlung an uns fallen für Sie nicht an.</p></details>
   <details><summary>Welche Wallet brauche ich?</summary><p>Eine Browser-Wallet, die Base unterstützt, zum Beispiel Coinbase Wallet oder MetaMask als Erweiterung in Chrome, Firefox oder Edge. Die Wallet zeigt vor jeder Zahlung Betrag und Empfänger und fragt nach Ihrer Bestätigung.</p></details>
   <details><summary>Bekomme ich eine Rechnung?</summary><p>Ja, auf Anfrage an <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a> mit der Anfragekennung. Jede Zahlung ist zusätzlich öffentlich nachprüfbar.</p></details>

@@ -1,0 +1,309 @@
+{
+  "example_only": true,
+  "paid": false,
+  "execution": "offline_local_functions",
+  "note": "Fixed reference-date demonstration. Not a customer result or proof of payment. Recipe content omitted; posts use keys only. Replace dates before a new request.",
+  "plan_input": {
+    "from": "2026-11-02",
+    "to": "2026-11-27",
+    "today": "2026-10-24",
+    "mix_counts": {
+      "produkt": 2,
+      "mitarbeiter": 2,
+      "bts": 2
+    },
+    "language": "de"
+  },
+  "plan_excerpt": {
+    "posts": [
+      {
+        "key": "p1",
+        "concept": "2026-10-26",
+        "shoot": "2026-10-29",
+        "edit": "2026-10-30",
+        "review": "2026-10-30",
+        "publish": "2026-11-02",
+        "shoot_group": "d1"
+      },
+      {
+        "key": "p2",
+        "concept": "2026-10-26",
+        "shoot": "2026-10-29",
+        "edit": "2026-11-04",
+        "review": "2026-11-05",
+        "publish": "2026-11-06",
+        "shoot_group": "d1"
+      },
+      {
+        "key": "p3",
+        "concept": "2026-10-26",
+        "shoot": "2026-10-29",
+        "edit": "2026-11-09",
+        "review": "2026-11-10",
+        "publish": "2026-11-11",
+        "shoot_group": "d1"
+      },
+      {
+        "key": "p4",
+        "concept": "2026-11-09",
+        "shoot": "2026-11-12",
+        "edit": "2026-11-13",
+        "review": "2026-11-13",
+        "publish": "2026-11-16",
+        "shoot_group": "d2"
+      },
+      {
+        "key": "p5",
+        "concept": "2026-11-09",
+        "shoot": "2026-11-12",
+        "edit": "2026-11-18",
+        "review": "2026-11-19",
+        "publish": "2026-11-20",
+        "shoot_group": "d2"
+      },
+      {
+        "key": "p6",
+        "concept": "2026-11-09",
+        "shoot": "2026-11-12",
+        "edit": "2026-11-23",
+        "review": "2026-11-24",
+        "publish": "2026-11-25",
+        "shoot_group": "d2"
+      }
+    ],
+    "shoot_days": [
+      {
+        "key": "d1",
+        "date": "2026-10-29",
+        "post_keys": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      },
+      {
+        "key": "d2",
+        "date": "2026-11-12",
+        "post_keys": [
+          "p4",
+          "p5",
+          "p6"
+        ]
+      }
+    ],
+    "conflicts_count": 0,
+    "warnings_count": 0,
+    "calendar_export_available": true
+  },
+  "shift_input": {
+    "posts": [
+      {
+        "key": "p1",
+        "concept": "2026-10-26",
+        "shoot": "2026-10-29",
+        "edit": "2026-10-30",
+        "review": "2026-10-30",
+        "publish": "2026-11-02",
+        "shoot_group": "d1"
+      },
+      {
+        "key": "p2",
+        "concept": "2026-10-26",
+        "shoot": "2026-10-29",
+        "edit": "2026-11-04",
+        "review": "2026-11-05",
+        "publish": "2026-11-06",
+        "shoot_group": "d1"
+      },
+      {
+        "key": "p3",
+        "concept": "2026-10-26",
+        "shoot": "2026-10-29",
+        "edit": "2026-11-09",
+        "review": "2026-11-10",
+        "publish": "2026-11-11",
+        "shoot_group": "d1"
+      },
+      {
+        "key": "p4",
+        "concept": "2026-11-09",
+        "shoot": "2026-11-12",
+        "edit": "2026-11-13",
+        "review": "2026-11-13",
+        "publish": "2026-11-16",
+        "shoot_group": "d2"
+      },
+      {
+        "key": "p5",
+        "concept": "2026-11-09",
+        "shoot": "2026-11-12",
+        "edit": "2026-11-18",
+        "review": "2026-11-19",
+        "publish": "2026-11-20",
+        "shoot_group": "d2"
+      },
+      {
+        "key": "p6",
+        "concept": "2026-11-09",
+        "shoot": "2026-11-12",
+        "edit": "2026-11-23",
+        "review": "2026-11-24",
+        "publish": "2026-11-25",
+        "shoot_group": "d2"
+      }
+    ],
+    "language": "de",
+    "move": {
+      "post_key": "p1",
+      "step": "shoot",
+      "new_date": "2026-11-06",
+      "shoot_mode": "group"
+    }
+  },
+  "shift_excerpt": {
+    "posts": [
+      {
+        "key": "p1",
+        "publish": "2026-11-02",
+        "concept": "2026-10-26",
+        "shoot": "2026-11-06",
+        "edit": "2026-11-02",
+        "review": "2026-11-02",
+        "shoot_group": "d1"
+      },
+      {
+        "key": "p2",
+        "publish": "2026-11-06",
+        "concept": "2026-10-26",
+        "shoot": "2026-11-06",
+        "edit": "2026-11-06",
+        "review": "2026-11-06",
+        "shoot_group": "d1"
+      },
+      {
+        "key": "p3",
+        "publish": "2026-11-11",
+        "concept": "2026-10-26",
+        "shoot": "2026-11-06",
+        "edit": "2026-11-09",
+        "review": "2026-11-10",
+        "shoot_group": "d1"
+      },
+      {
+        "key": "p4",
+        "publish": "2026-11-16",
+        "concept": "2026-11-09",
+        "shoot": "2026-11-12",
+        "edit": "2026-11-13",
+        "review": "2026-11-13",
+        "shoot_group": "d2"
+      },
+      {
+        "key": "p5",
+        "publish": "2026-11-20",
+        "concept": "2026-11-09",
+        "shoot": "2026-11-12",
+        "edit": "2026-11-18",
+        "review": "2026-11-19",
+        "shoot_group": "d2"
+      },
+      {
+        "key": "p6",
+        "publish": "2026-11-25",
+        "concept": "2026-11-09",
+        "shoot": "2026-11-12",
+        "edit": "2026-11-23",
+        "review": "2026-11-24",
+        "shoot_group": "d2"
+      }
+    ],
+    "changes": [
+      {
+        "post_key": "p1",
+        "step": "shoot",
+        "from": "2026-10-29",
+        "to": "2026-11-06",
+        "created": false
+      },
+      {
+        "post_key": "p1",
+        "step": "edit",
+        "from": "2026-10-30",
+        "to": "2026-11-02",
+        "created": false
+      },
+      {
+        "post_key": "p1",
+        "step": "review",
+        "from": "2026-10-30",
+        "to": "2026-11-02",
+        "created": false
+      },
+      {
+        "post_key": "p2",
+        "step": "shoot",
+        "from": "2026-10-29",
+        "to": "2026-11-06",
+        "created": false
+      },
+      {
+        "post_key": "p2",
+        "step": "edit",
+        "from": "2026-11-04",
+        "to": "2026-11-06",
+        "created": false
+      },
+      {
+        "post_key": "p2",
+        "step": "review",
+        "from": "2026-11-05",
+        "to": "2026-11-06",
+        "created": false
+      },
+      {
+        "post_key": "p3",
+        "step": "shoot",
+        "from": "2026-10-29",
+        "to": "2026-11-06",
+        "created": false
+      }
+    ],
+    "conflicts": [
+      {
+        "level": "error",
+        "post_key": "p1",
+        "steps": [
+          "shoot",
+          "edit"
+        ],
+        "message": "\"p1\": Schnitt (2026-11-02) liegt vor Dreh (2026-11-06)."
+      },
+      {
+        "level": "warn",
+        "post_key": "p2",
+        "steps": [
+          "shoot",
+          "edit"
+        ],
+        "message": "\"p2\": Dreh und Schnitt liegen zu dicht beieinander (0 Tage)."
+      },
+      {
+        "level": "warn",
+        "post_key": "p2",
+        "steps": [
+          "shoot",
+          "publish"
+        ],
+        "message": "\"p2\": Dreh und Veröffentlichung am selben Tag – für Schnitt und Freigabe bleibt keine Zeit."
+      }
+    ],
+    "blocked": [],
+    "summary": {
+      "posts_changed": 3,
+      "dates_changed": 7,
+      "errors": 1,
+      "warnings": 2
+    },
+    "needs_confirmation": true
+  }
+}

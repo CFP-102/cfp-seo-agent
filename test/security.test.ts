@@ -10,6 +10,7 @@ import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { loadEnv } from "../src/config/env.js";
+import { serviceConfig } from "../src/config/services.js";
 import { createFacilitator, checkPayment, toAtomic, REPLAY_WINDOW_MS, MAX_INFLIGHT_PER_CLIENT } from "../src/payments/x402.js";
 import { Store } from "../src/lib/store.js";
 import { backupLedger } from "../src/lib/backup.js";
@@ -20,6 +21,69 @@ import type { PaymentPayload } from "@x402/core/types";
 const ROUTE = "/api/v1/keyword-metrics";
 const BODY = { keywords: ["running shoes"], location_code: 2840, language_code: "en" };
 const PRICE = "0.12";
+
+describe("free MCP connection check", () => {
+  const exampleUrl = new URL("../public/examples/mcp-check.mjs", import.meta.url).href;
+
+  it("calls only catalog and preflight with the real MCP SDK, without settlement or upstream access", async () => {
+    const { checkConnection } = await import(exampleUrl);
+    const events: Event[] = [];
+    const fac = fakeFacilitator(events);
+    const { app } = buildTestApp({ fetchImpl: routedUpstream(events).impl, facilitator: fac });
+    const requests: { method?: string; params?: { name?: string } }[] = [];
+    const fetchImpl: typeof fetch = async (input, init) => {
+      expect(init?.redirect).toBe("error");
+      expect(init?.signal).toBeTruthy();
+      if (typeof init?.body === "string") requests.push(JSON.parse(init.body));
+      return fetch(input, init);
+    };
+    const result = await checkConnection((await start(app)) + "/mcp", { fetchImpl });
+    expect(result).toMatchObject({ connected: true, paid: false, preflight: { ok: true, service: "google-serp", price_usdc: serviceConfig("google-serp").priceUsdc } });
+    expect(requests.filter(r => r.method === "tools/call").map(r => r.params?.name)).toEqual(["list_services", "preflight"]);
+    expect(events).toEqual([]);
+    expect(fac.settles()).toBe(0);
+  });
+
+  it("rejects unsafe endpoint syntax before making a request and stops on disabled service", async () => {
+    const { checkConnection } = await import(exampleUrl);
+    let called = false;
+    const fetchImpl = async () => { called = true; throw new Error("Unexpected request"); };
+    for (const url of ["http://example.com/mcp", "https://user:password@example.com/mcp", "https://example.com/mcp?key=private", "https://example.com/mcp#x", "https://example.com/other"]) {
+      await expect(checkConnection(url, { fetchImpl })).rejects.toThrow();
+    }
+    expect(called).toBe(false);
+    const events: Event[] = [];
+    const { app } = buildTestApp({ fetchImpl: routedUpstream(events).impl, disabled: ["google-serp"] });
+    await expect(checkConnection((await start(app)) + "/mcp")).rejects.toThrow("unavailable");
+    expect(events).toEqual([]);
+  });
+});
+
+describe("rendered documentation aliases", () => {
+  it("applies rendering, CSP, noindex and availability checks to direct template filenames too", async () => {
+    const events: Event[] = [];
+    const { app } = buildTestApp({ fetchImpl: routedUpstream(events).impl, disabled: ["content-month-plan"] });
+    const base = await start(app);
+    for (const path of [
+      "/connect-en.html", "/connect-de.html",
+      "/task-keyword-research-en.html", "/task-keyword-research-de.html",
+      "/task-local-visibility-en.html", "/task-local-visibility-de.html",
+      "/task-content-planning-en.html", "/task-content-planning-de.html",
+      "/case-study-en.html", "/case-study-de.html",
+    ]) {
+      const response = await fetch(base + path);
+      const html = await response.text();
+      expect(response.status, path).toBe(200);
+      expect(html, path).not.toMatch(/\{\{[A-Z_]+\}\}/);
+      expect(response.headers.get("content-security-policy"), path).toContain("default-src 'none'");
+      expect(response.headers.get("x-robots-tag"), path).toBe("noindex, nofollow");
+      if (path.includes("content-planning") || path.includes("case-study")) {
+        expect(html, path).toMatch(/currently unavailable|derzeit nicht verfügbar/);
+      }
+    }
+    expect(events).toEqual([]);
+  });
+});
 
 describe("keyword suggestions payment boundary", () => {
   it("rejects multiple seed phrases before payment instead of silently ignoring terms", async () => {

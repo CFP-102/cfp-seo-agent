@@ -56,6 +56,11 @@ export function siteValues(env: Env, pipeline: Pipeline, network?: string): Reco
         : "";
   const line = (s: ServiceDefinition) => `- ${s.name} (${s.priceUsdc} USDC): POST ${env.PUBLIC_BASE_URL}${s.route} — MCP tool ${toolNameOf(s.id)} — ${s.summary}`;
   return {
+    ...Object.fromEntries(services.map((s) => [`${s.id.replaceAll("-", "_").toUpperCase()}_PRICE`, escapeHtml(s.priceUsdc)])),
+    SERVICE_COUNT: String(services.filter(s => pipeline.isEnabled(s)).length),
+    MIN_SERVICE_PRICE: String(Math.min(...services.map(s => Number(s.priceUsdc)))),
+    MAX_SERVICE_PRICE: String(Math.max(...services.map(s => Number(s.priceUsdc)))),
+    CASE_TOTAL_PRICE: String(Number((Number(serviceConfig("content-month-plan").priceUsdc) + Number(serviceConfig("content-plan-shift").priceUsdc)).toFixed(6))),
     NAME: escapeHtml(env.SITE_NAME),
     BASE_URL: escapeHtml(env.PUBLIC_BASE_URL),
     NETWORK: escapeHtml(network ?? "eip155:8453"),
@@ -83,7 +88,7 @@ export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?:
   // Test/sandbox deployments stay out of search engines; only a mainnet (real money) deployment is indexable.
   const indexable = env.PAYMENT_MODE === "mainnet";
 
-  const page = (template: string, type: string): express.RequestHandler => (_req, res) => {
+  const page = (template: string, type: string, extraValues: () => Record<string, string> = () => ({})): express.RequestHandler => (_req, res) => {
     res.type(type);
     if (!indexable) res.setHeader("X-Robots-Tag", "noindex, nofollow");
     res.setHeader("Cache-Control", "public, max-age=300");
@@ -92,7 +97,7 @@ export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?:
       "Content-Security-Policy",
       "default-src 'none'; style-src 'self'; font-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
     );
-    res.send(render(template, siteValues(env, pipeline, network)));
+    res.send(render(template, { ...siteValues(env, pipeline, network), ...extraValues() }));
   };
 
   router.get(["/", "/index.html"], page(templates.index, "html"));
@@ -103,11 +108,42 @@ export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?:
   router.get("/legal.html", page(templates.legal, "html"));
   router.get("/legal-de.html", page(templates.legalDe, "html"));
   router.get("/quickstart.html", page(templates.guide, "html"));
+  router.get(["/connect", "/connect-en.html"], page(read("connect-en.html"), "html"));
+  router.get(["/de/einrichten", "/connect-de.html"], page(read("connect-de.html"), "html"));
+
+  for (const lang of ["en", "de"]) {
+    const status = () => ({ TASK_STATUS: ["content-month-plan", "content-plan-shift"].every(id => {
+      const service = pipeline.services.find(s => s.id === id);
+      return service && pipeline.isEnabled(service);
+    }) ? "" : `<p class="note">${lang === "de" ? "Mindestens ein Dienst dieses Beispiels ist derzeit nicht verfügbar. Vor einem Kauf den aktuellen Katalog prüfen." : "At least one service in this example is currently unavailable. Check the current catalog before purchasing."}</p>` });
+    router.get([lang === "de" ? "/de/content-planung-beispiel" : "/content-planning-example", `/case-study-${lang}.html`], page(read(`case-study-${lang}.html`), "html", status));
+  }
+
+  // Focused human entry points. They describe one purchase and never run a data call.
+  for (const [slug, germanSlug, serviceId] of [
+    ["keyword-research", "keyword-recherche", "keyword-metrics"],
+    ["local-visibility", "lokale-sichtbarkeit", "local-market-check"],
+    ["content-planning", "content-planung", "content-month-plan"],
+  ]) {
+    for (const lang of ["en", "de"]) {
+      const service = pipeline.services.find((s) => s.id === serviceId);
+      if (!service) continue;
+      const status = () => ({ TASK_STATUS: pipeline.isEnabled(service) ? "" : `<p class="note">${lang === "de" ? "Dieser Dienst ist derzeit nicht verfügbar. Nicht kaufen; aktuellen Katalog prüfen." : "This service is currently unavailable. Do not purchase; check the current catalog."}</p>` });
+      router.get([lang === "de" ? `/de/${germanSlug}` : `/${slug}`, `/task-${slug}-${lang}.html`], page(read(`task-${slug}-${lang}.html`), "html", status));
+    }
+  }
 
   router.get("/robots.txt", (_req, res) => {
     res
       .type("text/plain")
-      .send(indexable ? `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\n` : `User-agent: *\nDisallow: /\n`);
+      .send(indexable ? `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\nSitemap: ${env.PUBLIC_BASE_URL}/sitemap.xml\n` : `User-agent: *\nDisallow: /\n`);
+  });
+
+  router.get("/sitemap.xml", (_req, res) => {
+    const paths = ["/", "/de/", "/agencies", "/de/agenturen", "/connect", "/de/einrichten", "/quickstart.html", "/status", "/de/status", "/keyword-research", "/de/keyword-recherche", "/local-visibility", "/de/lokale-sichtbarkeit", "/content-planning", "/de/content-planung", "/content-planning-example", "/de/content-planung-beispiel"];
+    if (!indexable) res.setHeader("X-Robots-Tag", "noindex, nofollow");
+    res.setHeader("Cache-Control", "public, max-age=300");
+    res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(path => `<url><loc>${escapeHtml(env.PUBLIC_BASE_URL + path)}</loc></url>`).join("")}</urlset>`);
   });
 
   router.get("/openapi.json", (_req, res) => {

@@ -170,8 +170,31 @@
     };
   }
 
+  function usesJsonEditor(service) {
+    return service.category === "content" || Object.keys(service.example_request || {}).some(function (key) {
+      if (key === "location_code" || key === "language_code") return false;
+      var value = service.example_request[key];
+      return typeof value !== "string" && !(Array.isArray(value) && value.every(function (item) { return typeof item === "string"; }));
+    });
+  }
+  function parseJsonInput(text) {
+    if (text.length > 131072) throw new Error("JSON input is too large.");
+    var input = JSON.parse(text);
+    if (!input || typeof input !== "object" || Array.isArray(input)) throw new Error("JSON input must be an object.");
+    return input;
+  }
+  function usesLocale(service) {
+    var ex = service.example_request || {};
+    return Object.prototype.hasOwnProperty.call(ex, "location_code") || Object.prototype.hasOwnProperty.call(ex, "language_code");
+  }
+  function exampleInput(service, language) {
+    var input = Object.assign({}, service.example_request || {});
+    if (service.supports_language === true || Object.prototype.hasOwnProperty.call(input, "language")) input.language = language;
+    return input;
+  }
+
   // Exposed for tests (no effect on the page).
-  if (typeof window !== "undefined") window.AgenturPay = { createPurchaseSession: createPurchaseSession, buildPayment: buildPayment, b64encode: b64encode, b64decode: b64decode };
+  if (typeof window !== "undefined") window.AgenturPay = { createPurchaseSession: createPurchaseSession, buildPayment: buildPayment, b64encode: b64encode, b64decode: b64decode, usesJsonEditor: usesJsonEditor, parseJsonInput: parseJsonInput, usesLocale: usesLocale, exampleInput: exampleInput };
   if (typeof document === "undefined" || !document.getElementById("tester")) return;
 
   var $ = function (id) { return document.getElementById(id); };
@@ -206,6 +229,21 @@
     $("btn-free").disabled = !s.free_sample;
     $("btn-buy").textContent = T.buy + " (" + s.price_usdc + " USDC)";
     var ex = s.example_request || {};
+    if (usesJsonEditor(s)) {
+      var jsonLabel = el("label", null, "field");
+      jsonLabel.appendChild(el("span", LANG === "de" ? "Anfrage als JSON (Beispiel anpassen, insbesondere Termine)" : "JSON request (edit the example, especially dates)"));
+      var jsonInput = document.createElement("textarea");
+      jsonInput.id = "json-input";
+      jsonInput.rows = 14;
+      jsonInput.spellcheck = false;
+      jsonInput.value = JSON.stringify(exampleInput(s, LANG), null, 2);
+      jsonLabel.appendChild(jsonInput);
+      box.appendChild(jsonLabel);
+      $("loc").hidden = true;
+      $("loc-chosen").textContent = "";
+      return;
+    }
+    $("loc").hidden = !usesLocale(s);
     var labels = T.labels;
     Object.keys(ex).forEach(function (k) {
       if (k === "location_code" || k === "language_code") return;
@@ -228,6 +266,7 @@
 
   function body() {
     var s = current();
+    if (usesJsonEditor(s)) return parseJsonInput($("json-input").value);
     var out = {};
     var inputs = $("fields").querySelectorAll("input,textarea");
     for (var i = 0; i < inputs.length; i++) {
@@ -237,8 +276,10 @@
       out[f.name] = f.getAttribute("data-multi") === "1" ? v.split(/\n+/).map(function (x) { return x.trim(); }).filter(Boolean) : v;
     }
     var country = Number($("country").value);
-    out.location_code = cityCode && serpFamily.indexOf(s.id) !== -1 ? cityCode.code : country;
-    out.language_code = DE_LANG[cityCode ? cityCode.country : country] || "en";
+    if (usesLocale(s)) {
+      out.location_code = cityCode && serpFamily.indexOf(s.id) !== -1 ? cityCode.code : country;
+      out.language_code = DE_LANG[cityCode ? cityCode.country : country] || "en";
+    }
     return out;
   }
 
@@ -335,8 +376,8 @@
     var s = current();
     if (!s) return;
     var eth = window.ethereum;
-    var b = body();
     try {
+      var b = body();
       var session = createPurchaseSession(window.localStorage, window.navigator.locks, fetch);
       var purchase = await session.run(async function () {
         if (!eth) throw new Error(T.noWallet);
