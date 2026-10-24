@@ -154,6 +154,7 @@ describe("per-service free samples", () => {
     // Not eligible: too expensive, or a package.
     expect((await svcSample(base, "1.1.1.1", "keyword-metrics", { keywords: ["a"] })).status).toBe(403);
     expect((await svcSample(base, "1.1.1.1", "local-market-check", { keyword: "pizza london" })).status).toBe(403);
+    for (const id of ["shoot-day-plan", "content-month-plan", "content-plan-shift", "shoot-location-check", "video-recipes", "video-project-plan"]) expect((await svcSample(base, "1.1.1.1", id, {})).status).toBe(403);
     expect((await svcSample(base, "1.1.1.1", "nope", {})).status).toBe(404);
     // Invalid input is refused before anything is used up.
     expect((await svcSample(base, "2.2.2.2", "google-serp", { keyword: "site:x.com" })).status).toBe(400);
@@ -165,6 +166,7 @@ describe("per-service free samples", () => {
     expect(catalog.free_sample.per_service_eligible).toContain("google-serp");
     expect(catalog.free_sample.per_service_eligible).not.toContain("keyword-metrics");
     expect(catalog.free_sample.per_service_eligible).not.toContain("local-market-check");
+    for (const id of ["shoot-day-plan", "content-month-plan", "content-plan-shift", "shoot-location-check", "video-recipes", "video-project-plan"]) expect(catalog.free_sample.per_service_eligible).not.toContain(id);
     expect(catalog.services.find((s: any) => s.id === "local-market-check").free_sample).toBe(false);
     expect((await (await fetch(base + "/openapi.json")).json()).paths["/api/v1/free-sample/{serviceId}"]).toBeTruthy();
   });

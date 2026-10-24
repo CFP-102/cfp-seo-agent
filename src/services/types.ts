@@ -39,6 +39,10 @@ export interface ServiceDefinition<I = any, O = any> {
   extraSteps?: { endpoint: string; buildRequest(input: I): unknown[] }[];
   /** Packages only: map all tasks, primary first, then extraSteps in order. */
   mapPackage?(tasks: DfsTask[], input: I): O;
+  /** Free public remote API or fixed direct-HTTPS package; no per-call provider charge. Sandbox never contacts providers. */
+  executeRemote?(input: I, mode: "sandbox" | "live"): Promise<O>;
+  /** Local dataset query: no external call, executed only after payment. */
+  executeLocal?(input: I): O;
   /** Shown next to results, e.g. "AI search volumes are modeled estimates". */
   notice?: string;
   example: I;
@@ -49,7 +53,7 @@ export interface ServiceDefinition<I = any, O = any> {
 export interface ServiceResponse<O> {
   request_id: string;
   service: string;
-  data_source: "sandbox" | "live";
+  data_source: "sandbox" | "live" | "local";
   cached: boolean;
   notice?: string;
   result: O;

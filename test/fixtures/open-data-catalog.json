@@ -1,0 +1,49 @@
+{
+  "_fixture_note": "Synthetic catalog fixture; no live dataset content.",
+  "tasks": [
+    {
+      "status_code": 20000,
+      "cost": 0,
+      "result": [
+        {
+          "result": {
+            "count": 1,
+            "results": [
+              {
+                "id": "example-dataset",
+                "title": {
+                  "de": "Example catalog entry"
+                },
+                "description": {
+                  "de": "Illustrative metadata, not a live dataset."
+                },
+                "resource": "https://open.bydata.de/api/hub/repo/datasets/example-dataset",
+                "catalog": {
+                  "title": {
+                    "de": "Example publisher"
+                  }
+                },
+                "distributions": [
+                  {
+                    "title": {
+                      "de": "Example CSV"
+                    },
+                    "format": {
+                      "label": "CSV"
+                    },
+                    "access_url": [
+                      "https://example.com/data.csv"
+                    ],
+                    "license": {
+                      "resource": "http://dcat-ap.de/def/licenses/cc-by/4.0"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

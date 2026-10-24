@@ -1,6 +1,6 @@
 # {{NAME}}
 
-> Pay-per-call SEO data APIs for AI agents (keywords, SERP, competitors, search intent, AI-search demand). Each call costs a small USDC amount paid with the x402 protocol. No account, no API key.
+> Pay-per-call data APIs for AI agents: SEO data (keywords, SERP, competitors, search intent, AI-search demand) and, in a separate category, social media content planning for agencies and video teams (content month plan with linked dates, re-scheduling, shoot-day planning, shot lists, location check). Each call costs a small USDC amount paid with the x402 protocol. No account, no API key.
 
 ## How to use
 - REST and MCP purchase guide: {{BASE_URL}}/quickstart.html
@@ -21,6 +21,9 @@
 
 ## Services (USDC per call)
 {{SERVICE_LINES}}
+
+## Content planning for agencies and video teams (USDC per call)
+{{SERVICE_LINES_CONTENT}}
 
 ## Notes
 - For businesses only (B2B). Calling a paid endpoint means you act as a business and accept the terms of use: {{BASE_URL}}/legal.html#terms

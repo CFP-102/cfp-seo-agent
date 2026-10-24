@@ -16,7 +16,7 @@ export interface RequestRow {
   service_id: string;
   created_at: string;
   status: RequestStatus;
-  data_source: "sandbox" | "live";
+  data_source: "sandbox" | "live" | "local";
   price_usdc: number;
   payment_key: string | null;
   network: string | null;

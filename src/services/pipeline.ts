@@ -113,7 +113,7 @@ export class Pipeline {
     const ok = this.deps.store.claim({
       id: requestId,
       service_id: p.service.id,
-      data_source: this.dataSource,
+      data_source: p.service.executeLocal ? "local" : this.dataSource,
       price_usdc: payment?.priceUsdc ?? 0,
       payment_key: payment?.key ?? null,
       network: payment?.network ?? null,
@@ -147,7 +147,7 @@ export class Pipeline {
       const response: ServiceResponse<unknown> = {
         request_id: requestId,
         service: service.id,
-        data_source: this.dataSource,
+        data_source: p.service.executeLocal ? "local" : this.dataSource,
         cached: out.cached,
         ...(service.notice ? { notice: service.notice } : {}),
         result: out.result,
@@ -259,7 +259,7 @@ export class Pipeline {
     if (running) return { ...(await running), cached: true, costUsd: 0 };
 
     const promise = (async () => {
-      const { task, costUsd, result } = service.extraSteps?.length ? await this.fetchPackage(service, input) : await this.fetchSingle(service, input);
+      const { costUsd, result } = service.extraSteps?.length ? await this.fetchPackage(service, input) : await this.fetchSingle(service, input);
       this.cache.set(key, { result, costUsd }, service.cacheTtlSeconds);
       return { result, costUsd, cached: false };
     })();
@@ -272,8 +272,16 @@ export class Pipeline {
   }
 
   private async fetchSingle(service: ServiceDefinition, input: unknown) {
+    if (service.executeRemote) return { costUsd: 0, result: await service.executeRemote(input, this.dataSource) };
+    if (service.executeLocal) return { costUsd: 0, result: service.executeLocal(input) };
     const { task, costUsd } = await this.deps.dfs.post(service.upstream.endpoint, service.buildRequest(input));
-    return { task, costUsd, result: service.mapResult(task, input) };
+    try {
+      return { task, costUsd, result: service.mapResult(task, input) };
+    } catch (error) {
+      // A rejected/empty mapped page was still fetched and may already be billed.
+      const e = error instanceof DataForSeoError ? error : new DataForSeoError("Invalid provider result", "bad_response");
+      throw new DataForSeoError(e.message, e.code, Math.max(costUsd, e.costUsd));
+    }
   }
 
   /** Package: all steps in parallel. Every charged cost is booked, also when one step fails (then the whole call fails). */

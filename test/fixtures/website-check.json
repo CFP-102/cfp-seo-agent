@@ -1,0 +1,71 @@
+{
+  "_fixture_note": "Synthetic offline package fixture, not a network or TLS validation result.",
+  "tasks": [
+    {
+      "status_code": 20000,
+      "cost": 0,
+      "result": [
+        {
+          "probes": [
+            {
+              "body": "",
+              "url": "https://example.com/",
+              "status": 200,
+              "outcome": "response",
+              "redirect_url": null,
+              "content_type": "text/html",
+              "tls": {
+                "verified": true,
+                "valid_until": "2027-01-01T00:00:00.000Z",
+                "protocol": "TLSv1.3"
+              }
+            },
+            {
+              "body": "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"></urlset>",
+              "url": "https://example.com/sitemap.xml",
+              "status": 200,
+              "outcome": "response",
+              "redirect_url": null,
+              "content_type": "application/xml",
+              "tls": {
+                "verified": true,
+                "valid_until": "2027-01-01T00:00:00.000Z",
+                "protocol": "TLSv1.3"
+              },
+              "format": "urlset",
+              "xml_validation": "not_performed"
+            },
+            {
+              "body": "",
+              "url": "https://example.com/about",
+              "status": 200,
+              "outcome": "response",
+              "redirect_url": null,
+              "content_type": "text/html",
+              "tls": {
+                "verified": true,
+                "valid_until": "2027-01-01T00:00:00.000Z",
+                "protocol": "TLSv1.3"
+              },
+              "state": "reachable"
+            },
+            {
+              "body": "",
+              "url": "https://example.com/contact",
+              "status": 200,
+              "outcome": "response",
+              "redirect_url": null,
+              "content_type": "text/html",
+              "tls": {
+                "verified": true,
+                "valid_until": "2027-01-01T00:00:00.000Z",
+                "protocol": "TLSv1.3"
+              },
+              "state": "reachable"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

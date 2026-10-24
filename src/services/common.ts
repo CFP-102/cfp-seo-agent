@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { checkLocale, defaultLanguage, type LocaleFamily } from "../config/locales.js";
+import { DataForSeoError } from "../dataforseo/client.js";
 
 /**
  * Shared input building blocks. Inputs are strict (unknown fields rejected),
@@ -99,3 +100,23 @@ export function inputJsonSchema(schema: z.ZodType): Record<string, unknown> {
 
 /** MCP tool name for a service id: keyword-metrics -> keyword_metrics. */
 export const toolNameOf = (serviceId: string) => serviceId.replace(/-/g, "_");
+
+/** Trimmed, 1..max characters, no control characters (free-text labels of the planning services). */
+export const plain = (max: number) => z.string().trim().min(1).max(max).regex(/^[^\u0000-\u001f\u007f]+$/u, "Control characters are not allowed");
+
+/** Reads a response body up to `maxBytes`; larger or unreadable bodies are refused with a bad_response error. */
+export async function readBounded(response: Response, maxBytes: number): Promise<Buffer> {
+  const reader = response.body!.getReader(); const chunks: Uint8Array[] = []; let bytes = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read(); if (done) break;
+      bytes += value.byteLength;
+      if (bytes > maxBytes) { await reader.cancel(); throw new DataForSeoError("Source response too large", "bad_response"); }
+      chunks.push(value);
+    }
+    return Buffer.concat(chunks);
+  } catch (error) {
+    if (error instanceof DataForSeoError) throw error;
+    throw new DataForSeoError("Unreadable source response", "bad_response");
+  } finally { reader.releaseLock(); }
+}

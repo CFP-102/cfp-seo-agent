@@ -9,6 +9,10 @@
   var LANG = typeof document !== "undefined" && document.documentElement.lang === "en" ? "en" : "de";
   var T = {
     de: {
+      pending: "Ein Kauf ist noch ungeklärt. Nicht erneut bezahlen. Bitte den Support kontaktieren und Kaufzeit sowie Wallet-Adresse nennen.",
+      storage: "Sicherer Kauf benötigt Browserspeicher und Web Locks. Bitte einen aktuellen Browser verwenden.",
+      busy: "Ein Kauf läuft bereits in einem anderen Tab. Bitte warten.",
+      another: "Der letzte Kauf ist abgeschlossen. Einen weiteren kostenpflichtigen Abruf starten?",
       format: "Unbekanntes Zahlungsformat.", noScheme: "Keine passende Zahlungsart (USDC auf Base) angeboten.", payTo: "Empfänger stimmt nicht mit dem Betreiber überein. Abbruch.",
       asset: "Unerwartete Währung. Abbruch.", price: "Preis weicht vom Katalog ab. Abbruch.", incomplete: "Zahlungsangaben unvollständig.",
       price_label: " Preis: ", free_yes: " Kostenlose Probe möglich.", free_no: " Keine kostenlose Probe.", buy: "Mit Wallet kaufen", freeTag: " · Probe gratis",
@@ -22,6 +26,10 @@
       keep: " (bitte aufbewahren)", done: "Bezahlt und geliefert.", aborted: "Abgebrochen.", loadFail: "Dienste konnten nicht geladen werden.", file: "ergebnis",
     },
     en: {
+      pending: "A purchase is still unresolved. Do not pay again. Contact support with the purchase time and wallet address.",
+      storage: "Safe purchasing requires browser storage and Web Locks. Please use a current browser.",
+      busy: "A purchase is already running in another tab. Please wait.",
+      another: "The previous purchase is complete. Start another paid call?",
       format: "Unknown payment format.", noScheme: "No matching payment option (USDC on Base) offered.", payTo: "Recipient does not match the operator. Aborted.",
       asset: "Unexpected currency. Aborted.", price: "Price differs from the catalog. Aborted.", incomplete: "Payment details incomplete.",
       price_label: " Price: ", free_yes: " Free sample available.", free_no: " No free sample.", buy: "Buy with wallet", freeTag: " · free sample",
@@ -103,8 +111,67 @@
     return { header: b64encode(JSON.stringify(payload)), amountUsdc: Number(req.amount) / 1e6, payTo: req.payTo };
   }
 
+  /** Persist a purchase BEFORE signing; never persist a signature or wallet key.
+   * Web Locks serializes purchases across tabs. Uncertain outcomes stay blocked until reconciled.
+   */
+  function createPurchaseSession(storage, locks, send) {
+    var key = "agent-data-api.browser-purchase.v1";
+    function save(record) { storage.setItem(key, JSON.stringify(record)); }
+    return {
+      read: function () { return JSON.parse(storage.getItem(key) || "null"); },
+      run: async function (authorize, confirmNew) {
+        if (!storage || !locks) throw new Error(T.storage);
+        return locks.request(key, { ifAvailable: true }, async function (lock) {
+          if (!lock) throw new Error(T.busy);
+          var record = JSON.parse(storage.getItem(key) || "null");
+          if (record && record.state !== "completed") {
+            if (!record.request_id || !record.result_token) throw new Error(T.pending + " " + record.started_at);
+            // Read-only retrieval: never sign or replay a payment to recover a result.
+            var recovered = await send("/api/v1/results/" + encodeURIComponent(record.request_id), {
+              headers: { authorization: "Bearer " + record.result_token }, cache: "no-store",
+            });
+            var body = await recovered.json();
+            if (recovered.ok && body.result !== undefined) {
+              body.result_token = record.result_token;
+              record.state = "completed";
+              record.response = body;
+              save(record);
+              return { ok: true, body: body };
+            }
+            throw new Error(T.pending + " " + record.started_at + " · " + record.request_id);
+          }
+          if (record && !(await confirmNew())) return { ok: true, body: record.response };
+          record = { state: "pending", started_at: new Date().toISOString() };
+          save(record); // Fail closed when storage is disabled or full, before wallet interaction.
+          var request;
+          try {
+            request = await authorize();
+          } catch (e) {
+            storage.removeItem(key); // No request was submitted; signing/validation failed.
+            throw e;
+          }
+          if (!request) { storage.removeItem(key); return null; }
+          record.path = request.path;
+          record.input = request.input;
+          save(record); // If this fails, keep the earlier pending marker and never submit.
+          var response = await send(request.path, {
+            method: "POST", headers: { "content-type": "application/json", "payment-signature": request.header },
+            body: JSON.stringify(request.input),
+          });
+          var out = await response.json();
+          record.request_id = out.request_id;
+          record.result_token = out.result_token;
+          record.response = out;
+          if (response.ok && out.result !== undefined) record.state = "completed";
+          save(record);
+          return { ok: response.ok, body: out };
+        });
+      },
+    };
+  }
+
   // Exposed for tests (no effect on the page).
-  if (typeof window !== "undefined") window.AgenturPay = { buildPayment: buildPayment, b64encode: b64encode, b64decode: b64decode };
+  if (typeof window !== "undefined") window.AgenturPay = { createPurchaseSession: createPurchaseSession, buildPayment: buildPayment, b64encode: b64encode, b64decode: b64decode };
   if (typeof document === "undefined" || !document.getElementById("tester")) return;
 
   var $ = function (id) { return document.getElementById(id); };
@@ -268,39 +335,51 @@
     var s = current();
     if (!s) return;
     var eth = window.ethereum;
-    if (!eth) return msg(T.noWallet, true);
     var b = body();
     try {
-      msg(T.checking);
-      var pre = await fetch("/api/v1/preflight/" + encodeURIComponent(s.id), { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(b) });
-      var pj = await pre.json();
-      if (!pre.ok) return msg(pj.message || pj.error || T.invalid, true);
-      msg(T.quote);
-      var quote = await fetch(s.path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(b) });
-      if (quote.status !== 402) return msg(T.unexpected.replace("{s}", String(quote.status)), true);
-      var accounts = await eth.request({ method: "eth_requestAccounts" });
-      var from = accounts && accounts[0];
-      if (!from) return msg(T.notConnected, true);
-      try {
-        await eth.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x" + CHAIN[network].toString(16) }] });
-      } catch (e) {
-        return msg(T.switchNet, true);
+      var session = createPurchaseSession(window.localStorage, window.navigator.locks, fetch);
+      var purchase = await session.run(async function () {
+        if (!eth) throw new Error(T.noWallet);
+        msg(T.checking);
+        var pre = await fetch("/api/v1/preflight/" + encodeURIComponent(s.id), { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(b) });
+        var pj = await pre.json();
+        if (!pre.ok) throw new Error(pj.message || pj.error || T.invalid);
+        msg(T.quote);
+        var quote = await fetch(s.path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(b) });
+        if (quote.status !== 402) throw new Error(T.unexpected.replace("{s}", String(quote.status)));
+        var accounts = await eth.request({ method: "eth_requestAccounts" });
+        var from = accounts && accounts[0];
+        if (!from) throw new Error(T.notConnected);
+        try {
+          await eth.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x" + CHAIN[network].toString(16) }] });
+        } catch (e) {
+          throw new Error(T.switchNet);
+        }
+        var pay = await buildPayment(quote.headers.get("payment-required"), { payTo: payTo, network: network, priceUsdc: s.price_usdc }, {
+          address: from,
+          signTypedData: function (json) { return eth.request({ method: "eth_signTypedData_v4", params: [from, json] }); },
+        }, Math.floor(Date.now() / 1000), window.crypto, function (amount, to) {
+          return window.confirm(T.confirm.replace("{a}", String(amount)).replace("{t}", to));
+        });
+        if (!pay) return null;
+        msg(T.settling);
+        return { path: s.path, input: b, header: pay.header };
+      }, function () { return window.confirm(T.another); });
+      if (!purchase) return msg(T.cancelled);
+      var j = purchase.body;
+      if (!purchase.ok) {
+        showResult(j, true); // Preserve request id and result token in the downloadable JSON.
+        return msg((j.message || j.error || T.error) + " " + T.pending, true);
       }
-      var pay = await buildPayment(quote.headers.get("payment-required"), { payTo: payTo, network: network, priceUsdc: s.price_usdc }, {
-        address: from,
-        signTypedData: function (json) { return eth.request({ method: "eth_signTypedData_v4", params: [from, json] }); },
-      }, Math.floor(Date.now() / 1000), window.crypto, function (amount, to) {
-        return window.confirm(T.confirm.replace("{a}", String(amount)).replace("{t}", to));
-      });
-      if (!pay) return msg(T.cancelled);
-      msg(T.settling);
-      var r = await fetch(s.path, { method: "POST", headers: { "content-type": "application/json", "payment-signature": pay.header }, body: JSON.stringify(b) });
-      var j = await r.json();
-      if (!r.ok) return msg((j.message || j.error || T.error) + (j.request_id ? " · " + T.reqId + " " + j.request_id + T.keep : ""), true);
       msg(T.done);
       showResult(j, true);
     } catch (e) {
-      msg((e && e.message) || T.aborted, true);
+      var warning = (e && e.message) || T.aborted;
+      try {
+        var pending = session && session.read();
+        if (pending && pending.state !== "completed") warning += " " + T.pending + " " + pending.started_at;
+      } catch (_) { /* Keep the purchase blocked if storage cannot be read. */ }
+      msg(warning, true);
     }
   }
 
@@ -348,6 +427,11 @@
       var pre = new URLSearchParams(location.search).get("dienst") || new URLSearchParams(location.search).get("service");
       if (pre && services.some(function (s) { return s.id === pre; })) $("svc").value = pre;
       renderFields();
+      try {
+        var previous = createPurchaseSession(window.localStorage, window.navigator.locks, fetch).read();
+        if (previous && previous.state === "completed" && previous.response) showResult(previous.response, true);
+        else if (previous) msg(T.pending + " " + previous.started_at, true);
+      } catch (e) { msg(T.storage, true); }
     } catch (e) {
       msg(T.loadFail, true);
     }

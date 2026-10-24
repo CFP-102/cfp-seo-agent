@@ -1,0 +1,353 @@
+{
+ "dataset": "chiemgau-films-video-recipes",
+ "updated_at": "2026-10-24T00:00:00.000Z",
+ "license": "Sample file, MIT like the repository. The operator's full recipe set is proprietary and not included.",
+ "sample": true,
+ "categories": [
+  {
+   "id": "produkt",
+   "label": "Produkt & Leistung",
+   "description": "Produkte und Leistungen verständlich zeigen und erklären."
+  },
+  {
+   "id": "mitarbeiter",
+   "label": "Mitarbeiter & Team",
+   "description": "Die Menschen hinter dem Unternehmen sichtbar machen."
+  },
+  {
+   "id": "bts",
+   "label": "Hinter den Kulissen",
+   "description": "Abläufe, Alltag und Arbeit zeigen, die Kunden sonst nicht sehen."
+  },
+  {
+   "id": "wissen",
+   "label": "Tipps & Wissen",
+   "description": "Fachwissen teilen, Fragen beantworten und echten Nutzen bieten."
+  },
+  {
+   "id": "kunde",
+   "label": "Kunden & Referenzen",
+   "description": "Ergebnisse, Projekte und Kundenstimmen als Beweis zeigen."
+  },
+  {
+   "id": "unternehmen",
+   "label": "Unternehmen & Events",
+   "description": "Geschichte, Zahlen, Feiern und Messen rund ums Unternehmen."
+  },
+  {
+   "id": "recruiting",
+   "label": "Ausbildung & Recruiting",
+   "description": "Neue Kollegen und Azubis gewinnen – mit echten Einblicken."
+  }
+ ],
+ "recipes": [
+  {
+   "id": "tpl-produkt-in-30-sekunden",
+   "title": "Produkt in 30 Sekunden",
+   "category": "produkt",
+   "description": "Beispielvorlage (öffentliche Musterdatei). Der vollständige Vorlagensatz ist nicht Teil des Repositorys.",
+   "length": "20–40 Sek",
+   "mediaType": "reel",
+   "hook": "Beispiel-Hook.",
+   "hookAlternatives": [],
+   "shots": [
+    "Übersicht",
+    "Nahaufnahme",
+    "Abschluss"
+   ],
+   "questions": [
+    "Beispielfrage?"
+   ],
+   "equipment": [
+    "Smartphone",
+    "Stativ"
+   ],
+   "shootMinutes": 20,
+   "effortLabel": "15–25 Min. Aufnahmezeit",
+   "platforms": [
+    "Instagram"
+   ],
+   "locationHint": "Showroom",
+   "peopleHint": "Eine Person aus dem Team",
+   "setup": "mixed",
+   "tips": [
+    "Beispieltipp."
+   ],
+   "variants": [
+    {
+     "type": "story",
+     "label": "Story",
+     "count": 1,
+     "mediaType": "story"
+    }
+   ],
+   "ideas": [
+    "Produkt in 30 Sekunden (Beispiel)"
+   ]
+  },
+  {
+   "id": "tpl-mitarbeiter-vorstellen",
+   "title": "Mitarbeiter stellt sich vor",
+   "category": "mitarbeiter",
+   "description": "Beispielvorlage (öffentliche Musterdatei). Der vollständige Vorlagensatz ist nicht Teil des Repositorys.",
+   "length": "20–40 Sek",
+   "mediaType": "reel",
+   "hook": "Beispiel-Hook.",
+   "hookAlternatives": [],
+   "shots": [
+    "Übersicht",
+    "Nahaufnahme",
+    "Abschluss"
+   ],
+   "questions": [
+    "Beispielfrage?"
+   ],
+   "equipment": [
+    "Smartphone",
+    "Stativ"
+   ],
+   "shootMinutes": 20,
+   "effortLabel": "15–25 Min. Aufnahmezeit",
+   "platforms": [
+    "Instagram"
+   ],
+   "locationHint": "Werkstatt",
+   "peopleHint": "Eine Person aus dem Team",
+   "setup": "interview",
+   "tips": [
+    "Beispieltipp."
+   ],
+   "variants": [
+    {
+     "type": "story",
+     "label": "Story",
+     "count": 1,
+     "mediaType": "story"
+    }
+   ],
+   "ideas": [
+    "Mitarbeiter stellt sich vor (Beispiel)"
+   ]
+  },
+  {
+   "id": "tpl-blick-hinter-die-kulissen",
+   "title": "Blick hinter die Kulissen",
+   "category": "bts",
+   "description": "Beispielvorlage (öffentliche Musterdatei). Der vollständige Vorlagensatz ist nicht Teil des Repositorys.",
+   "length": "20–40 Sek",
+   "mediaType": "reel",
+   "hook": "Beispiel-Hook.",
+   "hookAlternatives": [],
+   "shots": [
+    "Übersicht",
+    "Nahaufnahme",
+    "Abschluss"
+   ],
+   "questions": [
+    "Beispielfrage?"
+   ],
+   "equipment": [
+    "Smartphone",
+    "Stativ"
+   ],
+   "shootMinutes": 20,
+   "effortLabel": "15–25 Min. Aufnahmezeit",
+   "platforms": [
+    "Instagram"
+   ],
+   "locationHint": "Produktion",
+   "peopleHint": "Eine Person aus dem Team",
+   "setup": "broll",
+   "tips": [
+    "Beispieltipp."
+   ],
+   "variants": [
+    {
+     "type": "story",
+     "label": "Story",
+     "count": 1,
+     "mediaType": "story"
+    }
+   ],
+   "ideas": [
+    "Blick hinter die Kulissen (Beispiel)"
+   ]
+  },
+  {
+   "id": "tpl-kurzer-experten-tipp",
+   "title": "Kurzer Experten-Tipp",
+   "category": "wissen",
+   "description": "Beispielvorlage (öffentliche Musterdatei). Der vollständige Vorlagensatz ist nicht Teil des Repositorys.",
+   "length": "20–40 Sek",
+   "mediaType": "reel",
+   "hook": "Beispiel-Hook.",
+   "hookAlternatives": [],
+   "shots": [
+    "Übersicht",
+    "Nahaufnahme",
+    "Abschluss"
+   ],
+   "questions": [
+    "Beispielfrage?"
+   ],
+   "equipment": [
+    "Smartphone",
+    "Stativ"
+   ],
+   "shootMinutes": 20,
+   "effortLabel": "15–25 Min. Aufnahmezeit",
+   "platforms": [
+    "Instagram"
+   ],
+   "locationHint": "Werkstatt",
+   "peopleHint": "Eine Person aus dem Team",
+   "setup": "mixed",
+   "tips": [
+    "Beispieltipp."
+   ],
+   "variants": [
+    {
+     "type": "story",
+     "label": "Story",
+     "count": 1,
+     "mediaType": "story"
+    }
+   ],
+   "ideas": [
+    "Kurzer Experten-Tipp (Beispiel)"
+   ]
+  },
+  {
+   "id": "tpl-kundenfragen",
+   "title": "Kundenfragen beantwortet",
+   "category": "kunde",
+   "description": "Beispielvorlage (öffentliche Musterdatei). Der vollständige Vorlagensatz ist nicht Teil des Repositorys.",
+   "length": "20–40 Sek",
+   "mediaType": "reel",
+   "hook": "Beispiel-Hook.",
+   "hookAlternatives": [],
+   "shots": [
+    "Übersicht",
+    "Nahaufnahme",
+    "Abschluss"
+   ],
+   "questions": [
+    "Beispielfrage?"
+   ],
+   "equipment": [
+    "Smartphone",
+    "Stativ"
+   ],
+   "shootMinutes": 20,
+   "effortLabel": "15–25 Min. Aufnahmezeit",
+   "platforms": [
+    "Instagram"
+   ],
+   "locationHint": "Büro",
+   "peopleHint": "Eine Person aus dem Team",
+   "setup": "interview",
+   "tips": [
+    "Beispieltipp."
+   ],
+   "variants": [
+    {
+     "type": "story",
+     "label": "Story",
+     "count": 1,
+     "mediaType": "story"
+    }
+   ],
+   "ideas": [
+    "Kundenfragen beantwortet (Beispiel)"
+   ]
+  },
+  {
+   "id": "tpl-zahlen-und-fakten",
+   "title": "Zahlen und Fakten",
+   "category": "unternehmen",
+   "description": "Beispielvorlage (öffentliche Musterdatei). Der vollständige Vorlagensatz ist nicht Teil des Repositorys.",
+   "length": "20–40 Sek",
+   "mediaType": "reel",
+   "hook": "Beispiel-Hook.",
+   "hookAlternatives": [],
+   "shots": [
+    "Übersicht",
+    "Nahaufnahme",
+    "Abschluss"
+   ],
+   "questions": [
+    "Beispielfrage?"
+   ],
+   "equipment": [
+    "Smartphone",
+    "Stativ"
+   ],
+   "shootMinutes": 20,
+   "effortLabel": "15–25 Min. Aufnahmezeit",
+   "platforms": [
+    "Instagram"
+   ],
+   "locationHint": "Ganzes Unternehmen",
+   "peopleHint": "Eine Person aus dem Team",
+   "setup": "broll",
+   "tips": [
+    "Beispieltipp."
+   ],
+   "variants": [
+    {
+     "type": "story",
+     "label": "Story",
+     "count": 1,
+     "mediaType": "story"
+    }
+   ],
+   "ideas": [
+    "Zahlen und Fakten (Beispiel)"
+   ]
+  },
+  {
+   "id": "tpl-azubi-interview",
+   "title": "Azubi-Interview",
+   "category": "recruiting",
+   "description": "Beispielvorlage (öffentliche Musterdatei). Der vollständige Vorlagensatz ist nicht Teil des Repositorys.",
+   "length": "20–40 Sek",
+   "mediaType": "reel",
+   "hook": "Beispiel-Hook.",
+   "hookAlternatives": [],
+   "shots": [
+    "Übersicht",
+    "Nahaufnahme",
+    "Abschluss"
+   ],
+   "questions": [
+    "Beispielfrage?"
+   ],
+   "equipment": [
+    "Smartphone",
+    "Stativ"
+   ],
+   "shootMinutes": 20,
+   "effortLabel": "15–25 Min. Aufnahmezeit",
+   "platforms": [
+    "Instagram"
+   ],
+   "locationHint": "Werkstatt",
+   "peopleHint": "Eine Person aus dem Team",
+   "setup": "interview",
+   "tips": [
+    "Beispieltipp."
+   ],
+   "variants": [
+    {
+     "type": "story",
+     "label": "Story",
+     "count": 1,
+     "mediaType": "story"
+    }
+   ],
+   "ideas": [
+    "Azubi-Interview (Beispiel)"
+   ]
+  }
+ ]
+}

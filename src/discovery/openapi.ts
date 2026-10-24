@@ -34,7 +34,7 @@ export function buildOpenApi({ env, pipeline, network, freeSample }: OpenApiDeps
   const payDescription = paid
     ? `Payment: x402 v2, USDC on ${network}. Send the request without payment to receive HTTP 402 with a PAYMENT-REQUIRED header, ` +
       `then retry with a PAYMENT-SIGNATURE header (use an x402 client such as @x402/fetch). No account or API key is needed.`
-    : "Development mode: sandbox data, no payment.";
+    : "Development mode: DataForSEO sandbox data and local source snapshots, no payment.";
 
   const paths: Record<string, unknown> = {
     "/api/v1/services": {
@@ -196,7 +196,7 @@ export function buildOpenApi({ env, pipeline, network, freeSample }: OpenApiDeps
                 schema: { $ref: "#/components/schemas/ServiceResponse" },
                 examples: {
                   default: {
-                    value: { request_id: "00000000-0000-0000-0000-000000000000", service: s.id, data_source: "live", cached: false, result: s.outputExample, result_token: "<token>" },
+                    value: { request_id: "00000000-0000-0000-0000-000000000000", service: s.id, data_source: s.executeLocal ? "local" : pipeline.dataSource, cached: false, result: s.outputExample, result_token: "<token>" },
                   },
                 },
               },
@@ -266,7 +266,7 @@ export function buildOpenApi({ env, pipeline, network, freeSample }: OpenApiDeps
           properties: {
             request_id: { type: "string", format: "uuid" },
             service: { type: "string" },
-            data_source: { type: "string", enum: ["live", "sandbox"], description: "sandbox = dummy test data" },
+            data_source: { type: "string", enum: ["live", "sandbox", "local"], description: "sandbox = DataForSEO dummy test data; local = maintained source snapshot with its own retrieval date" },
             cached: { type: "boolean" },
             notice: { type: "string" },
             result: { type: "object", description: "Service-specific result; see the example." },

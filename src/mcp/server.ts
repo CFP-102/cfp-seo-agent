@@ -140,7 +140,7 @@ function paidTool(s: ServiceDefinition, deps: McpDeps): Tool {
     ? `PAID: ${s.priceUsdc} USDC per call (USDC on ${deps.payments.network}, x402 v2). ` +
       `Requires an x402-capable MCP client that attaches the payment in _meta["x402/payment"] (e.g. createx402MCPClient from @x402/mcp). ` +
       `Without a payment this tool returns a "payment required" result and charges nothing.`
-    : "SANDBOX (development): returns dummy data, no payment.";
+    : s.executeLocal ? "LOCAL SNAPSHOT (development): source data with retrieval date, no payment." : "SANDBOX (development): returns dummy data, no payment.";
   return {
     name: toolNameOf(s.id),
     description: `${s.summary} Returns: ${returnsOf(s)}. ${payNote}${s.notice ? ` NOTE: ${s.notice}` : ""}`,

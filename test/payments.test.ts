@@ -206,11 +206,11 @@ describe("all services over x402", () => {
       expect(res.status, s.id).toBe(200);
       const body = await res.json();
       // One upstream task per payment; packages: their fixed, priced set of steps.
-      const endpoints = [s.upstream.endpoint, ...(s.extraSteps ?? []).map((x) => x.endpoint)];
+      const endpoints = (s.executeLocal || s.executeRemote) ? [] : [s.upstream.endpoint, ...(s.extraSteps ?? []).map((x) => x.endpoint)];
       expect(events, s.id).toEqual(["settle", ...endpoints.map(() => "upstream")]);
       expect(up.calls.map((c) => c.endpoint).sort(), s.id).toEqual([...endpoints].sort());
       for (const c of up.calls) expect(Array.isArray(c.body) && (c.body as unknown[]).length, s.id).toBe(1);
-      expect(body, s.id).toMatchObject({ service: s.id, data_source: "sandbox", cached: false });
+      expect(body, s.id).toMatchObject({ service: s.id, data_source: s.executeLocal ? "local" : "sandbox", cached: false });
       expect(body.result, s.id).toBeTruthy();
       expect(store.get(body.request_id), s.id).toMatchObject({ status: "completed", price_usdc: Number(s.priceUsdc) });
       expect(decodePaymentResponseHeader(res.headers.get("payment-response")!).success, s.id).toBe(true);
@@ -256,5 +256,84 @@ describe("all services over x402", () => {
     expect(res.headers.get("payment-required")).toBeNull();
     const ok = await fetch(base + "/api/v1/search-intent", post({ keywords: ["a"] }));
     expect(ok.status).toBe(402);
+  });
+});
+
+import { regionalData } from "../src/services/regionalData.js";
+
+describe("paid local regional data", () => {
+  it("executes only after settlement and replays the stored local result without another query", async () => {
+    const events: Event[] = [];
+    let executions = 0;
+    const local = { ...regionalData, executeLocal: (i: Parameters<NonNullable<typeof regionalData.executeLocal>>[0]) => { executions++; expect(events).toEqual(["settle"]); return regionalData.executeLocal!(i); } };
+    const up = routedUpstream(events);
+    const fac = fakeFacilitator(events);
+    const { app, store } = buildTestApp({ fetchImpl: up.impl, facilitator: fac, services: [local] });
+    const base = await start(app);
+    expect((await fetch(base + local.route, post(local.example))).status).toBe(402);
+    expect(executions).toBe(0);
+    const { pay, sent } = buyer();
+    const result = await (await pay(base + local.route, post(local.example))).json();
+    expect(result).toMatchObject({ data_source: "local", result: { total_matches: 8 } });
+    expect(store.get(result.request_id)).toMatchObject({ data_source: "local", upstream_cost_usd: 0 });
+    const signature = sent.map(h => h.get("payment-signature")).find(Boolean)!;
+    const replay = await fetch(base + local.route, post(local.example, { "payment-signature": signature }));
+    expect(replay.status).toBe(200);
+    expect((await replay.json()).result).toEqual(result.result);
+    expect(executions).toBe(1);
+    expect(up.calls).toHaveLength(0);
+    expect(fac.settles()).toBe(1);
+  });
+});
+
+import { createWebsiteCheck } from "../src/services/websiteCheck.js";
+
+describe("direct website-check payments", () => {
+  it("makes all four probes only after settlement and replays without new probes", async () => {
+    const events: Event[] = []; const probes: string[] = [];
+    const service = createWebsiteCheck(async (url, method) => {
+      expect(events).toEqual(["settle"]); probes.push(method + " " + url);
+      return { url, status: 200, outcome: "response", redirect_url: null, content_type: "text/html", tls: { verified: true, valid_until: null, protocol: "TLSv1.3" }, body: "" };
+    });
+    const fac = fakeFacilitator(events);
+    const { app, store } = buildTestApp({ fetchImpl: routedUpstream(events).impl, facilitator: fac, services: [service], env: { PAYMENT_MODE: "testnet", PAY_TO_ADDRESS: PAY_TO, DATAFORSEO_MODE: "live", ALLOW_LIVE_DATA_ON_TESTNET: "true", DATAFORSEO_LOGIN: "fake", DATAFORSEO_PASSWORD: "fake" } });
+    const base = await start(app);
+    expect((await fetch(base + service.route, post(service.example))).status).toBe(402);
+    expect(probes).toEqual([]);
+    const { pay, sent } = buyer();
+    const response = await pay(base + service.route, post(service.example));
+    expect(response.status).toBe(200); const result = await response.json();
+    expect(result).toMatchObject({ data_source: "live", result: { simulated: false, requests_planned: 4 } });
+    expect(probes).toHaveLength(4);
+    expect(store.get(result.request_id)).toMatchObject({ upstream_cost_usd: 0, status: "completed" });
+    const signature = sent.map(h => h.get("payment-signature")).find(Boolean)!;
+    expect((await fetch(base + service.route, post(service.example, { "payment-signature": signature }))).status).toBe(200);
+    expect(probes).toHaveLength(4); expect(fac.settles()).toBe(1);
+  });
+});
+
+import { createOpenDataSearch } from "../src/services/openDataSearch.js";
+
+describe("catalog search x402", () => {
+  it("settles before its single public GET and replays without fetching source files", async () => {
+    const events: Event[] = []; let calls = 0;
+    const service = createOpenDataSearch((async (url: RequestInfo | URL, init?: RequestInit) => {
+      expect(events).toEqual(["settle"]); calls++;
+      expect(new URL(String(url)).host).toBe("open.bydata.de");
+      expect(init).toMatchObject({ method: "GET", redirect: "error", credentials: "omit" });
+      return new Response(JSON.stringify(fixture("open-data-catalog.json").tasks[0].result[0]));
+    }) as typeof fetch);
+    const fac = fakeFacilitator(events);
+    const { app } = buildTestApp({ fetchImpl: routedUpstream(events).impl, facilitator: fac, services: [service], env: { PAYMENT_MODE: "testnet", PAY_TO_ADDRESS: PAY_TO, DATAFORSEO_MODE: "live", ALLOW_LIVE_DATA_ON_TESTNET: "true", DATAFORSEO_LOGIN: "fake", DATAFORSEO_PASSWORD: "fake" } });
+    const base = await start(app);
+    expect((await fetch(base + service.route, post(service.example))).status).toBe(402); expect(calls).toBe(0);
+    const { pay, sent } = buyer();
+    const response = await pay(base + service.route, post(service.example));
+    expect(response.status).toBe(200); const body = await response.json();
+    expect(body.result).toMatchObject({ simulated: false, source: "openbydata" }); expect(calls).toBe(1);
+    const signature = sent.map(h => h.get("payment-signature")).find(Boolean)!;
+    const replay = await fetch(base + service.route, post(service.example, { "payment-signature": signature }));
+    expect(replay.status).toBe(200); expect((await replay.json()).result).toEqual(body.result);
+    expect(calls).toBe(1); expect(fac.settles()).toBe(1);
   });
 });

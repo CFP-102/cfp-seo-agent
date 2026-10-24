@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { serviceConfig } from "./config/services.js";
 import { clientKey } from "./lib/rateLimit.js";
 import type { Store } from "./lib/store.js";
 import { keywordString } from "./services/common.js";
@@ -60,7 +61,7 @@ export function createFreeSample(deps: FreeSampleDeps) {
   };
   const service = () => pipeline.services.find((s) => s.id === FREE_SAMPLE_SERVICE_ID);
   const on = () => limit() > 0;
-  const eligible = (s: ServiceDefinition) => pipeline.isEnabled(s) && !s.extraSteps?.length && Number(s.priceUsdc) <= FREE_SAMPLE_MAX_PRICE_USDC;
+  const eligible = (s: ServiceDefinition) => pipeline.isEnabled(s) && !s.extraSteps?.length && !s.executeRemote && !s.executeLocal && serviceConfig(s.id).category !== "content" && Number(s.priceUsdc) <= FREE_SAMPLE_MAX_PRICE_USDC;
   const eligibleIds = () => pipeline.services.filter(eligible).map((s) => s.id);
 
   /** Shared core: limits, budget, one upstream call, ledger. `key` identifies "this client, this sample kind". */
@@ -152,7 +153,7 @@ export function createFreeSample(deps: FreeSampleDeps) {
       const svc = pipeline.services.find((s) => s.id === serviceId);
       if (!svc || !on()) return { status: 404, body: { error: "not_found" } };
       if (!eligible(svc)) {
-        return { status: 403, body: { error: "no_free_sample", message: `No free sample for ${svc.id}: samples cover single-call services up to ${FREE_SAMPLE_MAX_PRICE_USDC} USDC. Use a paid call.` } };
+        return { status: 403, body: { error: "no_free_sample", message: `No free sample for ${svc.id}: samples cover single-call data services up to ${FREE_SAMPLE_MAX_PRICE_USDC} USDC. Use a paid call.` } };
       }
       return sample(svc, ip, body ?? {}, `svc:${svc.id}`);
     },

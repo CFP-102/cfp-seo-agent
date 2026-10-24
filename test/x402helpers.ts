@@ -101,6 +101,7 @@ export const FIXTURE_BY_ENDPOINT: Record<string, string> = {
   "/v3/dataforseo_labs/google/keywords_for_site/live": "labs-keywords-for-site.json",
   "/v3/dataforseo_labs/google/bulk_traffic_estimation/live": "labs-bulk-traffic-estimation.json",
   "/v3/serp/google/news/live/advanced": "serp-google-news.json",
+  "/v3/on_page/content_parsing/live": "onpage-content-parsing.json",
   "/v3/serp/google/images/live/advanced": "serp-google-images.json",
 };
 

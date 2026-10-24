@@ -36,7 +36,40 @@ export interface ServiceConfig {
   cacheTtlSeconds: number;
   /** Upstream calls per minute we allow ourselves for this endpoint (DataForSEO account-wide limits apply). */
   upstreamPerMinute: number;
+  /** Website grouping: "data" (default, SEO and open data) or "content" (content planning for agencies and video teams). */
+  category?: ServiceCategory;
 }
+
+export type ServiceCategory = "data" | "content";
+
+/** Bounded website extraction and regional dataset limits, shared by validation and mapping. */
+export const CONTENT_LIMITS = { textChars: 12000, headings: 40, headingChars: 200, links: 40, urlChars: 2000, changes: 40 } as const;
+export const WEBSITE_CHECK_LIMITS = { links: 2, requests: 4, timeoutMs: 8000, sitemapBytes: 65536, headerBytes: 16384, headerValueChars: 200 } as const;
+export const CATALOG_LIMITS = { queryChars: 80, results: 10, resources: 3, urls: 2, titleChars: 200, descriptionChars: 500, fieldChars: 300, idChars: 200, responseBytes: 2097152, timeoutMs: 10000 } as const;
+export const CATALOG_SOURCES = { govdata: "https://ckan.govdata.de/api/3/action/package_search", openbydata: "https://open.bydata.de/api/hub/search/search" } as const;
+/** Content planning services (shoot planning, recipes, month plans, location check): bounded inputs shared by validation and mapping. */
+export const PLAN_LIMITS = {
+  shoots: 12, titleChars: 120, locationChars: 80, equipmentItems: 10, equipmentChars: 60, recipeResults: 5,
+  queryChars: 60, hourlyHours: 24, areaResults: 10, timeoutMs: 8000, responseBytes: 262144, forecastDays: 9,
+  /** Weather: compressed forecast file and its unpacked size are capped; stations further away are not used. */
+  forecastUnpackedBytes: 4194304, maxStationKm: 40,
+  /** Month plan and re-scheduling. */
+  planPosts: 30, planSpanDays: 62, shiftPosts: 40, existingDates: 60,
+} as const;
+/** Fixed public read-only hosts for the shoot-location-check package (one GET each, no key, no redirects). */
+export const PLAN_SOURCES = {
+  /** Official DWD Open Data (MOSMIX_L single-station forecasts). Only a station id is ever put in the path. */
+  weather: "https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations",
+  protectedAreas: "https://www.lfu.bayern.de/gdi/wfs/natur/schutzgebiete",
+} as const;
+/** Manual OSM pilot import only; no public Overpass backend for buyer calls. */
+export const OSM_IMPORT = {
+  endpoint: "https://overpass-api.de/api/interpreter",
+  region: "chiemsee-pilot", bbox: [47.75, 12.30, 47.95, 12.60] as readonly number[],
+  timeoutMs: 30000, queryTimeoutSeconds: 25, queryMemoryBytes: 67108864,
+  responseBytes: 5242880, elements: 10000, tagChars: 200,
+} as const;
+export const REGIONAL_LIMITS = { records: 10000, results: 20, queryChars: 80 } as const;
 
 export const DFS_PRICES = {
   /** Google Ads search_volume Live: flat per task, independent of keyword count. */
@@ -67,6 +100,83 @@ export const DFS_PRICES = {
 const labs = (items: number) => DFS_PRICES.labsPerTask + items * DFS_PRICES.labsPerItem;
 
 export const SERVICE_CONFIG: Record<string, ServiceConfig> = {
+  "video-recipes": {
+    id: "video-recipes", name: "Video Recipes (Shot Lists)", route: "/api/v1/video-recipes",
+    worstCaseUsd: 0, priceUsdc: "0.01", referencePriceUsdc: null,
+    enabled: true, maxInputs: 1, maxResults: PLAN_LIMITS.recipeResults,
+    dataforseoEndpoint: "local:video-recipes", maxUpstreamCostUsd: 0,
+    cacheTtlSeconds: 0, upstreamPerMinute: 30, category: "content",
+  },
+  "shoot-day-plan": {
+    id: "shoot-day-plan", name: "Shoot Day Planner", route: "/api/v1/shoot-day-plan",
+    worstCaseUsd: 0, priceUsdc: "0.03", referencePriceUsdc: null,
+    enabled: true, maxInputs: PLAN_LIMITS.shoots, maxResults: PLAN_LIMITS.shoots,
+    dataforseoEndpoint: "local:shoot-day-plan", maxUpstreamCostUsd: 0,
+    cacheTtlSeconds: 0, upstreamPerMinute: 30, category: "content",
+  },
+  "content-month-plan": {
+    id: "content-month-plan", name: "Content Month Plan", route: "/api/v1/content-month-plan",
+    worstCaseUsd: 0, priceUsdc: "0.05", referencePriceUsdc: null,
+    enabled: true, maxInputs: 1, maxResults: PLAN_LIMITS.planPosts,
+    dataforseoEndpoint: "local:content-month-plan", maxUpstreamCostUsd: 0,
+    cacheTtlSeconds: 0, upstreamPerMinute: 30, category: "content",
+  },
+  "content-plan-shift": {
+    id: "content-plan-shift", name: "Content Plan Re-Schedule", route: "/api/v1/content-plan-shift",
+    worstCaseUsd: 0, priceUsdc: "0.02", referencePriceUsdc: null,
+    enabled: true, maxInputs: PLAN_LIMITS.shiftPosts, maxResults: PLAN_LIMITS.shiftPosts,
+    dataforseoEndpoint: "local:content-plan-shift", maxUpstreamCostUsd: 0,
+    cacheTtlSeconds: 0, upstreamPerMinute: 30, category: "content",
+  },
+  "video-project-plan": {
+    id: "video-project-plan", name: "Video Project Plan", route: "/api/v1/video-project-plan",
+    worstCaseUsd: 0, priceUsdc: "0.08", referencePriceUsdc: null,
+    enabled: true, maxInputs: 1, maxResults: PLAN_LIMITS.shoots,
+    dataforseoEndpoint: "local:video-project-plan", maxUpstreamCostUsd: 0,
+    cacheTtlSeconds: 0, upstreamPerMinute: 30, category: "content",
+  },
+  "shoot-location-check": {
+    id: "shoot-location-check", name: "Shoot Location Check (package)", route: "/api/v1/shoot-location-check",
+    worstCaseUsd: 0, priceUsdc: "0.04", referencePriceUsdc: null,
+    enabled: true, maxInputs: 1, maxResults: PLAN_LIMITS.areaResults,
+    dataforseoEndpoint: "direct:shoot-location-check", maxUpstreamCostUsd: 0,
+    cacheTtlSeconds: 0, upstreamPerMinute: 10, category: "content",
+  },
+  "open-data-search": {
+    id: "open-data-search", name: "Open Data Catalog Search", route: "/api/v1/open-data-search",
+    worstCaseUsd: 0, priceUsdc: "0.01", referencePriceUsdc: null,
+    enabled: true, maxInputs: 1, maxResults: CATALOG_LIMITS.results,
+    dataforseoEndpoint: "catalog:search", maxUpstreamCostUsd: 0,
+    cacheTtlSeconds: 900, upstreamPerMinute: 10,
+  },
+  "website-check": {
+    id: "website-check", name: "Website Check (package)", route: "/api/v1/website-check",
+    worstCaseUsd: 0, priceUsdc: "0.04", referencePriceUsdc: null,
+    enabled: true, maxInputs: WEBSITE_CHECK_LIMITS.links + 1, maxResults: WEBSITE_CHECK_LIMITS.requests,
+    dataforseoEndpoint: "direct:website-check", maxUpstreamCostUsd: 0,
+    cacheTtlSeconds: 0, upstreamPerMinute: 10,
+  },
+  "website-content": {
+    id: "website-content", name: "Website Content", route: "/api/v1/website-content",
+    worstCaseUsd: DFS_PRICES.instantPagesPerPage, priceUsdc: "0.02", referencePriceUsdc: null,
+    enabled: true, maxInputs: 1, maxResults: 40,
+    dataforseoEndpoint: "/v3/on_page/content_parsing/live", maxUpstreamCostUsd: 0.005,
+    cacheTtlSeconds: 300, upstreamPerMinute: 30,
+  },
+  "website-changes": {
+    id: "website-changes", name: "Website Changes", route: "/api/v1/website-changes",
+    worstCaseUsd: DFS_PRICES.instantPagesPerPage, priceUsdc: "0.025", referencePriceUsdc: null,
+    enabled: true, maxInputs: 1, maxResults: 40,
+    dataforseoEndpoint: "/v3/on_page/content_parsing/live", maxUpstreamCostUsd: 0.005,
+    cacheTtlSeconds: 0, upstreamPerMinute: 30,
+  },
+  "regional-data": {
+    id: "regional-data", name: "Regional Places (Chiemgau)", route: "/api/v1/regional-data",
+    worstCaseUsd: 0, priceUsdc: "0.01", referencePriceUsdc: null,
+    enabled: true, maxInputs: 1, maxResults: 20,
+    dataforseoEndpoint: "local:regional-data", maxUpstreamCostUsd: 0,
+    cacheTtlSeconds: 0, upstreamPerMinute: 30,
+  },
   "keyword-metrics": {
     id: "keyword-metrics",
     name: "Keyword Metrics",
@@ -242,7 +352,7 @@ export const SERVICE_CONFIG: Record<string, ServiceConfig> = {
     route: "/api/v1/page-audit",
     worstCaseUsd: DFS_PRICES.instantPagesPerPage,
     priceUsdc: "0.02",
-    referencePriceUsdc: null,
+    referencePriceUsdc: "0.03",
     enabled: true,
     maxInputs: 1,
     maxResults: 1,
@@ -332,8 +442,8 @@ export const SERVICE_CONFIG: Record<string, ServiceConfig> = {
     route: "/api/v1/local-market-check",
     // Package: one Google organic SERP page + one Google Maps page (two upstream calls per payment, fixed).
     worstCaseUsd: DFS_PRICES.serpLivePerPage + DFS_PRICES.mapsLivePer100,
-    priceUsdc: "0.1",
-    referencePriceUsdc: null,
+    priceUsdc: "0.09",
+    referencePriceUsdc: "0.10",
     enabled: true,
     maxInputs: 1,
     maxResults: 10,

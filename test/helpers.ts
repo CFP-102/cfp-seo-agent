@@ -36,14 +36,16 @@ export function buildTestApp(opts: {
   /** Enable x402 (testnet network) against the given facilitator. */
   facilitator?: FacilitatorClient;
   disabled?: string[];
+  services?: typeof SERVICES;
 }) {
   const env = loadEnv({ NODE_ENV: "test", DB_PATH: ":memory:", RATE_LIMIT_PER_MINUTE: "1000", ...opts.env });
   const store = new Store(":memory:");
   const dfs = createDataForSeoClient({ mode: env.DATAFORSEO_MODE, login: "test-login", password: "test-password", timeoutMs: 2000, fetchImpl: opts.fetchImpl });
   const guard = new CostGuard(store, { dailyUsd: opts.dailyUsd ?? 5, monthlyUsd: 100, countSpend: opts.countSpend ?? false });
-  const pipeline = new Pipeline({ dfs, store, guard, services: SERVICES, disabledServices: opts.disabled });
+  const services = opts.services ?? SERVICES;
+  const pipeline = new Pipeline({ dfs, store, guard, services, disabledServices: opts.disabled });
   const payments = opts.facilitator
-    ? createPayments({ mode: "testnet", payTo: PAY_TO, publicBaseUrl: "http://api.test", facilitator: opts.facilitator }, { store, pipeline, services: SERVICES })
+    ? createPayments({ mode: "testnet", payTo: PAY_TO, publicBaseUrl: "http://api.test", facilitator: opts.facilitator }, { store, pipeline, services })
     : undefined;
   const app = createApp({ env, store, pipeline, payments });
   return { app, store, pipeline, guard, env };

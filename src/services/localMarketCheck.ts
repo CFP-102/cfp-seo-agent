@@ -31,6 +31,8 @@ export interface LocalMarketCheckOutput {
   your_domain: { domain: string; organic_position: number | null; local_pack_position: number | null; maps_position: number | null } | null;
   /** Short, rule-based observations derived from the returned results (not advice). */
   observations: string[];
+  coverage: string;
+  website_not_listed_count: number;
 }
 
 const host = (url: string | null): string | null => {
@@ -68,6 +70,8 @@ export const localMarketCheck: ServiceDefinition<Input, LocalMarketCheckOutput> 
     maps: [{ position: 1, name: "Zahnarztpraxis Beispiel", category: "Zahnarzt", rating: 4.8, reviews_count: 212, domain: "example-praxis.de", address: "Musterstraße 1, 83022 Rosenheim", phone: "+49 8031 000000" }],
     competitor_domains: [{ domain: "example-praxis.de", organic_position: 1, local_pack_position: 1, maps_position: 1 }],
     your_domain: null,
+    coverage: "Search-result sample only; no complete business census or website quality audit. A missing website link is not proof that a business has no website.",
+    website_not_listed_count: 0,
     observations: ["1 domain appears in both the organic and the Maps results."],
   },
 
@@ -126,12 +130,14 @@ export const localMarketCheck: ServiceDefinition<Input, LocalMarketCheckOutput> 
       observations.push(`The Maps results shown average ${avg.toFixed(1)} stars with about ${reviews} reviews each.`);
     }
     const noSite = maps.filter((m) => !m.domain).length;
-    if (noSite) observations.push(`${noSite} of ${maps.length} Maps businesses show no website.`);
+    if (noSite) observations.push(`${noSite} of ${maps.length} Maps businesses have no website link in the returned data; this does not prove that they have no website.`);
     if (your_domain) {
       observations.push(your_domain.organic_position === null ? "Your domain is not among the organic results returned." : `Your domain ranks at organic position ${your_domain.organic_position}.`);
       observations.push(your_domain.maps_position === null ? "Your domain is not among the Maps results returned." : `Your domain appears at Maps position ${your_domain.maps_position}.`);
     }
     return {
+      coverage: "Search-result sample only; no complete business census or website quality audit. A missing website link is not proof that a business has no website.",
+      website_not_listed_count: noSite,
       keyword: i.keyword,
       location_code: i.location_code,
       language_code: i.language_code,

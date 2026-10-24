@@ -1029,3 +1029,250 @@ describe("browser purchase recovery", () => {
     expect(send).toHaveBeenCalledTimes(2);
   });
 });
+
+import { websiteContent, websiteChanges } from "../src/services/websiteContent.js";
+import { CONTENT_LIMITS, WEBSITE_CHECK_LIMITS } from "../src/config/services.js";
+import { regionalData } from "../src/services/regionalData.js";
+
+describe("website and local-data security regressions", () => {
+  it("rejects internal targets, credentials, excess snapshots and URL mismatches before charging", async () => {
+    const events: Event[] = [];
+    const up = routedUpstream(events);
+    const { app } = buildTestApp({ fetchImpl: up.impl, facilitator: fakeFacilitator(events) });
+    const base = await start(app);
+    for (const url of ["http://127.0.0.1/", "http://[::1]/", "http://localhost/", "https://metadata.google.internal/", "https://example.local/", "https://u:p@example.com/", "https://example.com:8080/", "https://2130706433/", "file:///etc/passwd"]) {
+      for (const service of [websiteContent, websiteChanges]) {
+        const body = service.id === "website-changes" ? { url, previous: { url, text: "old" } } : { url };
+        const response = await fetch(base + service.route, post(body));
+        expect(response.status, url).toBe(400);
+        expect(response.headers.get("payment-required")).toBeNull();
+      }
+    }
+    for (const previous of [{ url: "https://other.com/", text: "x" }, { url: "https://example.com/", text: "x".repeat(CONTENT_LIMITS.textChars + 1) }]) {
+      expect((await fetch(base + websiteChanges.route, post({ url: "https://example.com/", previous }))).status).toBe(400);
+    }
+    expect(events).toEqual([]);
+  });
+  it("does not forward the previous snapshot and filters unsafe provider links", () => {
+    const input = websiteChanges.inputSchema.parse(websiteChanges.example);
+    expect(JSON.stringify(websiteChanges.buildRequest(input))).not.toContain(input.previous.text);
+    const t = fixture("onpage-content-parsing.json").tasks[0];
+    t.result[0].items[0].page_content.main_topic[0].primary_content[0].urls = [
+      { url: "javascript:alert(1)" }, { url: "https://user:password@example.com/" }, { url: "http://127.0.0.1/" }, { url: "https://example.local/" }, { url: "https://example.com/safe", anchor_text: "Safe" },
+    ];
+    expect(websiteContent.mapResult(t, { url: "https://example.com/" }).links).toEqual([{ url: "https://example.com/safe", text: "Safe" }]);
+  });
+  it("never runs a local query when payment settlement fails", async () => {
+    const events: Event[] = []; let executions = 0;
+    const local = { ...regionalData, executeLocal: () => { executions++; throw new Error("must not run"); } };
+    const { app } = buildTestApp({ fetchImpl: routedUpstream(events).impl, facilitator: fakeFacilitator(events, { failSettle: true }), services: [local] });
+    const response = await buyer().pay((await start(app)) + local.route, post(local.example));
+    expect(response.status).toBe(402);
+    expect(executions).toBe(0);
+    expect(events).not.toContain("upstream");
+  });
+  it("records provider cost even when an empty page is rejected during mapping", async () => {
+    const payload = fixture("onpage-content-parsing.json");
+    payload.cost = 0.00015; payload.tasks[0].cost = 0;
+    payload.tasks[0].result[0].items[0].page_content.main_topic = [];
+    const { pipeline, store } = buildTestApp({ fetchImpl: fakeFetch(payload).impl });
+    const prep = pipeline.prepare(websiteContent, websiteContent.example);
+    expect(prep.ok).toBe(true); if (!prep.ok) return;
+    const claim = pipeline.claim(prep.prepared, null)!;
+    await expect(pipeline.execute(prep.prepared, claim.requestId)).rejects.toThrow("No main-topic text");
+    expect(store.get(claim.requestId)).toMatchObject({ status: "failed", upstream_cost_usd: 0.00015 });
+  });
+});
+
+import { gzipSync } from "node:zlib";
+import nodemailer from "nodemailer";
+
+describe("2026-10-24 dependency security regressions", () => {
+  it("survives compressed JSON followed by invalid trailing bytes", async () => {
+    const { app } = buildTestApp({ fetchImpl: routedUpstream([]).impl });
+    const base = await start(app);
+    const bytes = Buffer.concat([gzipSync(JSON.stringify({ keyword: "test" })), Buffer.from("invalid-trailing-frame")]);
+    const response = await fetch(base + "/api/v1/preflight/google-serp", {
+      method: "POST", headers: { "content-type": "application/json", "content-encoding": "gzip" }, body: new Uint8Array(bytes),
+    });
+    expect(response.status).toBe(400);
+    expect((await fetch(base + "/health")).status).toBe(200);
+  });
+  it("does not turn nested email comments into an extra recipient (local JSON transport only)", async () => {
+    const transport = nodemailer.createTransport({ jsonTransport: true });
+    const result = await transport.sendMail({ from: "sender@example.com", to: "allowed@example.com (outer (inner) hidden@example.org)", subject: "Offline parser regression", text: "Offline only." });
+    expect(result.envelope.to).toEqual(["allowed@example.com"]);
+  });
+});
+
+import { createPublicProbe, isPublicAddress, pinnedOptions } from "../src/lib/webProbe.js";
+import { createWebsiteCheck, websiteCheck } from "../src/services/websiteCheck.js";
+
+
+describe("direct HTTPS probe security boundary", () => {
+  it("rejects private, special-use and embedded IPv4 targets before opening a socket", async () => {
+    const addresses = ["127.0.0.1", "10.1.2.3", "100.64.0.1", "169.254.169.254", "172.16.0.1", "192.168.1.1", "192.0.0.1", "192.0.2.1", "198.18.0.1", "198.51.100.1", "203.0.113.1", "224.0.0.1", "240.0.0.1", "::1", "::ffff:127.0.0.1", "::ffff:8.8.8.8", "64:ff9b::7f00:1", "fc00::1", "fe80::1", "2001:db8::1", "2002:7f00:1::", "3fff::1", "ff02::1"];
+    let sends = 0;
+    for (const address of addresses) {
+      expect(isPublicAddress(address), address).toBe(false);
+      const probe = createPublicProbe({ resolve: async () => [{ address, family: address.includes(":") ? 6 : 4 }], send: async () => { sends++; throw new Error("must not connect"); } });
+      expect((await probe("https://example.com/", "HEAD")).outcome, address).toBe("blocked_target");
+    }
+    expect(sends).toBe(0);
+    expect(isPublicAddress("8.8.8.8")).toBe(true);
+    expect(isPublicAddress("2606:4700:4700::1111")).toBe(true);
+  });
+  it("blocks mixed DNS answers and pins a public answer without a second DNS lookup", async () => {
+    let sends = 0; let lookups = 0;
+    const mixed = createPublicProbe({ resolve: async () => [{ address: "8.8.8.8", family: 4 }, { address: "127.0.0.1", family: 4 }], send: async () => { sends++; throw new Error("must not connect"); } });
+    expect((await mixed("https://example.com/", "HEAD")).outcome).toBe("blocked_target");
+    const probe = createPublicProbe({
+      resolve: async () => { lookups++; return [{ address: lookups === 1 ? "8.8.8.8" : "127.0.0.1", family: 4 }]; },
+      send: async (url, address, method, signal) => {
+        sends++;
+        const opts = pinnedOptions(url, address, method, signal);
+        expect(opts).toMatchObject({ hostname: "example.com", servername: "example.com", rejectUnauthorized: true, agent: false, port: 443 });
+        let actual: unknown;
+        (opts.lookup as Function)("example.com", { all: true }, (_error: unknown, resolved: unknown) => { actual = resolved; });
+        expect(actual).toEqual([{ address: "8.8.8.8", family: 4 }]);
+        return { url: url.toString(), status: 302, outcome: "response", redirect_url: "https://example.com/next", content_type: null, tls: null, body: "" };
+      },
+    });
+    expect((await probe("https://example.com/", "HEAD")).status).toBe(302);
+    expect(lookups).toBe(1);
+    expect(sends).toBe(1);
+  });
+  it("distinguishes DNS, TLS and network failures without leaking raw errors", async () => {
+    const dns = createPublicProbe({ resolve: async () => { throw new Error("sensitive resolver details"); } });
+    expect((await dns("https://example.com/", "HEAD")).outcome).toBe("dns_error");
+    const tls = createPublicProbe({ resolve: async () => [{ address: "8.8.8.8", family: 4 }], send: async () => { throw Object.assign(new Error("private diagnostics"), { code: "CERT_HAS_EXPIRED" }); } });
+    const result = await tls("https://example.com/", "HEAD");
+    expect(result).toMatchObject({ outcome: "tls_error", tls: { verified: false }, status: null });
+    expect(JSON.stringify(result)).not.toMatch(/private diagnostics|8\.8\.8\.8/);
+  });
+  it("refuses free samples for the direct four-probe package", async () => {
+    const { pipeline, store } = buildTestApp({ fetchImpl: routedUpstream([]).impl });
+    const sample = createFreeSample({ pipeline, store, dailyLimit: 10 });
+    const result = await sample.runService("192.0.2.10", websiteCheck.id, websiteCheck.example);
+    expect(result.status).toBe(403);
+    expect(store.stats("day").perService).toEqual([]);
+  });
+});
+
+
+it("a timed-out DNS lookup cannot open a late socket", async () => {
+  vi.useFakeTimers();
+  try {
+    let finish!: (value: { address: string; family: number }[]) => void;
+    let sends = 0;
+    const probe = createPublicProbe({ resolve: () => new Promise(resolve => { finish = resolve; }), send: async () => { sends++; throw new Error("must not run"); } });
+    const pending = probe("https://example.com/", "HEAD");
+    await vi.advanceTimersByTimeAsync(WEBSITE_CHECK_LIMITS.timeoutMs);
+    expect((await pending).outcome).toBe("timeout");
+    finish([{ address: "8.8.8.8", family: 4 }]);
+    await Promise.resolve(); await Promise.resolve();
+    expect(sends).toBe(0);
+  } finally { vi.useRealTimers(); }
+});
+
+import { createOpenDataSearch, fetchCatalog, mapCatalog } from "../src/services/openDataSearch.js";
+import { CATALOG_LIMITS } from "../src/config/services.js";
+
+describe("catalog security regressions", () => {
+  it("rejects provider/parameter injection before settlement and makes no sandbox requests", async () => {
+    let calls = 0;
+    const service = createOpenDataSearch((async () => { calls++; throw new Error("must not fetch"); }) as typeof fetch);
+    expect((await service.executeRemote!(service.example, "sandbox")).simulated).toBe(true);
+    const events: Event[] = [];
+    const { app } = buildTestApp({ fetchImpl: routedUpstream(events).impl, facilitator: fakeFacilitator(events), services: [service] });
+    const base = await start(app);
+    for (const input of [{ source: "https://127.0.0.1", query: "test" }, { source: "govdata", query: "test", url: "https://evil.com" }, { source: "govdata", query: "*:*" }]) {
+      const response = await fetch(base + service.route, post(input));
+      expect(response.status).toBe(400); expect(response.headers.get("payment-required")).toBeNull();
+    }
+    expect(calls).toBe(0); expect(events).toEqual([]);
+  });
+  it("enforces response byte limits and rejects redirects/unsuccessful HTTP", async () => {
+    let canceled = false;
+    const stream = new ReadableStream({ start(controller) { controller.enqueue(new Uint8Array(CATALOG_LIMITS.responseBytes + 1)); }, cancel() { canceled = true; } });
+    await expect(fetchCatalog({ source: "govdata", query: "parking" }, (async () => new Response(stream)) as typeof fetch)).rejects.toThrow("too large");
+    expect(canceled).toBe(true);
+    await expect(fetchCatalog({ source: "govdata", query: "parking" }, (async () => new Response("", { status: 302 })) as typeof fetch)).rejects.toThrow("unavailable");
+    await expect(fetchCatalog({ source: "govdata", query: "parking" }, (async () => { throw new Error("private transport details"); }) as typeof fetch)).rejects.toThrow("Catalog request failed");
+  });
+  it("never returns unsafe resource links or contact emails from metadata", () => {
+    const payload = { success: true, result: { count: 1, results: [{ id: "id", title: "Parking", author_email: "private@example.com", resources: [{ url: "http://127.0.0.1/file", license: "CC0" }, { url: "https://user:password@example.com/file" }, { url: "file:///etc/passwd" }] }] } };
+    const result = mapCatalog(payload, { source: "govdata", query: "parking" }, "now", false);
+    expect(result.datasets[0]?.resources.every(r => r.access_urls.length === 0)).toBe(true);
+    expect(JSON.stringify(result)).not.toContain("private@example.com");
+  });
+});
+
+import { normalizeOsmTransport, fetchOsmTransport } from "../src/services/osmImport.js";
+import { OSM_IMPORT } from "../src/config/services.js";
+
+describe("manual OSM import safety", () => {
+  it("does not retain mapper identities, contact tags, script content or unknown fields", () => {
+    const result = normalizeOsmTransport({ osm3s: { timestamp_osm_base: "2026-10-24T00:00:00Z" }, elements: [{ type: "node", id: 1, lat: 47.8, lon: 12.4, user: "mapper-identity", uid: 123, tags: { amenity: "parking", name: "x".repeat(1000), "contact:email": "private@example.com", "contact:phone": "123", description: "untrusted arbitrary instructions" } }] }, "2026-10-24T00:00:00Z");
+    const serialized = JSON.stringify(result);
+    expect(serialized).not.toMatch(/mapper-identity|private@example.com|untrusted arbitrary instructions|contact:phone/);
+    expect(result.features[0]?.properties.name?.length).toBe(OSM_IMPORT.tagChars);
+    expect(result.features[0]?.properties.access).toBeNull();
+  });
+  it("cancels oversized OSM responses rather than saving a partial import", async () => {
+    let canceled = false;
+    const stream = new ReadableStream({ start(c) { c.enqueue(new Uint8Array(OSM_IMPORT.responseBytes + 1)); }, cancel() { canceled = true; } });
+    await expect(fetchOsmTransport((async () => new Response(stream)) as typeof fetch)).rejects.toThrow("too large");
+    expect(canceled).toBe(true);
+  });
+});
+
+import { shootDayPlan as filmPlanner } from "../src/services/shootPlan.js";
+import { checkLocation as filmLocationCheck, protectedAreasUrl, weatherUrl } from "../src/services/shootLocationCheck.js";
+import { PLAN_SOURCES } from "../src/config/services.js";
+
+describe("filmmaker services safety", () => {
+  it("cannot be steered to another host and never sends unrounded coordinates, even for odd numeric input", async () => {
+    const seen: URL[] = [];
+    const impl = (async (url: RequestInfo | URL) => { seen.push(new URL(String(url))); return new Response("{}"); }) as typeof fetch;
+    await filmLocationCheck({ latitude: 47.86712345, longitude: 12.43999999, date: "2026-10-26" }, "live", impl, new Date("2026-10-24T10:00:00Z")).catch(() => undefined);
+    expect(seen.length).toBeGreaterThan(0);
+    for (const u of seen) { expect([new URL(PLAN_SOURCES.weather).host, new URL(PLAN_SOURCES.protectedAreas).host]).toContain(u.host); expect(u.protocol).toBe("https:"); expect(u.href).not.toMatch(/47\.867123|12\.439999/); }
+    expect(weatherUrl("P875").origin).toBe(new URL(PLAN_SOURCES.weather).origin);
+    expect(protectedAreasUrl(47.867, 12.44).origin).toBe(new URL(PLAN_SOURCES.protectedAreas).origin);
+  });
+  it("does not let planner text break out of the calendar file or the schedule", () => {
+    expect(filmPlanner.inputSchema.safeParse({ shoots: [{ title: "x\r\nEND:VEVENT\r\nBEGIN:VEVENT" }] }).success).toBe(false);
+    expect(filmPlanner.inputSchema.safeParse({ shoots: [{ title: "ok", location: "Halle\nZwei" }] }).success).toBe(false);
+    const plan = filmPlanner.executeLocal!(filmPlanner.inputSchema.parse({ shoots: [{ title: "A;B,C\\D", location: "Ort; 1" }], first_date: "2026-11-10" }));
+    const ics = plan.days[0]!.calendar_file_ics!;
+    expect(ics.match(/BEGIN:VEVENT/g)).toHaveLength(1); expect(ics).toContain("A\\;B\\,C\\\\D");
+  });
+});
+
+import { contentMonthPlan as monthPlanner } from "../src/services/contentMonthPlan.js";
+import { contentPlanShift as planShifter } from "../src/services/contentShift.js";
+import { unzipKmz, weatherUrl as stationUrl } from "../src/services/shootLocationCheck.js";
+
+describe("content planning safety", () => {
+  it("only produces calendar text from validated dates and operator-written recipe text", () => {
+    const r = monthPlanner.executeLocal!(monthPlanner.inputSchema.parse({ today: "2026-10-24", from: "2026-11-01", to: "2026-11-30", mix_counts: { produkt: 2 } }));
+    const events = r.calendar_file_ics.match(/BEGIN:VEVENT/g)!.length;
+    expect(r.calendar_file_ics.match(/END:VEVENT/g)!.length).toBe(events);
+    expect(r.calendar_file_ics).not.toMatch(/\r\n(?!\s)[^A-Z]/);
+    expect(monthPlanner.inputSchema.safeParse({ from: "2026-11-01\r\nEND:VCALENDAR", to: "2026-11-30" }).success).toBe(false);
+    expect(monthPlanner.inputSchema.safeParse({ from: "2026-11-01", to: "2026-11-30", mix_counts: JSON.parse('{"produkt":1,"__proto__":5}') }).success).toBe(false);
+  });
+  it("rejects re-schedule input that could break messages or exhaust the service", () => {
+    const move = { post_key: "a", step: "edit", new_date: "2026-11-10" };
+    expect(planShifter.inputSchema.safeParse({ posts: [{ key: "a", publish: "2026-11-13", shoot_group: "g\u0007" }], move }).success).toBe(false);
+    expect(planShifter.inputSchema.safeParse({ posts: [{ key: "../a", publish: "2026-11-13" }], move }).success).toBe(false);
+    expect(planShifter.inputSchema.safeParse({ posts: [{ key: "a", publish: "2026-11-13", done: ["publish"] }], move }).success).toBe(false);
+  });
+  it("never builds a forecast URL from anything but a station id and refuses oversized or foreign archives", () => {
+    expect(() => stationUrl("P875/../../x")).toThrow();
+    expect(() => stationUrl("https://evil.example/a")).toThrow();
+    expect(stationUrl("P875").host).toBe("opendata.dwd.de");
+    expect(() => unzipKmz(Buffer.from("PK\u0003\u0004 not really a zip"))).toThrow();
+  });
+});

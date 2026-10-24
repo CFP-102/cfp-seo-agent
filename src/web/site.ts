@@ -11,6 +11,7 @@ import { renderStatusPage } from "./statusPage.js";
 import { toolNameOf } from "../services/common.js";
 import type { Pipeline } from "../services/pipeline.js";
 import type { ServiceDefinition } from "../services/types.js";
+import { serviceConfig } from "../config/services.js";
 
 const PUBLIC_DIR = new URL("../../public/", import.meta.url);
 
@@ -40,16 +41,20 @@ function card(s: ServiceDefinition, enabled: boolean): string {
     </article>`;
 }
 
+/** Website grouping: services for video producers get their own section. */
+export const isPlanningService = (s: ServiceDefinition) => serviceConfig(s.id).category === "content";
+
 export function siteValues(env: Env, pipeline: Pipeline, network?: string): Record<string, string> {
   const services = pipeline.services;
   const modeNote =
     env.PAYMENT_MODE === "testnet"
       ? '<p class="note">Test mode: payments use Base Sepolia test USDC (no real money).' +
-        (pipeline.dataSource === "sandbox" ? " Responses contain sandbox dummy data." : "") +
+        (pipeline.dataSource === "sandbox" ? " DataForSEO responses contain sandbox dummy data; local datasets retain their source date." : "") +
         "</p>"
       : pipeline.dataSource === "sandbox"
         ? '<p class="note">Development mode: responses contain sandbox dummy data.</p>'
         : "";
+  const line = (s: ServiceDefinition) => `- ${s.name} (${s.priceUsdc} USDC): POST ${env.PUBLIC_BASE_URL}${s.route} — MCP tool ${toolNameOf(s.id)} — ${s.summary}`;
   return {
     NAME: escapeHtml(env.SITE_NAME),
     BASE_URL: escapeHtml(env.PUBLIC_BASE_URL),
@@ -58,11 +63,13 @@ export function siteValues(env: Env, pipeline: Pipeline, network?: string): Reco
     CONTACT_EMAIL: escapeHtml(env.CONTACT_EMAIL || "[set CONTACT_EMAIL]"),
     PAY_TO_ADDRESS: escapeHtml(env.PAY_TO_ADDRESS),
     SERP_PRICE: escapeHtml(services.find((s) => s.id === "google-serp")!.priceUsdc),
-    SERVICE_CARDS: services.map((s) => card(s, pipeline.isEnabled(s))).join("\n"),
+    SERVICE_CARDS: services.filter((s) => !isPlanningService(s)).map((s) => card(s, pipeline.isEnabled(s))).join("\n"),
+    SERVICE_CARDS_CONTENT: services.filter(isPlanningService).map((s) => card(s, pipeline.isEnabled(s))).join("\n"),
     SERVICE_LINES: services
-      .filter((s) => pipeline.isEnabled(s))
-      .map((s) => `- ${s.name} (${s.priceUsdc} USDC): POST ${env.PUBLIC_BASE_URL}${s.route} — MCP tool ${toolNameOf(s.id)} — ${s.summary}`)
+      .filter((s) => pipeline.isEnabled(s) && !isPlanningService(s))
+      .map(line)
       .join("\n"),
+    SERVICE_LINES_CONTENT: services.filter((s) => pipeline.isEnabled(s) && isPlanningService(s)).map(line).join("\n"),
   };
 }
 

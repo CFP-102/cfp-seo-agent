@@ -1,36 +1,11 @@
 import { z } from "zod";
 import { DFS_PRICES, serviceConfig } from "../config/services.js";
 import type { ServiceDefinition } from "./types.js";
-import { arr, domainString, num, obj, round2, str } from "./common.js";
+import { arr, num, obj, round2, str } from "./common.js";
 
 const cfg = serviceConfig("page-audit");
 
-/** One public http(s) page: no credentials, no IP address, no port; the host must be a normal domain name. */
-const pageUrl = z
-  .string()
-  .trim()
-  .max(2000)
-  .transform((s, ctx) => {
-    let u: URL;
-    try {
-      u = new URL(/^https?:\/\//i.test(s) ? s : `https://${s}`);
-    } catch {
-      ctx.addIssue({ code: "custom", message: "url must be a valid http(s) URL such as https://example.com/page" });
-      return z.NEVER;
-    }
-    if (!["http:", "https:"].includes(u.protocol) || u.username || u.password || u.port) {
-      ctx.addIssue({ code: "custom", message: "url must be a plain http(s) URL without credentials or port" });
-      return z.NEVER;
-    }
-    const host = domainString.safeParse(u.hostname);
-    if (!host.success) {
-      ctx.addIssue({ code: "custom", message: "url host must be a domain name (IP addresses and internal hosts are rejected)" });
-      return z.NEVER;
-    }
-    u.hash = "";
-    return u.toString();
-  })
-  .describe("Public page URL to audit, e.g. https://example.com/pricing. IP addresses, ports and credentials are rejected.");
+import { pageUrl } from "./pageUrl.js";
 
 const input = z.strictObject({ url: pageUrl });
 type Input = z.output<typeof input>;
@@ -55,6 +30,8 @@ export interface PageAuditOutput {
   load_time_ms: number | null;
   /** On-page checks that fired, e.g. no_title, is_4xx_code, high_loading_time, no_h1_tag. */
   checks_triggered: string[];
+  coverage: string;
+  findings: { check: string; severity: string; evidence: string }[];
 }
 
 export const pageAudit: ServiceDefinition<Input, PageAuditOutput> = {
@@ -87,6 +64,8 @@ export const pageAudit: ServiceDefinition<Input, PageAuditOutput> = {
     onpage_score: 97.07,
     load_time_ms: 222,
     checks_triggered: ["is_https"],
+    coverage: "Single page only. No TLS certificate validation, sitemap retrieval, linked-page crawl or broken-link verification.",
+    findings: [],
   },
 
   // Base price per page only: JavaScript, resource loading and browser rendering add-ons are never requested.
@@ -113,6 +92,13 @@ export const pageAudit: ServiceDefinition<Input, PageAuditOutput> = {
     const checks = obj(page.checks);
     const count = (v: unknown) => arr(v).length;
     return {
+      coverage: "Single page only. No TLS certificate validation, sitemap retrieval, linked-page crawl or broken-link verification.",
+      findings: [
+        ...((num(page.status_code) ?? 0) >= 400 ? [{ check: "http_error", severity: "error", evidence: `HTTP ${num(page.status_code)}` }] : []),
+        ...(["no_title", "no_description", "no_h1_tag", "high_loading_time", "is_broken", "is_redirect"] as const)
+          .filter(key => checks[key] === true)
+          .map(key => ({ check: key, severity: key === "is_broken" ? "error" : "warning", evidence: `DataForSEO check: ${key}` })),
+      ],
       url: i.url,
       fetched: Object.keys(page).length > 0,
       http_status: num(page.status_code),

@@ -35,6 +35,8 @@ describe("registry", () => {
     expect(SERVICES.map((s) => s.id).sort()).toEqual(Object.keys(SERVICE_CONFIG).sort());
     expect(new Set(SERVICES.map((s) => s.route)).size).toBe(SERVICES.length);
     for (const s of SERVICES) {
+      expect(s.name.length, s.id).toBeLessThanOrEqual(32);
+      expect(s.name, s.id).toMatch(/^[\x20-\x7e]+$/);
       expect(s.route).toBe(SERVICE_CONFIG[s.id]!.route);
       expect(s.priceUsdc).toBe(SERVICE_CONFIG[s.id]!.priceUsdc);
       expect(s.upstream.endpoint).toBe(SERVICE_CONFIG[s.id]!.dataforseoEndpoint);
@@ -54,6 +56,17 @@ describe("registry", () => {
   it("worst-case upstream estimate at maximum input never exceeds the configured worst case (which prices were derived from)", () => {
     const kw = (n: number) => Array.from({ length: n }, (_, i) => `keyword ${i}`);
     const maxInputs: Record<string, unknown> = {
+      "video-recipes": { category: "produkt" },
+      "shoot-day-plan": { shoots: [{ title: "Example video" }] },
+      "video-project-plan": { goal: "recruiting", shoot_date: "2026-11-20", deliver_by: "2026-12-23", today: "2026-10-24" },
+      "content-month-plan": { from: "2026-11-02", to: "2026-11-27", today: "2026-10-24" },
+      "content-plan-shift": { posts: [{ key: "p1", publish: "2026-11-13" }], move: { post_key: "p1", step: "publish", new_date: "2026-11-14" } },
+      "shoot-location-check": { latitude: 47.867, longitude: 12.44, date: "2026-10-26" },
+      "open-data-search": { source: "openbydata", query: "Chiemgau" },
+      "website-check": { url: "https://example.com/", link_urls: ["https://example.com/about", "https://example.com/contact"] },
+      "website-content": { url: "https://example.com/" },
+      "website-changes": { url: "https://example.com/", previous: { url: "https://example.com/", text: "Old example." } },
+      "regional-data": { region: "chiemgau" },
       "keyword-metrics": { keywords: kw(1000) },
       "keyword-ideas": { keywords: kw(1) },
       "google-serp": { keyword: "running shoes" },
@@ -357,5 +370,152 @@ describe("keywords-for-site, traffic-estimate, news-search, image-search", () =>
     expect(JSON.stringify(img)).not.toContain("encrypted-tbn");
     expect(newsSearch.inputSchema.safeParse({ keyword: "site:example.com" }).success).toBe(false);
     expect(imageSearch.inputSchema.safeParse({ keyword: '"x"' }).success).toBe(false);
+  });
+});
+
+import { CONTENT_LIMITS } from "../src/config/services.js";
+import { websiteContent, websiteChanges, compareText } from "../src/services/websiteContent.js";
+import { regionalData } from "../src/services/regionalData.js";
+import { regionalDatasetSchema } from "../src/services/regionalSchema.js";
+
+describe("website extraction and changes", () => {
+  const url = "https://example.com/";
+  it("extracts documented main-topic structure and produces a reusable snapshot", () => {
+    const out = websiteContent.mapResult(task("onpage-content-parsing.json"), { url });
+    expect(out).toEqual(websiteContent.outputExample);
+    const input = websiteChanges.inputSchema.parse({ url, previous: out.snapshot });
+    const same = websiteChanges.mapResult(task("onpage-content-parsing.json"), input);
+    expect(same).toMatchObject({ changed: false, added: { count: 0, lines: [] }, removed: { count: 0, lines: [] } });
+    expect(websiteContent.buildRequest({ url })).toEqual([{ url, enable_javascript: false, enable_browser_rendering: false, load_resources: false, enable_xhr: false, store_raw_html: false, markdown_view: false }]);
+  });
+  it("counts added and removed repeated lines and detects reordered text", () => {
+    expect(compareText("A\nA\nB", "A\nC")).toEqual({ added: { count: 1, lines: ["C"] }, removed: { count: 2, lines: ["A", "B"] } });
+    expect(compareText("A\nB", "B\nA").added.count).toBe(0);
+    const out = websiteChanges.mapResult(task("onpage-content-parsing.json"), websiteChanges.inputSchema.parse(websiteChanges.example));
+    expect(out.changed).toBe(true);
+    expect(out.removed.lines).toEqual(["Old example."]);
+    expect(websiteChanges.cacheTtlSeconds).toBe(0);
+  });
+  it("bounds content and marks incomplete output, without retaining navigation", () => {
+    const t = structuredClone(task("onpage-content-parsing.json"));
+    const pc = t.result[0].items[0].page_content;
+    pc.header = { primary_content: [{ text: "NAVIGATION SECRET" }] };
+    pc.main_topic = Array.from({ length: 80 }, (_, n) => ({ main_title: `Title ${n}`, level: 2, primary_content: [{ text: "x".repeat(2000), urls: [{ url: `https://example.com/page${n}`, anchor_text: "A" }] }] }));
+    const out = websiteContent.mapResult(t, { url });
+    expect(out.text.length).toBeLessThanOrEqual(CONTENT_LIMITS.textChars);
+    expect(out.text).not.toContain("NAVIGATION SECRET");
+    expect(out.truncated).toBe(true);
+    expect(out.headings).toHaveLength(CONTENT_LIMITS.headings);
+    expect(out.links).toHaveLength(CONTENT_LIMITS.links);
+    expect(websiteChanges.inputSchema.safeParse({ url, previous: out.snapshot }).success).toBe(true);
+    const changes = compareText("", Array.from({ length: 80 }, (_, n) => `Line ${n}`).join("\n"));
+    expect(changes.added.count).toBe(80);
+    expect(changes.added.lines).toHaveLength(CONTENT_LIMITS.changes);
+  });
+  it("does not present missing or failed pages as a successful comparison", () => {
+    for (const status of [0, 301, 403, 404, 500]) {
+      const t = structuredClone(task("onpage-content-parsing.json")); t.result[0].items[0].status_code = status;
+      expect(() => websiteContent.mapResult(t, { url })).toThrow("could not be fetched");
+    }
+    const t = structuredClone(task("onpage-content-parsing.json")); t.result[0].items[0].page_content.main_topic = [];
+    expect(() => websiteContent.mapResult(t, { url })).toThrow("No main-topic text");
+  });
+});
+
+describe("Chiemgau local dataset", () => {
+  it("filters real source records and retains provenance on every result", () => {
+    const all = regionalData.executeLocal!({ region: "chiemgau" });
+    expect(all.places).toHaveLength(8);
+    expect(all.coverage).toContain("not a complete directory");
+    for (const place of all.places) expect(place).toMatchObject({ license: "CC0-1.0", source_revision: expect.any(Number), source_url: `https://www.wikidata.org/wiki/${place.id}`, retrieved_at: expect.any(String) });
+    expect(regionalData.executeLocal!({ region: "chiemgau", query: "fraueninsel" }).places[0]?.id).toBe("Q645925");
+    expect(regionalData.executeLocal!({ region: "chiemgau", category: "town" }).places).toHaveLength(3);
+    expect(regionalData.executeLocal!({ region: "chiemgau", query: "nonexistent-place" })).toMatchObject({ places: [], total_matches: 0 });
+    expect(regionalData.inputSchema.safeParse({ region: "bayern" }).success).toBe(false);
+  });
+  it("rejects empty or unlicensed datasets and mismatched source identities", () => {
+    const valid = { dataset: "chiemgau-wikidata", updated_at: new Date().toISOString(), records: regionalData.outputExample.places };
+    expect(regionalDatasetSchema.safeParse(valid).success).toBe(true);
+    expect(regionalDatasetSchema.safeParse({ ...valid, records: [] }).success).toBe(false);
+    expect(regionalDatasetSchema.safeParse({ ...valid, records: [{ ...valid.records[0], license: "unknown" }] }).success).toBe(false);
+    expect(regionalDatasetSchema.safeParse({ ...valid, records: [{ ...valid.records[0], source_url: "https://www.wikidata.org/wiki/Q1" }] }).success).toBe(false);
+  });
+});
+
+import { createWebsiteCheck, sitemapFormat, websiteCheck } from "../src/services/websiteCheck.js";
+import type { ProbeResult } from "../src/lib/webProbe.js";
+
+describe("technical website-check package", () => {
+  const probes = () => fixture("website-check.json").tasks[0].result[0].probes as ProbeResult[];
+  it("requires exactly two distinct same-origin HTTPS links", () => {
+    expect(websiteCheck.inputSchema.safeParse(websiteCheck.example).success).toBe(true);
+    for (const input of [
+      { ...websiteCheck.example, url: "http://example.com/" },
+      { ...websiteCheck.example, link_urls: ["https://example.com/about"] },
+      { ...websiteCheck.example, link_urls: ["https://evil.com/a", "https://example.com/b"] },
+      { ...websiteCheck.example, link_urls: ["https://example.com/about", "https://example.com/about"] },
+      { ...websiteCheck.example, link_urls: ["https://example.com/sitemap.xml", "https://example.com/about"] },
+    ]) expect(websiteCheck.inputSchema.safeParse(input).success).toBe(false);
+  });
+  it("executes exactly four fixed probes and classifies link responses without fallback requests", async () => {
+    const calls: { url: string; method: string }[] = [];
+    const values = probes(); values[2]!.status = 404; values[3]!.status = 405;
+    const service = createWebsiteCheck(async (url, method) => { calls.push({ url, method }); return values[calls.length - 1]!; });
+    const result = await service.executeRemote!(service.example, "live");
+    expect(calls).toEqual([
+      { url: "https://example.com/", method: "HEAD" }, { url: "https://example.com/sitemap.xml", method: "GET" },
+      { url: "https://example.com/about", method: "HEAD" }, { url: "https://example.com/contact", method: "HEAD" },
+    ]);
+    expect(result.simulated).toBe(false);
+    expect(result.broken_links_count).toBe(1);
+    expect(result.links.map(x => x.state)).toEqual(["broken", "head_not_supported"]);
+    expect(result.sitemap.format).toBe("urlset");
+    expect(JSON.stringify(result)).not.toContain('"body":');
+    const redirected = probes(); redirected[2]!.status = 302; redirected[2]!.redirect_url = "https://example.com/next";
+    expect(service.mapResult({ ...fixture("website-check.json").tasks[0], result: [{ probes: redirected }] }, service.example).links[0]?.state).toBe("redirect");
+  });
+  it("never probes targets in sandbox mode and clearly marks simulated TLS checks", async () => {
+    const service = createWebsiteCheck(async () => { throw new Error("must not call"); });
+    expect(await service.executeRemote!(service.example, "sandbox")).toEqual(service.outputExample);
+    expect(service.outputExample.simulated).toBe(true);
+  });
+  it("recognizes the sitemap container without executing DTDs or claiming XML validity", () => {
+    expect(sitemapFormat('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"/>')).toBe("urlset");
+    expect(sitemapFormat('<?xml version="1.0"?><!-- comment --><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></sitemapindex>')).toBe("sitemapindex");
+    for (const bad of ["<html>Not a sitemap</html>", "<urlset>no namespace</urlset>", '<!DOCTYPE urlset [<!ENTITY x SYSTEM "file:///etc/passwd">]><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']) expect(sitemapFormat(bad)).toBeNull();
+  });
+});
+
+import { buildCatalogUrl, mapCatalog, openDataSearch } from "../src/services/openDataSearch.js";
+
+describe("public open-data catalogs", () => {
+  it("uses the supplied hub-search API and CKAN endpoint with fixed result limits and literal terms", () => {
+    for (const source of ["govdata", "openbydata"] as const) {
+      const u = buildCatalogUrl({ source, query: "Parkplätze Rosenheim" });
+      expect(u.searchParams.get("q")).toBe('"Parkplätze" AND "Rosenheim"');
+      expect(u.origin).toBe(source === "govdata" ? "https://ckan.govdata.de" : "https://open.bydata.de");
+      expect(u.searchParams.get(source === "govdata" ? "rows" : "limit")).toBe("10");
+    }
+    for (const query of ["*:*", "title:private", '"x"', "x&limit=1000", "x\ny", "..", "a".repeat(81)]) expect(openDataSearch.inputSchema.safeParse({ source: "govdata", query }).success).toBe(false);
+    expect(openDataSearch.inputSchema.safeParse({ source: "elsewhere", query: "test" }).success).toBe(false);
+  });
+  it("retains resource licenses when CKAN's top-level license is empty and separates dates", () => {
+    const data = { success: true, result: { count: 1, results: [{ id: "sample", title: "Parking", license_id: "", metadata_modified: "2026-10-23", organization: { title: "Aggregator" }, extras: [{ key: "uri", value: "https://open.bydata.de/api/hub/repo/datasets/sample" }, { key: "modified", value: "2025-01-01" }, { key: "publisher_name", value: "Source authority" }], resources: [{ url: "https://example.com/data.csv", format: "CSV", license: "http://dcat-ap.de/def/licenses/cc-by/4.0" }] }] } };
+    const r = mapCatalog(data, { source: "govdata", query: "parking" }, "2026-10-24T00:00:00Z", false);
+    expect(r.datasets[0]).toMatchObject({ publisher: "Source authority", dataset_license_reference: null, dataset_modified: "2025-01-01", metadata_modified: "2026-10-23", reuse_review_required: true, resources: [{ license_reference: "http://dcat-ap.de/def/licenses/cc-by/4.0" }] });
+    expect(r.datasets[0]?.deduplication_key).toMatch(/^[a-f0-9]{64}$/);
+    const hub = { result: { count: 1, results: [{ id: "sample", title: { de: "Parking" }, resource: "https://open.bydata.de/api/hub/repo/datasets/sample", distributions: [] }] } };
+    expect(mapCatalog(hub, { source: "openbydata", query: "parking" }, "now", false).datasets[0]?.deduplication_key).toBe(r.datasets[0]?.deduplication_key);
+    const first = structuredClone(data), second = structuredClone(data);
+    first.result.results[0]!.extras[0]!.value += "#first"; second.result.results[0]!.extras[0]!.value += "#second";
+    expect(mapCatalog(first, { source: "govdata", query: "parking" }, "now", false).datasets[0]?.deduplication_key).not.toBe(mapCatalog(second, { source: "govdata", query: "parking" }, "now", false).datasets[0]?.deduplication_key);
+  });
+  it("caps datasets, descriptions, resources and URLs; refuses malformed success responses", () => {
+    const item = { id: "sample", title: "A", notes: "x".repeat(2000), resources: Array.from({ length: 20 }, () => ({ url: "https://example.com/data.csv" })) };
+    const r = mapCatalog({ success: true, result: { count: 100, results: Array.from({ length: 30 }, () => item) } }, { source: "govdata", query: "parking" }, "now", false);
+    expect(r.datasets).toHaveLength(10); expect(r.truncated).toBe(true);
+    expect(r.datasets[0]?.description?.length).toBe(500);
+    expect(r.datasets[0]?.resources).toHaveLength(3); expect(r.datasets[0]?.resources_truncated).toBe(true);
+    for (const payload of [{ success: false, result: { count: 0, results: [] } }, { success: true, result: { count: -1, results: [] } }, { success: true, result: { count: 1, results: [{}] } }]) expect(() => mapCatalog(payload, { source: "govdata", query: "parking" }, "now", false)).toThrow();
   });
 });

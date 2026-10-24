@@ -1,0 +1,110 @@
+{
+  "dataset": "chiemgau-wikidata",
+  "updated_at": "2026-10-24T09:13:06.600Z",
+  "records": [
+    {
+      "id": "Q4138",
+      "region": "chiemgau",
+      "category": "nature",
+      "name": "Chiemsee",
+      "description": "See im deutschen Alpenvorland",
+      "latitude": 47.89,
+      "longitude": 12.47,
+      "source_url": "https://www.wikidata.org/wiki/Q4138",
+      "source_revision": 2559663600,
+      "license": "CC0-1.0",
+      "retrieved_at": "2026-10-24T09:13:06.600Z"
+    },
+    {
+      "id": "Q694888",
+      "region": "chiemgau",
+      "category": "nature",
+      "name": "Herrenchiemsee",
+      "description": "größte Insel im Chiemsee",
+      "latitude": 47.86055555555556,
+      "longitude": 12.398055555555555,
+      "source_url": "https://www.wikidata.org/wiki/Q694888",
+      "source_revision": 2558928931,
+      "license": "CC0-1.0",
+      "retrieved_at": "2026-10-24T09:13:06.600Z"
+    },
+    {
+      "id": "Q645925",
+      "region": "chiemgau",
+      "category": "nature",
+      "name": "Fraueninsel",
+      "description": "Insel im Chiemsee in Bayern",
+      "latitude": 47.873122,
+      "longitude": 12.425708,
+      "source_url": "https://www.wikidata.org/wiki/Q645925",
+      "source_revision": 2558914106,
+      "license": "CC0-1.0",
+      "retrieved_at": "2026-10-24T09:13:06.600Z"
+    },
+    {
+      "id": "Q118618",
+      "region": "chiemgau",
+      "category": "attraction",
+      "name": "Neues Schloss Herrenchiemsee",
+      "description": "Schloss und Park in Bayern auf einer Insel im Chiemsee",
+      "latitude": 47.860428624966,
+      "longitude": 12.4021986182951,
+      "source_url": "https://www.wikidata.org/wiki/Q118618",
+      "source_revision": 2544042493,
+      "license": "CC0-1.0",
+      "retrieved_at": "2026-10-24T09:13:06.600Z"
+    },
+    {
+      "id": "Q263280",
+      "region": "chiemgau",
+      "category": "nature",
+      "name": "Kampenwand",
+      "description": "Berg in den Alpen",
+      "latitude": 47.756111111111,
+      "longitude": 12.366666666667,
+      "source_url": "https://www.wikidata.org/wiki/Q263280",
+      "source_revision": 2556278038,
+      "license": "CC0-1.0",
+      "retrieved_at": "2026-10-24T09:13:06.600Z"
+    },
+    {
+      "id": "Q18863",
+      "region": "chiemgau",
+      "category": "town",
+      "name": "Prien am Chiemsee",
+      "description": "Markt in Oberbayern, Deutschland",
+      "latitude": 47.85602,
+      "longitude": 12.34623,
+      "source_url": "https://www.wikidata.org/wiki/Q18863",
+      "source_revision": 2552274138,
+      "license": "CC0-1.0",
+      "retrieved_at": "2026-10-24T09:13:06.600Z"
+    },
+    {
+      "id": "Q73532",
+      "region": "chiemgau",
+      "category": "town",
+      "name": "Ruhpolding",
+      "description": "Gemeinde in Deutschland",
+      "latitude": 47.766666666667,
+      "longitude": 12.65,
+      "source_url": "https://www.wikidata.org/wiki/Q73532",
+      "source_revision": 2550431326,
+      "license": "CC0-1.0",
+      "retrieved_at": "2026-10-24T09:13:06.600Z"
+    },
+    {
+      "id": "Q253119",
+      "region": "chiemgau",
+      "category": "town",
+      "name": "Traunstein",
+      "description": "Stadt in Oberbayern",
+      "latitude": 47.868333333333,
+      "longitude": 12.643333333333,
+      "source_url": "https://www.wikidata.org/wiki/Q253119",
+      "source_revision": 2550431362,
+      "license": "CC0-1.0",
+      "retrieved_at": "2026-10-24T09:13:06.600Z"
+    }
+  ]
+}

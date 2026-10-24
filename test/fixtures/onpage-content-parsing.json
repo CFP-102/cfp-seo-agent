@@ -1,0 +1,45 @@
+{
+  "_fixture_note": "Synthetic documentation-shaped fixture for offline tests; not a live or sandbox API result.",
+  "version": "test",
+  "status_code": 20000,
+  "cost": 0.00015,
+  "tasks": [
+    {
+      "id": "offline-content",
+      "status_code": 20000,
+      "cost": 0.00015,
+      "result_count": 1,
+      "result": [
+        {
+          "items": [
+            {
+              "type": "content_parsing_element",
+              "status_code": 200,
+              "fetch_time": "2026-10-24 10:00:00 +00:00",
+              "page_content": {
+                "main_topic": [
+                  {
+                    "h_title": "Example Domain",
+                    "main_title": "Example Domain",
+                    "level": 1,
+                    "primary_content": [
+                      {
+                        "text": "Example page.",
+                        "urls": [
+                          {
+                            "url": "https://example.com/about",
+                            "anchor_text": "About"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

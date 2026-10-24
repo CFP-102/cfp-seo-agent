@@ -113,9 +113,9 @@ describe("MCP server", () => {
       expect(out.paymentMade, s.id).toBe(true);
       expect(out.paymentResponse, s.id).toMatchObject({ success: true, network: NETWORK });
       const body = parse(out);
-      expect(body, s.id).toMatchObject({ service: s.id, data_source: "sandbox", cached: false });
+      expect(body, s.id).toMatchObject({ service: s.id, data_source: s.executeLocal ? "local" : "sandbox", cached: false });
       expect(body.result_token, s.id).toBeTruthy();
-      const endpoints = [s.upstream.endpoint, ...(s.extraSteps ?? []).map((x) => x.endpoint)];
+      const endpoints = (s.executeLocal || s.executeRemote) ? [] : [s.upstream.endpoint, ...(s.extraSteps ?? []).map((x) => x.endpoint)];
       expect(events, s.id).toEqual(["settle", ...endpoints.map(() => "upstream")]);
       expect(up.calls.map((c) => c.endpoint).sort(), s.id).toEqual([...endpoints].sort());
       expect(store.get(body.request_id), s.id).toMatchObject({ status: "completed", price_usdc: Number(s.priceUsdc) });

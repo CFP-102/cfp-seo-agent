@@ -79,6 +79,17 @@ describe("OpenAPI 3.1", () => {
 
   it("every service's outputExample has the same shape as its real mapped output", () => {
     const fixtures: Record<string, string> = {
+      "video-recipes": "onpage-content-parsing.json",
+      "shoot-day-plan": "onpage-content-parsing.json",
+      "video-project-plan": "onpage-content-parsing.json",
+      "content-month-plan": "onpage-content-parsing.json",
+      "content-plan-shift": "onpage-content-parsing.json",
+      "shoot-location-check": "shoot-location-check.json",
+      "open-data-search": "open-data-catalog.json",
+      "website-check": "website-check.json",
+      "website-content": "onpage-content-parsing.json",
+      "website-changes": "onpage-content-parsing.json",
+      "regional-data": "onpage-content-parsing.json",
       "keyword-metrics": "google-ads-search-volume.json",
       "keyword-ideas": "labs-keyword-suggestions.json",
       "google-serp": "serp-google-organic.json",
@@ -126,6 +137,7 @@ describe("Bazaar discovery metadata and crawler probes", () => {
     for (const s of SERVICES) {
       const res = await fetch(base + s.route, post(s.example));
       const required = decodePaymentRequiredHeader(res.headers.get("payment-required")!) as unknown as { extensions?: Record<string, any> };
+      expect(res.headers.get("payment-required")!.length, s.id + " payment-required header size").toBeLessThan(8000);
       const info = required.extensions?.bazaar?.info;
       expect(info, s.id).toBeTruthy();
       expect(JSON.stringify(info), s.id).toContain(JSON.stringify(Object.values(s.example as object)[0]).slice(0, 12));

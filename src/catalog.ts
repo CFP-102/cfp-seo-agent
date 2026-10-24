@@ -1,6 +1,7 @@
 import type { Env } from "./config/env.js";
 import type { Pipeline } from "./services/pipeline.js";
 import { toolNameOf } from "./services/common.js";
+import { serviceConfig } from "./config/services.js";
 
 /** Public, free description of what we sell. Used by GET /api/v1/services and the MCP list_services tool. */
 export function buildCatalog(deps: { env: Env; pipeline: Pipeline; network?: string; freeSample?: Record<string, unknown>; wishlist?: Record<string, unknown> }) {
@@ -14,12 +15,14 @@ export function buildCatalog(deps: { env: Env; pipeline: Pipeline; network?: str
     services: pipeline.services.map((s) => ({
       id: s.id,
       name: s.name,
+      category: serviceConfig(s.id).category ?? "data",
       summary: s.summary,
       method: "POST",
       path: s.route,
       mcp_tool: toolNameOf(s.id),
       price_usdc: s.priceUsdc,
       enabled: pipeline.isEnabled(s),
+      data_source: s.executeLocal ? "local" : pipeline.dataSource,
       max_inputs: s.limits.maxInputs,
       max_results: s.limits.maxResults,
       ...(s.notice ? { notice: s.notice } : {}),
