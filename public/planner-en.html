@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Content planner for agencies – {{NAME}}</title>
+<meta name="description" content="Order a content month plan with linked dates, keep it as a file, move dates and print a client report. Pay per plan, no account.">
+<link rel="canonical" href="{{BASE_URL}}/planner">
+<link rel="alternate" hreflang="en" href="{{BASE_URL}}/planner">
+<link rel="alternate" hreflang="de" href="{{BASE_URL}}/de/planer">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body class="planner-page" data-pay-to="{{PAY_TO_ADDRESS}}" data-network="{{NETWORK}}">
+<header class="top no-print">
+  <div class="wrap bar">
+    <a class="brand" href="/"><img src="/logo-white.png" alt="Chiemgau Films" width="62" height="30"><span class="brandname">{{NAME}}</span></a>
+    <div class="navgroup">
+      <nav aria-label="Planner"><a href="#plan">Plan</a><a href="#plan-view">Result</a><a href="#shift">Move a date</a><a href="#report-setup">Client report</a><a href="/project-planner">Video project</a></nav>
+      <a class="lang" href="/de/planer" hreflang="de" lang="de">DE</a>
+    </div>
+  </div>
+</header>
+<main>
+<section class="hero wrap no-print">
+  <p class="eyebrow">For agencies and video teams</p>
+  <h1>Plan a content month, move dates, report to your client</h1>
+  <p class="lead">Enter the period, topic mix and your publishing and production days. You see the exact price before you approve exactly one purchase with your browser wallet. The plan stays with you as a file: no account, nothing stored in a calendar.</p>
+  {{MODE_NOTE}}{{TASK_STATUS}}
+  <p class="fine">Only the planning details below are sent (dates, counts, weekdays, booked dates). Project or client titles stay in your browser. Inputs and results are deleted on our server after 30 days.</p>
+</section>
+
+<section id="plan" class="wrap no-print">
+  <h2>1. Your plan <span class="price" id="price-plan"></span></h2>
+  <noscript><p class="note">This planner needs JavaScript. Without it, use the content planning task page.</p></noscript>
+  <form id="planner" class="tester" novalidate>
+    <div class="field-row">
+      <label class="field"><span>First publishing day (from)</span><input id="f-from" type="date" required></label>
+      <label class="field"><span>Last day (to)</span><input id="f-to" type="date" required></label>
+    </div>
+    <fieldset class="field"><legend>Number of posts</legend>
+      <label class="check"><input type="radio" name="mode" id="f-mode-weekly" checked><span>Posts per week, topics shared evenly</span></label>
+      <label class="check"><input type="radio" name="mode" id="f-mode-mix"><span>Exact number per topic</span></label>
+      <div id="f-ppw-box">
+        <label class="field small"><span>Posts per week</span><input id="f-ppw" type="number" value="3" step="1"></label>
+        <p class="fine">Topics</p><div id="f-cats" class="checks"></div>
+      </div>
+      <div id="f-mix-box" hidden><p class="fine">Number of posts per topic (0 = not used).</p><div id="f-mix" class="field-row wrapgrid"></div></div>
+    </fieldset>
+    <fieldset class="field"><legend>Publishing days</legend><div id="f-pub" class="checks"></div></fieldset>
+    <fieldset class="field"><legend>Production days (shoots)</legend><div id="f-prod" class="checks"></div></fieldset>
+    <div class="field-row">
+      <label class="field"><span>Dates already taken for posts (one per line)</span><textarea id="f-ex-pub" rows="3" placeholder="2026-11-05"></textarea></label>
+      <label class="field"><span>Shoot days already booked (one per line)</span><textarea id="f-ex-shoot" rows="3" placeholder="2026-11-12"></textarea></label>
+    </div>
+    <p class="fine">Format YYYY-MM-DD. The planner only knows these dates: it cannot see your calendar, holidays, vacations or people's availability. (max. <span id="f-existing-max"></span>)</p>
+    <div class="field-row">
+      <label class="check"><input id="f-weekends" type="checkbox" checked><span>Avoid weekends for preparation steps</span></label>
+      <label class="field small"><span>Shoot start time</span><input id="f-start" type="time" value="09:00"></label>
+    </div>
+    <label class="field"><span>Public holidays (no posts, shoots or preparation on these days)</span><select id="f-region"></select></label>
+    <p class="note">Limits come from the service itself: the free check below tells you if the period or the number of posts is too large.</p>
+    <div class="cta">
+      <button type="submit" class="btn primary" id="btn-check" data-busy-lock>Check input for free</button>
+      <label class="btn filebtn">Open a saved plan (.json)<input id="f-load" type="file" accept="application/json,.json"></label>
+    </div>
+    <p id="plan-msg" class="fine" role="status" aria-live="polite"></p>
+  </form>
+  <div id="buy-plan" class="buybox" hidden>
+    <p data-price></p>
+    <label class="check"><input type="checkbox"><span data-approve-label></span></label>
+    <div class="cta"><button type="button" class="btn primary" id="btn-buy-plan" data-busy-lock>Buy this plan with wallet</button><button type="button" class="btn" id="btn-cancel-plan" data-busy-lock>Cancel</button></div>
+    <details><summary>Expert view: exact request (JSON)</summary><pre><code data-expert></code></pre></details>
+    <p class="fine">Your wallet shows amount and recipient again and asks for confirmation. If the outcome is unclear, do not pay again: the page then only retrieves the existing result.</p>
+  </div>
+</section>
+
+<section id="plan-view" class="wrap" hidden>
+  <h2 class="no-print">2. Your plan</h2>
+  <p class="no-print"><span id="plan-status" class="status"></span> <span id="plan-meta" class="fine"></span></p>
+  <div class="cta no-print">
+    <button type="button" class="btn" id="dl-ics">Download calendar (.ics)</button>
+    <button type="button" class="btn" id="dl-plan">Save plan as file</button>
+    <button type="button" class="btn" id="dl-receipt" hidden>Purchase receipt (private)</button>
+    <button type="button" class="btn" id="btn-restore" hidden>Back to original plan</button>
+  </div>
+  <p class="fine no-print">The plan file contains the plan only, never payment data or result keys. Keep the private purchase receipt separately: with it the paid result can be fetched again for 30 days.</p>
+  <div class="no-print">
+    <h3>Posts and date chain (tick finished steps)</h3><div id="plan-list"></div>
+    <h3>Shoot days</h3><div id="plan-days" class="grid"></div>
+    <h3>Calendar</h3><div id="plan-calendar"></div>
+    <h3>Conflicts and notes</h3><div id="plan-conflicts"></div>
+    <h3>Script infos</h3><p class="fine">For posts based on a recipe you can buy hook, shots, interview questions and equipment, one post at a time.</p>
+    <p id="script-msg" class="fine" role="status" aria-live="polite"></p>
+    <div id="buy-script" class="buybox" hidden>
+      <p data-price></p>
+      <label class="check"><input type="checkbox"><span data-approve-label></span></label>
+      <div class="cta"><button type="button" class="btn primary" id="btn-buy-script" data-busy-lock>Buy script infos with wallet</button><button type="button" class="btn" id="btn-cancel-script" data-busy-lock>Cancel</button></div>
+    </div>
+  </div>
+</section>
+
+<section id="shift" class="wrap no-print" hidden>
+  <h2>3. Move a date <span class="price" id="price-shift"></span></h2>
+  <p class="sub">Each move is a separate purchase. Dependent dates follow, shared shoot days move together, ticked steps stay. Weekends, holidays and capacity are not checked. You review the result before it changes your plan.</p>
+  <form id="shift-form" class="tester" novalidate>
+    <div class="field-row">
+      <label class="field"><span>Post</span><select id="s-post"></select></label>
+      <label class="field"><span>Step</span><select id="s-step"></select></label>
+      <label class="field"><span>New date</span><input id="s-date" type="date" required></label>
+    </div>
+    <label class="field" id="s-publish-mode-box" hidden><span>When publishing moves</span><select id="s-publish-mode"><option value="shift_all">Move unfinished steps by the same number of days</option><option value="only_publish">Only move the publishing date</option></select></label>
+    <label class="field" id="s-shoot-mode-box" hidden><span>For a shared shoot day</span><select id="s-shoot-mode"><option value="group">Move the whole shoot day</option><option value="detach">Move only this post (leave the group)</option></select></label>
+    <div class="cta"><button type="submit" class="btn primary" id="btn-shift-check" data-busy-lock>Check move for free</button></div>
+    <p id="shift-msg" class="fine" role="status" aria-live="polite"></p>
+  </form>
+  <div id="buy-shift" class="buybox" hidden>
+    <p data-price></p>
+    <label class="check"><input type="checkbox"><span data-approve-label></span></label>
+    <div class="cta"><button type="button" class="btn primary" id="btn-buy-shift" data-busy-lock>Buy this move with wallet</button><button type="button" class="btn" id="btn-cancel-shift" data-busy-lock>Cancel</button></div>
+    <details><summary>Expert view: exact request (JSON)</summary><pre><code data-expert></code></pre></details>
+  </div>
+  <div id="shift-review" class="buybox" hidden>
+    <h3>Review the changes</h3>
+    <p id="shift-confirm-note" class="note"></p>
+    <div id="shift-changes"></div>
+    <h3>Conflicts and notes</h3><div id="shift-conflicts"></div>
+    <p id="shift-note" class="fine"></p>
+    <div class="cta"><button type="button" class="btn primary" id="btn-apply-shift">Apply to my plan</button><button type="button" class="btn" id="btn-discard-shift">Discard</button></div>
+  </div>
+</section>
+
+<section id="report-setup" class="wrap no-print" hidden>
+  <h2>4. Client report</h2>
+  <p class="sub">A clean overview for your client: period, posts, shoot days, dates, conflicts, next decisions and data basis. The title stays in your browser. Print it or save it as PDF in the print dialog.</p>
+  <label class="field"><span>Project or client title (optional, stays local)</span><input id="r-title" type="text" maxlength="120" autocomplete="off"></label>
+  <div class="field-row">
+    <label class="field"><span>Agency logo for the report (PNG, JPG or WebP, max. 1 MB)</span><input id="r-logo" type="file" accept="image/png,image/jpeg,image/webp"></label>
+    <label class="field small"><span>Accent colour</span><input id="r-color" type="color" value="#ec6b01"></label>
+  </div>
+  <p class="fine">The logo stays in this browser: it is not uploaded, not sent to us and not saved in the plan file. Only plain image pixels are used. <button type="button" class="btn small" id="btn-logo-remove">Remove logo</button></p>
+  <div class="cta"><button type="button" class="btn" id="btn-report">Show report</button><button type="button" class="btn primary" id="btn-print">Print / save as PDF</button></div>
+  <p id="report-msg" class="fine" role="status" aria-live="polite"></p>
+</section>
+<section id="report" class="wrap report" hidden></section>
+</main>
+<footer class="no-print">
+  <div class="wrap foot">
+    <div><strong>{{NAME}}</strong><br><span class="fine"><a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a></span></div>
+    <div class="fine"><a href="/legal.html#datenschutz">Privacy</a> · <a href="/status">Status</a></div>
+  </div>
+</footer>
+<script src="/agentur.js" defer></script>
+<script src="/planner.js" defer></script>
+</body>
+</html>

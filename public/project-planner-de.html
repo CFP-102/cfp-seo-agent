@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Videoprojekt-Planer für Agenturen – {{NAME}}</title>
+<meta name="description" content="Einen Videoauftrag planen: Reel-Ideen, ein Drehtag im Zeitfenster, Call Sheet, Sonnenzeiten und Postproduktion bis zur Abgabe. Bezahlung pro Plan, kein Konto.">
+<link rel="canonical" href="{{BASE_URL}}/de/projekt-planer">
+<link rel="alternate" hreflang="en" href="{{BASE_URL}}/project-planner">
+<link rel="alternate" hreflang="de" href="{{BASE_URL}}/de/projekt-planer">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body class="planner-page" data-pay-to="{{PAY_TO_ADDRESS}}" data-network="{{NETWORK}}">
+<header class="top no-print">
+  <div class="wrap bar">
+    <a class="brand" href="/de/"><img src="/logo-white.png" alt="Chiemgau Films" width="62" height="30"><span class="brandname">{{NAME}}</span></a>
+    <div class="navgroup">
+      <nav aria-label="Projekt-Planer"><a href="#project">Auftrag</a><a href="#project-view">Ergebnis</a><a href="#report-setup">Kundenbericht</a><a href="/de/planer">Content-Planer</a></nav>
+      <a class="lang" href="/project-planner" hreflang="en" lang="en">EN</a>
+    </div>
+  </div>
+</header>
+<main>
+<section class="hero wrap no-print">
+  <p class="eyebrow">Für Agenturen und Videoteams</p>
+  <h1>Einen Videoauftrag planen: Ideen, Drehtag, Abgabe</h1>
+  <p class="lead">Drehtag, Zeitfenster, Abgabetermin und Anzahl Reels eingeben. Sie bekommen Reel-Ideen mit Einstieg, Einstellungen und Fragen, einen Ablauf für den Drehtag, ein Call Sheet und die Postproduktion bis zur Abgabe. Vor der Freigabe sehen Sie den genauen Preis und bestätigen genau einen Kauf mit Ihrer Browser-Wallet.</p>
+  {{MODE_NOTE}}{{TASK_STATUS}}
+  <p class="fine">Gesendet werden nur die Planungsangaben unten (Ziel, Branche, Ort, Termine, eigene Ideen, Bereiche). Bitte keine Personennamen eintragen. Der Berichtstitel und das Logo bleiben in Ihrem Browser. Eingaben und Ergebnisse werden auf unserem Server nach 30 Tagen gelöscht.</p>
+</section>
+
+<section id="project" class="wrap no-print">
+  <h2>1. Ihr Auftrag <span class="price" id="price-project"></span></h2>
+  <noscript><p class="note">Der Planer braucht JavaScript.</p></noscript>
+  <form id="project-form" class="tester" novalidate>
+    <div class="field-row">
+      <label class="field"><span>Ziel</span><select id="p-goal"></select></label>
+      <label class="field"><span>Branche (optional)</span><input id="p-industry" type="text" maxlength="60" placeholder="Metallbau" autocomplete="off"></label>
+    </div>
+    <div class="field-row">
+      <label class="field"><span>Ort des Unternehmens (optional)</span><input id="p-town" type="text" maxlength="60" placeholder="Chieming" autocomplete="off"></label>
+      <label class="field"><span>Beruf / Stelle (optional)</span><input id="p-job" type="text" maxlength="60" placeholder="Metallbauer" autocomplete="off"></label>
+    </div>
+    <div class="field-row">
+      <label class="field"><span>Drehtag</span><input id="p-shoot" type="date" required></label>
+      <label class="field small"><span>Beginn</span><input id="p-start" type="time" value="08:00" required></label>
+      <label class="field small"><span>Ende</span><input id="p-end" type="time" value="17:00" required></label>
+      <label class="field"><span>Abgabe bis</span><input id="p-deliver" type="date" required></label>
+    </div>
+    <div class="field-row">
+      <label class="field small"><span>Reels mindestens</span><input id="p-min" type="number" value="5" min="1" step="1"></label>
+      <label class="field small"><span>Reels höchstens</span><input id="p-max" type="number" value="10" min="1" step="1"></label>
+      <label class="field small"><span>Feedback-Runden</span><select id="p-rounds"><option value="0">0</option><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option></select></label>
+    </div>
+    <label class="field"><span>Eigene Ideen (optional, eine pro Zeile; werden zuerst eingeplant)</span><textarea id="p-ideas" rows="3" placeholder="Ein Tag in der Werkstatt"></textarea></label>
+    <label class="field"><span>Bereiche oder Drehorte (optional, durch Komma getrennt)</span><input id="p-locations" type="text" maxlength="500" placeholder="Werkstatt, Büro, Hof" autocomplete="off"></label>
+    <label class="field"><span>Feiertage (keine Postproduktion an diesen Tagen)</span><select id="p-region"></select></label>
+    <details><summary>Sonnenzeiten für Außenaufnahmen (optional)</summary>
+      <div class="field-row">
+        <label class="field small"><span>Breitengrad</span><input id="p-lat" type="text" inputmode="decimal" placeholder="47.88" autocomplete="off"></label>
+        <label class="field small"><span>Längengrad</span><input id="p-lon" type="text" inputmode="decimal" placeholder="12.53" autocomplete="off"></label>
+      </div>
+      <p class="fine">Ungefähre Lage reicht (wird auf drei Nachkommastellen gerundet). Nur für Orte in Deutschland.</p>
+    </details>
+    <div class="cta"><button type="submit" class="btn primary" id="btn-project-check" data-busy-lock>Eingabe kostenlos prüfen</button></div>
+    <p id="project-msg" class="fine" role="status" aria-live="polite"></p>
+  </form>
+  <div id="buy-project" class="buybox" hidden>
+    <p data-price></p>
+    <label class="check"><input type="checkbox"><span data-approve-label></span></label>
+    <div class="cta"><button type="button" class="btn primary" id="btn-buy-project" data-busy-lock>Diesen Projektplan mit Wallet kaufen</button><button type="button" class="btn" id="btn-cancel-project" data-busy-lock>Abbrechen</button></div>
+    <details><summary>Expertenansicht: genaue Anfrage (JSON)</summary><pre><code data-expert></code></pre></details>
+    <p class="fine">Ihre Wallet zeigt Betrag und Empfänger nochmals an und fragt nach Bestätigung. Ist der Ausgang unklar, nicht erneut bezahlen: Die Seite ruft dann nur das vorhandene Ergebnis ab.</p>
+  </div>
+</section>
+
+<section id="project-view" class="wrap no-print" hidden>
+  <h2>2. Ihr Projektplan</h2>
+  <p><span id="project-status" class="status"></span> <span id="project-meta" class="fine"></span></p>
+  <div id="project-warnings" class="note"></div>
+  <div class="cta">
+    <button type="button" class="btn" id="dl-ics">Kalender herunterladen (.ics)</button>
+    <button type="button" class="btn" id="dl-receipt" hidden>Kaufbeleg (privat)</button>
+  </div>
+  <p class="fine">Den privaten Kaufbeleg getrennt aufbewahren: Damit lässt sich das bezahlte Ergebnis 30 Tage lang erneut abrufen.</p>
+  <h3>Reels</h3><div id="project-reels" class="grid"></div>
+  <h3>Reserve</h3><div id="project-reserve"></div>
+  <h3>Ablauf Drehtag</h3><div id="project-schedule"></div><div id="project-sun"></div>
+  <h3>Call Sheet</h3><div id="project-callsheet"></div>
+  <h3>Postproduktion</h3><div id="project-post"></div>
+  <h3>Checkliste und nächste Schritte</h3><div id="project-checklist"></div>
+  <p id="project-coverage" class="fine"></p>
+</section>
+
+<section id="report-setup" class="wrap no-print" hidden>
+  <h2>3. Kundenbericht</h2>
+  <p class="sub">Eine saubere Übersicht für Ihren Kunden: Reels, Drehtag, Postproduktion und Vorbereitung. Drucken oder im Druckdialog als PDF speichern.</p>
+  <label class="field"><span>Projekt- oder Kundentitel (optional, bleibt lokal)</span><input id="r-title" type="text" maxlength="120" autocomplete="off"></label>
+  <div class="field-row">
+    <label class="field"><span>Agenturlogo für den Bericht (PNG, JPG oder WebP, max. 1 MB)</span><input id="r-logo" type="file" accept="image/png,image/jpeg,image/webp"></label>
+    <label class="field small"><span>Akzentfarbe</span><input id="r-color" type="color" value="#ec6b01"></label>
+  </div>
+  <p class="fine">Das Logo bleibt in diesem Browser: Es wird nicht hochgeladen und nicht an uns gesendet. Verwendet werden nur die reinen Bildpunkte. <button type="button" class="btn small" id="btn-logo-remove">Logo entfernen</button></p>
+  <div class="cta"><button type="button" class="btn" id="btn-report">Bericht anzeigen</button><button type="button" class="btn primary" id="btn-print">Drucken / als PDF speichern</button></div>
+  <p id="report-msg" class="fine" role="status" aria-live="polite"></p>
+</section>
+<section id="report" class="wrap report" hidden></section>
+</main>
+<footer class="no-print">
+  <div class="wrap foot">
+    <div><strong>{{NAME}}</strong><br><span class="fine"><a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a></span></div>
+    <div class="fine"><a href="/legal-de.html#datenschutz">Datenschutz</a> · <a href="/status">Status</a></div>
+  </div>
+</footer>
+<script src="/agentur.js" defer></script>
+<script src="/planner.js" defer></script>
+<script src="/project.js" defer></script>
+</body>
+</html>

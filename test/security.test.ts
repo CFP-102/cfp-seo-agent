@@ -1421,3 +1421,117 @@ describe("published input schemas work with every discovery service", () => {
     expect(plainField.safeParse({ shoots: [{ title: "Größe – ok" }] }).success).toBe(true);
   });
 });
+
+import { loadPlanner } from "./plannerHelper.js";
+
+describe("content planner safety", () => {
+  const { planner } = loadPlanner("de");
+  const good = () => ({
+    format: "cfp-content-plan", version: 1, saved_at: "2026-10-24T10:00:00Z", project_title: "Kunde",
+    plan: { posts: [{ key: "p1", title: "A", publish: "2026-11-10", shoot: "2026-11-05", shoot_group: "d1", done: [] }], shoot_days: [{ key: "d1", date: "2026-11-05", schedule: [] }], conflicts: [], warnings: [] },
+  });
+  it("rejects broken, oversized, foreign and malformed plan files", () => {
+    expect(() => planner.importPlan("x".repeat(planner.MAX_FILE_BYTES + 1))).toThrow(/zu groß/);
+    for (const bad of ["{", "null", "[]", '"text"', "42"]) expect(() => planner.importPlan(bad)).toThrow();
+    expect(() => planner.importPlan(JSON.stringify({ ...good(), version: 2 }))).toThrow(/Version/);
+    expect(() => planner.importPlan(JSON.stringify({ ...good(), format: "other" }))).toThrow(/Version/);
+    const mutate = (fn: (d: any) => void) => { const d: any = good(); fn(d); return JSON.stringify(d); };
+    expect(() => planner.importPlan(mutate((d) => { d.plan.posts[0].key = "<img src=x>"; }))).toThrow();
+    expect(() => planner.importPlan(mutate((d) => { d.plan.posts[0].publish = "tomorrow"; }))).toThrow();
+    expect(() => planner.importPlan(mutate((d) => { d.plan.posts.push({ ...d.plan.posts[0] }); }))).toThrow(); // duplicate key
+    expect(() => planner.importPlan(mutate((d) => { d.plan.posts = Array.from({ length: planner.LIMITS.posts + 1 }, (_, i) => ({ key: "p" + i, title: "x", publish: "2026-11-10" })); }))).toThrow();
+    expect(() => planner.importPlan(mutate((d) => { d.plan.shoot_days = "x"; }))).toThrow();
+  });
+  it("keeps imported text as plain data: no extra fields, no control characters, no prototype pollution", () => {
+    const raw = JSON.stringify(good()).replace('"title":"A"', '"title":"<script>alert(1)</script>\\u0007x","__proto__":{"polluted":"yes"},"onclick":"evil()"');
+    const loaded = planner.importPlan(raw);
+    expect(loaded.plan.posts[0].title).toBe("<script>alert(1)</script> x"); // stays text; rendered with textContent only
+    expect(Object.keys(loaded.plan.posts[0]).sort()).toEqual(["category", "concept", "done", "edit", "key", "location", "media_type", "publish", "recipe_id", "review", "shoot", "shoot_group", "title"]);
+    expect(({} as any).polluted).toBeUndefined();
+    const withIcs = good() as any; withIcs.plan.ics = "<html>"; withIcs.plan.conflicts = [{ level: "fatal", message: "x" }, { level: "error", message: "ok", post_key: "../p" }];
+    const l2 = planner.importPlan(JSON.stringify(withIcs));
+    expect(l2.plan.ics).toBeNull();
+    const withRealIcs = good() as any; withRealIcs.plan.ics = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nSUMMARY:Click https://evil.example\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+    expect(planner.importPlan(JSON.stringify(withRealIcs)).plan.ics).toBeNull(); // calendar text from files is never passed on
+    const longTitle = good() as any; longTitle.plan.posts[0].title = "Ein sehr langer Titel mit Umlauten äöü ".repeat(3);
+    const ics = planner.icsFromPlan(planner.importPlan(JSON.stringify(longTitle)).plan, "20261024T000000Z");
+    expect(ics).toContain("\r\n "); // folded
+    expect(ics.split("\r\n").every((line: string) => new TextEncoder().encode(line).length <= 75)).toBe(true);
+    expect(l2.plan.conflicts).toEqual([{ level: "error", post_key: null, steps: [], message: "ok", source: "plan" }]);
+  });
+  it("never writes payment data into the plan file and never builds HTML from data", () => {
+    const loaded = planner.importPlan(JSON.stringify(good()));
+    const file = JSON.stringify(planner.exportPlan({ plan: loaded.plan, original: loaded.original }, "T", new Date()));
+    expect(file).not.toMatch(/result_token|request_id|signature|payment/);
+    const src = readFileSync(new URL("../public/planner.js", import.meta.url), "utf8");
+    expect(src).not.toMatch(/innerHTML|outerHTML|insertAdjacentHTML|document\.write|eval\(|new Function/);
+    expect(src).not.toMatch(/localStorage\.setItem|sessionStorage|document\.cookie/); // the plan is kept only in memory and in user-saved files
+  });
+  it("serves both planner pages with a strict CSP, only same-origin scripts and no leftover placeholders", async () => {
+    const { app } = buildTestApp({ fetchImpl: routedUpstream([]).impl, env: { PAY_TO_ADDRESS: PAY_TO } });
+    const base = await start(app);
+    for (const path of ["/planner", "/de/planer", "/project-planner", "/de/projekt-planer"]) {
+      const res = await fetch(base + path);
+      expect(res.status, path).toBe(200);
+      const csp = res.headers.get("content-security-policy") ?? "";
+      expect(csp).toContain("script-src 'self'");
+      expect(csp).not.toMatch(/unsafe-inline|unsafe-eval/);
+      const html = await res.text();
+      expect(html).not.toMatch(/\{\{[A-Z_0-9]+\}\}/);
+      expect(html).not.toMatch(/<script(?![^>]*src=)|\son[a-z]+=|style=/);
+      expect(html.indexOf('src="/agentur.js"')).toBeLessThan(html.indexOf('src="/planner.js"'));
+      expect(html).toContain(`data-pay-to="${PAY_TO}"`);
+    }
+  });
+});
+
+describe("report logo and script infos safety", () => {
+  const { planner } = loadPlanner("de");
+  const bytes = (...b: number[]) => new Uint8Array([...b, ...new Array(16).fill(0)]);
+  const ascii = (t: string) => new Uint8Array([...Buffer.from(t), ...new Array(16).fill(0)]);
+  it("accepts only PNG, JPEG and WebP by file signature; SVG, PDF, HTML, programs and renamed files are refused", () => {
+    expect(planner.imageKind(bytes(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a))).toBe("image/png");
+    expect(planner.imageKind(bytes(0xff, 0xd8, 0xff, 0xe0))).toBe("image/jpeg");
+    expect(planner.imageKind(ascii("RIFF\u0000\u0000\u0000\u0000WEBPVP8 "))).toBe("image/webp");
+    for (const evil of ['<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)">', "%PDF-1.7", "<!doctype html><script>", "MZ\u0090\u0000 program", "GIF89a", "PK\u0003\u0004 zip", "RIFF\u0000\u0000\u0000\u0000WAVEfmt "]) {
+      expect(planner.imageKind(ascii(evil)), evil).toBeNull();
+    }
+    expect(planner.imageKind(new Uint8Array([0x89, 0x50]))).toBeNull();
+  });
+  it("never uploads or stores the logo: no upload APIs, and the plan file never contains image data", () => {
+    for (const file of ["planner.js", "project.js"]) {
+      const src = readFileSync(new URL("../public/" + file, import.meta.url), "utf8");
+      expect(src, file).not.toMatch(/FormData|XMLHttpRequest|sendBeacon|multipart|innerHTML|outerHTML|insertAdjacentHTML|document\.write|eval\(|new Function/);
+      expect(src, file).not.toMatch(/localStorage\.setItem|sessionStorage|document\.cookie/);
+      const fetchCalls = [...src.matchAll(/fetch\(([^)]*)\)/g)].map((m) => m[1]);
+      expect(fetchCalls.join(" "), file).not.toMatch(/logo|state\.|title/i);
+    }
+    const plan = planner.importPlan(JSON.stringify({ format: "cfp-content-plan", version: 1, plan: { posts: [{ key: "p1", title: "A", publish: "2026-11-10" }], shoot_days: [], conflicts: [], warnings: [] } })).plan;
+    const file = JSON.stringify(planner.exportPlan({ plan, original: plan, logo: "data:image/png;base64,AAAA", color: "#ff0000" }, "T", new Date()));
+    expect(file).not.toMatch(/data:image|base64|#ff0000/);
+  });
+  it("cleans bought script infos: bounded plain text, unknown fields dropped, broken entries ignored on import", () => {
+    const s = planner.cleanScript({ id: "tpl-azubi-interview", title: "T", hook: "<b>Hi</b>\u0007", shots: Array.from({ length: 40 }, (_, i) => "Shot " + i), questions: ["Q"], equipment: ["Cam"], tips: ["x".repeat(900)], evil: "<script>", peopleHint: "Azubi" });
+    expect(s.hook).toBe("<b>Hi</b>"); // stays text, rendered with textContent
+    expect(s.shots).toHaveLength(15);
+    expect(s.tips[0]).toHaveLength(300);
+    expect(s).not.toHaveProperty("evil");
+    expect(planner.cleanScript({ id: "javascript:alert(1)" })).toBeNull();
+    const file = { format: "cfp-content-plan", version: 1, plan: { posts: [{ key: "p1", title: "A", publish: "2026-11-10" }], shoot_days: [], conflicts: [], warnings: [], scripts: { p1: { id: "tpl-x", hook: "ok" }, ghost: { id: "tpl-y" }, p2: "bad" }, holiday_region: "DE-XX", holidays: [{ date: "nope" }, { date: "2026-12-25", name: "1. Weihnachtstag" }] } };
+    const plan = planner.importPlan(JSON.stringify(file)).plan;
+    expect(Object.keys(plan.scripts)).toEqual(["p1"]);
+    expect(plan.holiday_region).toBe("none");
+    expect(plan.holidays).toEqual([{ date: "2026-12-25", name: "1. Weihnachtstag" }]);
+  });
+});
+
+describe("extension responses in the settlement log", () => {
+  it("keeps only short public status fields", async () => {
+    const { extensionTrail } = await import("../src/payments/x402.js");
+    expect(extensionTrail({ bazaar: { status: "processing", rejectedReason: "x", secret: "nope", payer: "0xabc" } })).toEqual({ bazaar: { status: "processing", rejectedReason: "x" } });
+    expect(extensionTrail({ bazaar: { status: "y".repeat(500) } })!.bazaar!.status).toHaveLength(120);
+    expect(extensionTrail(undefined)).toBeUndefined();
+    expect(extensionTrail([1])).toBeUndefined();
+    expect(extensionTrail({})).toBeUndefined();
+  });
+});

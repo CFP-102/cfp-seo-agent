@@ -2,7 +2,8 @@ import { createHash } from "node:crypto";
 import { z } from "zod";
 import { PLAN_LIMITS, serviceConfig } from "../config/services.js";
 import { plain } from "./common.js";
-import { addDays, bavarianHolidays, berlinToday, diffDays, isWeekend, isoDate } from "./dates.js";
+import { addDays, berlinToday, diffDays, isWeekend, isoDate } from "./dates.js";
+import { holidayRegionInput, holidaysBetween, type HolidayRegion } from "./holidays.js";
 import { compactExample } from "./exampleCompact.js";
 import { hhmm, icsEscape, icsFold, norm, toMin } from "./shootPlan.js";
 import { sunTimes } from "./sunTimes.js";
@@ -16,7 +17,7 @@ import type { ServiceDefinition } from "./types.js";
  * day 08:00-17:00 on 2026-11-20, delivery by 2026-12-23". Combines, in one call: reel ideas fitted to goal, trade and town
  * (or the customer's own list), a single shoot day that respects the given time window (as many reels as fit, the rest as
  * reserve), a call sheet by role, sun times for outdoor shots, and the post-production timeline up to the delivery date with
- * Bavarian holidays. Rule-based, no AI model, stateless, no network.
+ * public holidays of the chosen region (default Bavaria). Rule-based, no AI model, stateless, no network.
  */
 const cfg = serviceConfig("video-project-plan");
 const clock = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
@@ -55,6 +56,7 @@ const inputSchema = z.strictObject({
   edit_reels_per_day: z.number().int().min(1).max(8).default(3),
   today: isoDate.optional(),
   language: languageInput,
+  holiday_region: holidayRegionInput("DE-BY"),
 }).refine(d => (d.latitude === undefined) === (d.longitude === undefined), { message: "Send latitude and longitude together", path: ["longitude"] })
   .refine(d => d.reel_count_max === undefined || d.reel_count_max >= d.reel_count_min, { message: "reel_count_max must not be below reel_count_min", path: ["reel_count_max"] });
 type Input = z.output<typeof inputSchema>;
@@ -186,16 +188,10 @@ function shootDay(reels: Reel[], startMin: number, lunch: number, lang: Lang) {
 }
 
 /* ---------- post-production on working days ---------- */
-const HOLIDAY_EN: Record<string, string> = {
-  "Neujahr": "New Year's Day", "Heilige Drei Könige": "Epiphany", "Karfreitag": "Good Friday", "Ostermontag": "Easter Monday", "Tag der Arbeit": "Labour Day",
-  "Christi Himmelfahrt": "Ascension Day", "Pfingstmontag": "Whit Monday", "Fronleichnam": "Corpus Christi", "Mariä Himmelfahrt": "Assumption Day",
-  "Tag der Deutschen Einheit": "German Unity Day", "Allerheiligen": "All Saints' Day", "1. Weihnachtstag": "Christmas Day", "2. Weihnachtstag": "Boxing Day",
-};
 const offDay = (d: string, hol: Map<string, string>) => isWeekend(d) || hol.has(d) || d.endsWith("-12-24") || d.endsWith("-12-31");
-function holidaysFor(from: string, to: string) {
-  const all = new Map<string, string>();
-  for (let y = Number(from.slice(0, 4)); y <= Number(to.slice(0, 4)) + 1; y++) for (const [d, n] of bavarianHolidays(y)) all.set(d, n);
-  return all;
+/** Holidays from the shoot to well after the delivery date (the timeline may run past it), names in the output language. */
+function holidaysFor(region: HolidayRegion, from: string, to: string, lang: Lang) {
+  return holidaysBetween(region, from, `${Number(to.slice(0, 4)) + 1}-12-31`, lang);
 }
 function workdays(start: string, n: number, hol: Map<string, string>) {
   let d = start; while (offDay(d, hol)) d = addDays(d, 1);
@@ -260,7 +256,8 @@ export function plan(i: Input) {
   const callSheet = [...roles].map(([role, times]) => ({ role, times, reels: day.rows.filter(r => r.people === role && r.reel).map(r => r.reel!) }));
 
   // Post-production up to delivery.
-  const hol = holidaysFor(i.shoot_date, i.deliver_by);
+  const hol = holidaysFor(i.holiday_region, i.shoot_date, i.deliver_by, lang);
+  if (hol.has(i.shoot_date)) warnings.push(t$(`Der Drehtag ${i.shoot_date} ist ein Feiertag (${hol.get(i.shoot_date)}).`, `The shoot day ${i.shoot_date} is a public holiday (${hol.get(i.shoot_date)}).`));
   const post = (rounds: number) => postProduction(i, n, rounds, hol);
   const { milestones, ready, buffer } = post(i.review_rounds);
   if (ready > i.deliver_by) {
@@ -269,7 +266,7 @@ export function plan(i: Input) {
     warnings.push(t$(`Mit ${i.review_rounds} Feedback-Runde(n) ist alles erst am ${ready} fertig, ${late} Arbeitstage nach dem ${i.deliver_by}.${fewer ? ` Mit ${i.review_rounds - 1} Runde(n): fertig am ${fewer.ready}.` : ""} Sonst kürzere Feedbackzeit, mehr Schnitttage pro Woche oder Abgabe in zwei Etappen.`,
       `With ${i.review_rounds} feedback round(s) everything is ready only on ${ready}, ${late} working days after ${i.deliver_by}.${fewer ? ` With ${i.review_rounds - 1} round(s): ready on ${fewer.ready}.` : ""} Otherwise shorter feedback time, more editing days per week or delivery in two stages.`));
   } else if (buffer < 2) warnings.push(t$(`Nur ${buffer} Arbeitstag(e) Puffer vor der Abgabe am ${i.deliver_by}.`, `Only ${buffer} working day(s) of buffer before delivery on ${i.deliver_by}.`));
-  const holidaysInRange = [...hol].filter(([d]) => d > i.shoot_date && d <= i.deliver_by).map(([date, name]) => ({ date, name: lang === "en" ? HOLIDAY_EN[name] ?? name : name }));
+  const holidaysInRange = [...hol].filter(([d]) => d > i.shoot_date && d <= i.deliver_by).map(([date, name]) => ({ date, name }));
 
   const checklist = [
     t$("Schriftliche Einwilligung aller gefilmten Personen (DSGVO); bei Minderjährigen zusätzlich die Eltern.", "Written consent from everyone filmed (GDPR); for minors also from the parents."),
@@ -301,10 +298,10 @@ export function plan(i: Input) {
     },
     reels, reserve,
     shoot_day: { date: i.shoot_date, schedule: day.rows, call_sheet: callSheet, sun },
-    post_production: { milestones, ready_for_delivery: ready, deliver_by: i.deliver_by, buffer_working_days: buffer, holidays_in_range: holidaysInRange, non_working: "Weekends, Bavarian public holidays, 24 and 31 December." },
+    post_production: { milestones, ready_for_delivery: ready, deliver_by: i.deliver_by, buffer_working_days: buffer, holidays_in_range: holidaysInRange, holiday_region: i.holiday_region, non_working: t$("Wochenenden, Feiertage der gewählten Region, 24. und 31. Dezember.", "Weekends, public holidays of the chosen region, 24 and 31 December.") },
     checklist, warnings, next_steps: nextSteps,
     calendar_file_ics: ics(planId, today, i, day.rows, hhmm(day.end), milestones),
-    coverage: "Rule-based plan from your inputs, built-in recipes and a small trade vocabulary; ideas are suggestions, not a creative concept. Durations are typical values (recording time plus 10 minutes per reel, 30 min set-up, 30 min teardown). No weather, travel, people's availability or legal clearance. Holidays: Bavaria. Nothing is stored or written to any calendar.",
+    coverage: "Rule-based plan from your inputs, built-in recipes and a small trade vocabulary; ideas are suggestions, not a creative concept. Durations are typical values (recording time plus 10 minutes per reel, 30 min set-up, 30 min teardown). No weather, travel, people's availability or legal clearance. Holidays: the chosen region (municipal days and school holidays not included). Nothing is stored or written to any calendar.",
   };
 }
 
@@ -324,7 +321,7 @@ function ics(planId: string, today: string, i: Input, rows: Row[], end: string, 
   return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Chiemgau Films Agent Data API//Video Project Plan//DE", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", ...events.flat(), "END:VCALENDAR"].map(icsFold).join("\r\n") + "\r\n";
 }
 
-const exampleInput = { goal: "recruiting", industry: "Metallbau", town: "Chieming", shoot_date: "2026-11-20", deliver_by: "2026-12-23", reel_count_max: 10, latitude: 47.89, longitude: 12.54, today: "2026-10-24" };
+const exampleInput = { goal: "recruiting", industry: "Metallbau", town: "Chieming", shoot_date: "2026-11-20", deliver_by: "2026-12-23", reel_count_max: 10, today: "2026-10-24" };
 const example: Input = inputSchema.parse(exampleInput);
 export const videoProjectPlan: ServiceDefinition<Input, ReturnType<typeof plan>> = {
   id: cfg.id, name: cfg.name, route: cfg.route, priceUsdc: cfg.priceUsdc, enabled: cfg.enabled,

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Video Project Planner for Agencies – {{NAME}}</title>
+<meta name="description" content="Plan one video job: reel ideas, one shoot day in your time window, call sheet, sun times and post-production up to delivery. Pay per plan, no account.">
+<link rel="canonical" href="{{BASE_URL}}/project-planner">
+<link rel="alternate" hreflang="en" href="{{BASE_URL}}/project-planner">
+<link rel="alternate" hreflang="de" href="{{BASE_URL}}/de/projekt-planer">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body class="planner-page" data-pay-to="{{PAY_TO_ADDRESS}}" data-network="{{NETWORK}}">
+<header class="top no-print">
+  <div class="wrap bar">
+    <a class="brand" href="/"><img src="/logo-white.png" alt="Chiemgau Films" width="62" height="30"><span class="brandname">{{NAME}}</span></a>
+    <div class="navgroup">
+      <nav aria-label="Project planner"><a href="#project">Job</a><a href="#project-view">Result</a><a href="#report-setup">Client report</a><a href="/planner">Content planner</a></nav>
+      <a class="lang" href="/de/projekt-planer" hreflang="de" lang="de">DE</a>
+    </div>
+  </div>
+</header>
+<main>
+<section class="hero wrap no-print">
+  <p class="eyebrow">For agencies and video teams</p>
+  <h1>Plan one video job: ideas, shoot day, delivery</h1>
+  <p class="lead">Enter the shoot day, time window, delivery date and number of reels. You get reel ideas with opening, shots and questions, a shoot-day schedule, a call sheet and post-production up to delivery. Before approving you see the exact price and confirm exactly one purchase with your browser wallet.</p>
+  {{MODE_NOTE}}{{TASK_STATUS}}
+  <p class="fine">Only the planning data below is sent (goal, trade, town, dates, own ideas, areas). Please do not enter people's names. The report title and logo stay in your browser. Inputs and results are deleted from our server after 30 days.</p>
+</section>
+
+<section id="project" class="wrap no-print">
+  <h2>1. Your job <span class="price" id="price-project"></span></h2>
+  <noscript><p class="note">The planner needs JavaScript.</p></noscript>
+  <form id="project-form" class="tester" novalidate>
+    <div class="field-row">
+      <label class="field"><span>Goal</span><select id="p-goal"></select></label>
+      <label class="field"><span>Trade (optional)</span><input id="p-industry" type="text" maxlength="60" placeholder="metalwork" autocomplete="off"></label>
+    </div>
+    <div class="field-row">
+      <label class="field"><span>Company town (optional)</span><input id="p-town" type="text" maxlength="60" placeholder="Chieming" autocomplete="off"></label>
+      <label class="field"><span>Job / position (optional)</span><input id="p-job" type="text" maxlength="60" placeholder="metalworker" autocomplete="off"></label>
+    </div>
+    <div class="field-row">
+      <label class="field"><span>Shoot day</span><input id="p-shoot" type="date" required></label>
+      <label class="field small"><span>Start</span><input id="p-start" type="time" value="08:00" required></label>
+      <label class="field small"><span>End</span><input id="p-end" type="time" value="17:00" required></label>
+      <label class="field"><span>Deliver by</span><input id="p-deliver" type="date" required></label>
+    </div>
+    <div class="field-row">
+      <label class="field small"><span>Reels at least</span><input id="p-min" type="number" value="5" min="1" step="1"></label>
+      <label class="field small"><span>Reels at most</span><input id="p-max" type="number" value="10" min="1" step="1"></label>
+      <label class="field small"><span>Feedback rounds</span><select id="p-rounds"><option value="0">0</option><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option></select></label>
+    </div>
+    <label class="field"><span>Own ideas (optional, one per line; planned first)</span><textarea id="p-ideas" rows="3" placeholder="A day in the workshop"></textarea></label>
+    <label class="field"><span>Areas or locations (optional, comma separated)</span><input id="p-locations" type="text" maxlength="500" placeholder="workshop, office, yard" autocomplete="off"></label>
+    <label class="field"><span>Public holidays (no post-production on these days)</span><select id="p-region"></select></label>
+    <details><summary>Sun times for outdoor shots (optional)</summary>
+      <div class="field-row">
+        <label class="field small"><span>Latitude</span><input id="p-lat" type="text" inputmode="decimal" placeholder="47.88" autocomplete="off"></label>
+        <label class="field small"><span>Longitude</span><input id="p-lon" type="text" inputmode="decimal" placeholder="12.53" autocomplete="off"></label>
+      </div>
+      <p class="fine">An approximate position is enough (rounded to three decimals). Locations in Germany only.</p>
+    </details>
+    <div class="cta"><button type="submit" class="btn primary" id="btn-project-check" data-busy-lock>Check input for free</button></div>
+    <p id="project-msg" class="fine" role="status" aria-live="polite"></p>
+  </form>
+  <div id="buy-project" class="buybox" hidden>
+    <p data-price></p>
+    <label class="check"><input type="checkbox"><span data-approve-label></span></label>
+    <div class="cta"><button type="button" class="btn primary" id="btn-buy-project" data-busy-lock>Buy this project plan with wallet</button><button type="button" class="btn" id="btn-cancel-project" data-busy-lock>Cancel</button></div>
+    <details><summary>Expert view: exact request (JSON)</summary><pre><code data-expert></code></pre></details>
+    <p class="fine">Your wallet shows amount and recipient again and asks for confirmation. If the outcome is unclear, do not pay again: the page then only retrieves the existing result.</p>
+  </div>
+</section>
+
+<section id="project-view" class="wrap no-print" hidden>
+  <h2>2. Your project plan</h2>
+  <p><span id="project-status" class="status"></span> <span id="project-meta" class="fine"></span></p>
+  <div id="project-warnings" class="note"></div>
+  <div class="cta">
+    <button type="button" class="btn" id="dl-ics">Download calendar (.ics)</button>
+    <button type="button" class="btn" id="dl-receipt" hidden>Purchase receipt (private)</button>
+  </div>
+  <p class="fine">Keep the private purchase receipt separately: it lets you retrieve the paid result again for 30 days.</p>
+  <h3>Reels</h3><div id="project-reels" class="grid"></div>
+  <h3>Reserve</h3><div id="project-reserve"></div>
+  <h3>Shoot-day schedule</h3><div id="project-schedule"></div><div id="project-sun"></div>
+  <h3>Call sheet</h3><div id="project-callsheet"></div>
+  <h3>Post-production</h3><div id="project-post"></div>
+  <h3>Checklist and next steps</h3><div id="project-checklist"></div>
+  <p id="project-coverage" class="fine"></p>
+</section>
+
+<section id="report-setup" class="wrap no-print" hidden>
+  <h2>3. Client report</h2>
+  <p class="sub">A clean overview for your client: reels, shoot day, post-production and preparation. Print it or save it as PDF in the print dialog.</p>
+  <label class="field"><span>Project or client title (optional, stays local)</span><input id="r-title" type="text" maxlength="120" autocomplete="off"></label>
+  <div class="field-row">
+    <label class="field"><span>Agency logo for the report (PNG, JPG or WebP, max. 1 MB)</span><input id="r-logo" type="file" accept="image/png,image/jpeg,image/webp"></label>
+    <label class="field small"><span>Accent colour</span><input id="r-color" type="color" value="#ec6b01"></label>
+  </div>
+  <p class="fine">The logo stays in this browser: it is not uploaded and not sent to us. Only the plain pixels are used. <button type="button" class="btn small" id="btn-logo-remove">Remove logo</button></p>
+  <div class="cta"><button type="button" class="btn" id="btn-report">Show report</button><button type="button" class="btn primary" id="btn-print">Print / save as PDF</button></div>
+  <p id="report-msg" class="fine" role="status" aria-live="polite"></p>
+</section>
+<section id="report" class="wrap report" hidden></section>
+</main>
+<footer class="no-print">
+  <div class="wrap foot">
+    <div><strong>{{NAME}}</strong><br><span class="fine"><a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a></span></div>
+    <div class="fine"><a href="/legal.html#datenschutz">Privacy</a> · <a href="/status">Status</a></div>
+  </div>
+</footer>
+<script src="/agentur.js" defer></script>
+<script src="/planner.js" defer></script>
+<script src="/project.js" defer></script>
+</body>
+</html>

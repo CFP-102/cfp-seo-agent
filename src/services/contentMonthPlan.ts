@@ -3,6 +3,7 @@ import { z } from "zod";
 import { PLAN_LIMITS, serviceConfig } from "../config/services.js";
 import { CHAIN, MIN_GAP, labelOf, validateDates, type Step } from "./contentPhases.js";
 import { languageInput, tr, type Lang } from "./i18n.js";
+import { HOLIDAY_COVERAGE, holidayRegionInput, holidaysBetween } from "./holidays.js";
 import { WEEKDAY_NAMES, addDays, berlinToday, diffDays, isWeekend, isoDate, weekday } from "./dates.js";
 import { block, chunks, fits, hhmm, icsEscape, icsFold, norm, order, timeline, toMin, type Block, type Rules } from "./shootPlan.js";
 import { recipeDataset, recipesIn, type Recipe } from "./videoRecipes.js";
@@ -22,9 +23,9 @@ const dayEnum = z.enum(WEEKDAY_NAMES);
 const inputSchema = z.strictObject({
   from: isoDate,
   to: isoDate.describe("At most 62 days after from."),
-  today: isoDate.optional().describe("Reference date, default today (Germany)."),
+  today: isoDate.optional(),
   posts_per_week: z.number().int().min(1).max(7).default(3),
-  categories: z.array(z.enum(categoryIds)).min(1).max(7).default(["produkt", "mitarbeiter", "bts"]).describe("Topic categories, shared evenly."),
+  categories: z.array(z.enum(categoryIds)).min(1).max(7).default(["produkt", "mitarbeiter", "bts"]),
   mix_counts: mixCounts.optional().describe("Posts per category; overrides posts_per_week and categories."),
   media_type: z.enum(["reel", "video", "post", "story", "carousel"]).optional(),
   publish_weekdays: z.array(dayEnum).min(1).max(7).default(["mon", "wed", "fri"]),
@@ -44,6 +45,7 @@ const inputSchema = z.strictObject({
   existing_shoot_dates: z.array(isoDate).max(PLAN_LIMITS.existingDates).default([]).describe("Shoot days already booked."),
   seed: z.number().int().min(0).max(99).default(0),
   language: languageInput,
+  holiday_region: holidayRegionInput("none"),
 }).refine(d => d.to >= d.from, { message: "to must not be before from", path: ["to"] })
   .refine(d => diffDays(d.from, d.to) <= PLAN_LIMITS.planSpanDays, { message: `The period may span at most ${PLAN_LIMITS.planSpanDays} days`, path: ["to"] })
   .refine(d => { if (!d.mix_counts) return true; const n = Object.values(d.mix_counts).reduce<number>((a, b) => a + (b ?? 0), 0); return n >= 1 && n <= PLAN_LIMITS.planPosts; }, { message: `mix_counts must add up to 1-${PLAN_LIMITS.planPosts} posts`, path: ["mix_counts"] });
@@ -67,16 +69,20 @@ export function plan(i: Input) {
   const earliestPublish = addDays(today, 2 + i.min_shoot_lead_days + 2); // preparation + shoot + edit
   const used = new Set(i.existing_publish_dates);
 
+  // Public holidays of the chosen region: never used for publishing, shoots or preparation steps.
+  const hol = holidaysBetween(i.holiday_region, today, i.to, lang);
+  const isHoliday = (d: string) => hol.has(d);
+
   // 1) publish dates
   const slots: string[] = [];
-  for (let d = from; d <= i.to; d = addDays(d, 1)) if (pubDays.includes(weekday(d)) && d >= earliestPublish) slots.push(d);
+  for (let d = from; d <= i.to; d = addDays(d, 1)) if (pubDays.includes(weekday(d)) && d >= earliestPublish && !isHoliday(d)) slots.push(d);
   const weeks = Math.max(1, Math.round((diffDays(from, i.to) + 1) / 7));
   const counts = i.mix_counts ? Object.entries(i.mix_counts).filter((e): e is [string, number] => (e[1] ?? 0) > 0) : null;
   let total = counts ? counts.reduce((a, [, n]) => a + n, 0) : Math.round(i.posts_per_week * weeks);
   if (total > PLAN_LIMITS.planPosts) { warnings.push(t$(`Es werden höchstens ${PLAN_LIMITS.planPosts} Beiträge je Plan geplant.`, `At most ${PLAN_LIMITS.planPosts} posts are planned per plan.`)); total = PLAN_LIMITS.planPosts; }
   let free = slots.filter(d => !used.has(d));
   if (free.length < total) {
-    for (let d = from; d <= i.to && free.length < total; d = addDays(d, 1)) { if (d < earliestPublish || isWeekend(d) || used.has(d) || free.includes(d)) continue; free.push(d); }
+    for (let d = from; d <= i.to && free.length < total; d = addDays(d, 1)) { if (d < earliestPublish || isWeekend(d) || isHoliday(d) || used.has(d) || free.includes(d)) continue; free.push(d); }
     free.sort();
   }
   if (free.length < total) {
@@ -125,9 +131,9 @@ export function plan(i: Input) {
   const floor = addDays(today, 2);
   const shootDateFor = (latest: string): string | null => {
     let d: string;
-    for (d = latest; d >= floor; d = addDays(d, -1)) if (!busy.has(d) && prodDays.includes(weekday(d)) && apart(d)) return d;
-    for (d = latest; d >= floor; d = addDays(d, -1)) if (!busy.has(d) && prodDays.includes(weekday(d))) return d;
-    for (d = latest; d >= floor; d = addDays(d, -1)) if (!busy.has(d) && !isWeekend(d)) return d;
+    for (d = latest; d >= floor; d = addDays(d, -1)) if (!busy.has(d) && !isHoliday(d) && prodDays.includes(weekday(d)) && apart(d)) return d;
+    for (d = latest; d >= floor; d = addDays(d, -1)) if (!busy.has(d) && !isHoliday(d) && prodDays.includes(weekday(d))) return d;
+    for (d = latest; d >= floor; d = addDays(d, -1)) if (!busy.has(d) && !isHoliday(d) && !isWeekend(d)) return d;
     return latest >= floor ? latest : null;
   };
   const windows: (typeof items)[] = []; let current: typeof items | null = null;
@@ -145,7 +151,8 @@ export function plan(i: Input) {
   }
   days.sort((a, b) => ((a.date ?? "9999") < (b.date ?? "9999") ? -1 : 1));
   const conflicts: { level: "error" | "warn"; post_key: string; steps: Step[]; message: string }[] = [];
-  const wk = (d: string, lowest: string, allowSame: boolean) => { if (!i.avoid_weekends) return d; let x = d; while (isWeekend(x) && (allowSame ? addDays(x, -1) >= lowest : addDays(x, -1) > lowest)) x = addDays(x, -1); return x; };
+  const blocked = (x: string) => (i.avoid_weekends && isWeekend(x)) || isHoliday(x);
+  const wk = (d: string, lowest: string, allowSame: boolean) => { let x = d; while (blocked(x) && (allowSame ? addDays(x, -1) >= lowest : addDays(x, -1) > lowest)) x = addDays(x, -1); return x; };
   days.forEach((day, n) => {
     for (const it of day.items) {
       it.shoot_day = `d${n + 1}`;
@@ -185,8 +192,10 @@ export function plan(i: Input) {
     posts, shoot_days: shootDays, conflicts, warnings,
     posts_for_reschedule: posts.map(p => ({ key: p.key, title: p.title, publish: p.publish, ...(p.concept ? { concept: p.concept } : {}), ...(p.shoot ? { shoot: p.shoot } : {}), ...(p.edit ? { edit: p.edit } : {}), ...(p.review ? { review: p.review } : {}), ...(p.shoot_day ? { shoot_group: p.shoot_day } : {}) })),
     next_step: "Send posts_for_reschedule to content-plan-shift together with one move to shift a date; the linked dates and shared shoot days follow.",
+    holiday_region: i.holiday_region,
+    holidays: [...hol].filter(([d]) => d >= from).map(([date, name]) => ({ date, name })),
     calendar_file_ics: ics(planId, today, posts, shootDays, lang),
-    coverage: "Rule-based plan from your settings and the built-in recipes (video-recipes): topics are suggestions, not a strategy. No holidays, vacations, people or capacities are checked; existing_publish_dates and existing_shoot_dates are the only things it knows about your calendar. Calendar files are text you import yourself; nothing is written to any calendar.",
+    coverage: (i.holiday_region === "none" ? "No public holidays checked (set holiday_region). " : `${HOLIDAY_COVERAGE.en} `) + "Rule-based plan from your settings and the built-in recipes (video-recipes): topics are suggestions, not a strategy. No vacations, people or capacities are checked; existing_publish_dates and existing_shoot_dates are the only things it knows about your calendar. Calendar files are text you import yourself; nothing is written to any calendar.",
   };
 }
 
@@ -230,10 +239,10 @@ export const contentMonthPlan: ServiceDefinition<Input, ReturnType<typeof plan>>
   id: cfg.id, name: cfg.name, route: cfg.route, priceUsdc: cfg.priceUsdc, enabled: cfg.enabled,
   cacheTtlSeconds: cfg.cacheTtlSeconds, limits: { maxInputs: cfg.maxInputs, maxResults: cfg.maxResults },
   upstream: { endpoint: cfg.dataforseoEndpoint, maxCostUsd: cfg.maxUpstreamCostUsd },
-  summary: "Plan a content month for a social media team or agency: up to 30 posts with topics, spread publish dates and linked dates per post (concept, shoot, edit, review, publish), bundled into realistic shoot days. Returns conflicts, input for content-plan-shift and one .ics file.",
+  summary: "Plan a content month for an agency: up to 30 posts with topics, publish dates and linked production dates, bundled shoot days, holidays per region, conflicts and an .ics file. EN/DE.",
   notice: "Rule-based, German or English (language), no AI model, stateless. Send periods, counts, weekdays and your already booked dates only, no personal data. Topics are suggestions from built-in recipes, not a content strategy. Nothing is written to any calendar; the .ics text is yours to import.",
   inputSchema, estimateCostUsd: () => 0,
   validateInput: i => { const earliest = addDays(i.today ?? berlinToday(), 2 + i.min_shoot_lead_days + 2); return i.to < earliest ? `The period ends before the first possible publish date (${earliest}): preparation, shoot and edit need time. Choose a later "to".` : null; },
   buildRequest: i => [i], mapResult: (_task, i) => plan(i), executeLocal: plan,
-  example: exampleInput as unknown as Input, outputExample: compactExample(plan(example), 1, 30),
+  example: exampleInput as unknown as Input, outputExample: compactExample(plan(example), 1, 18),
 };

@@ -119,6 +119,22 @@ export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?:
     router.get([lang === "de" ? "/de/content-planung-beispiel" : "/content-planning-example", `/case-study-${lang}.html`], page(read(`case-study-${lang}.html`), "html", status));
   }
 
+  // Content planner app (EN/DE): form, one approved purchase, plan file, date moves and a printable client report.
+  for (const lang of ["en", "de"] as const) {
+    const status = () => ({ TASK_STATUS: ["content-month-plan", "content-plan-shift"].every((id) => {
+      const service = pipeline.services.find((s) => s.id === id);
+      return service && pipeline.isEnabled(service);
+    }) ? "" : `<p class="note">${lang === "de" ? "Mindestens ein Dienst des Planers ist derzeit nicht verfügbar. Kein Kauf möglich." : "At least one planner service is currently unavailable. No purchase possible."}</p>` });
+    router.get([lang === "de" ? "/de/planer" : "/planner", `/planner-${lang}.html`], page(read(`planner-${lang}.html`), "html", status));
+  }
+
+  // Video project planner app (EN/DE): one job from a form, one approved purchase, calendar file and client report.
+  for (const lang of ["en", "de"] as const) {
+    const service = pipeline.services.find((s) => s.id === "video-project-plan");
+    const status = () => ({ TASK_STATUS: service && pipeline.isEnabled(service) ? "" : `<p class="note">${lang === "de" ? "Dieser Dienst ist derzeit nicht verfügbar. Kein Kauf möglich." : "This service is currently unavailable. No purchase possible."}</p>` });
+    router.get([lang === "de" ? "/de/projekt-planer" : "/project-planner", `/project-planner-${lang}.html`], page(read(`project-planner-${lang}.html`), "html", status));
+  }
+
   // Focused human entry points. They describe one purchase and never run a data call.
   for (const [slug, germanSlug, serviceId] of [
     ["keyword-research", "keyword-recherche", "keyword-metrics"],
@@ -140,7 +156,7 @@ export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?:
   });
 
   router.get("/sitemap.xml", (_req, res) => {
-    const paths = ["/", "/de/", "/agencies", "/de/agenturen", "/connect", "/de/einrichten", "/quickstart.html", "/status", "/de/status", "/keyword-research", "/de/keyword-recherche", "/local-visibility", "/de/lokale-sichtbarkeit", "/content-planning", "/de/content-planung", "/content-planning-example", "/de/content-planung-beispiel"];
+    const paths = ["/", "/de/", "/agencies", "/de/agenturen", "/connect", "/de/einrichten", "/quickstart.html", "/status", "/de/status", "/keyword-research", "/de/keyword-recherche", "/local-visibility", "/de/lokale-sichtbarkeit", "/content-planning", "/de/content-planung", "/content-planning-example", "/de/content-planung-beispiel", "/planner", "/de/planer", "/project-planner", "/de/projekt-planer"];
     if (!indexable) res.setHeader("X-Robots-Tag", "noindex, nofollow");
     res.setHeader("Cache-Control", "public, max-age=300");
     res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(path => `<url><loc>${escapeHtml(env.PUBLIC_BASE_URL + path)}</loc></url>`).join("")}</urlset>`);

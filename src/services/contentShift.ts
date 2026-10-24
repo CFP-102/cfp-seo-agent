@@ -2,6 +2,7 @@ import { z } from "zod";
 import { PLAN_LIMITS, serviceConfig } from "../config/services.js";
 import { CHAIN, STEPS, labelOf, propagate, validateDates, type Dates, type Step } from "./contentPhases.js";
 import { languageInput, tr } from "./i18n.js";
+import { holidayRegionInput, holidaysBetween } from "./holidays.js";
 import { plain } from "./common.js";
 import { addDays, diffDays, isoDate } from "./dates.js";
 import { compactExample } from "./exampleCompact.js";
@@ -24,6 +25,7 @@ const postSchema = z.strictObject({
 const inputSchema = z.strictObject({
   posts: z.array(postSchema).min(1).max(cfg.maxInputs),
   language: languageInput,
+  holiday_region: holidayRegionInput("none"),
   move: z.strictObject({
     post_key: z.string().min(1).max(40), step: z.enum(CHAIN), new_date: isoDate,
     publish_mode: z.enum(["shift_all", "only_publish"]).default("shift_all").describe("Publish moves: also shift the unfinished steps by the same number of days, or only the publish date."),
@@ -90,6 +92,17 @@ export function shift(i: Input) {
     apply(post, after);
     if (detached) delete post.shoot_group;
   }
+  // Public holidays: a changed date that lands on one gets a note (the move itself is not changed).
+  if (i.holiday_region !== "none" && changes.length) {
+    const dates = changes.map((c) => c.to).sort();
+    const hol = holidaysBetween(i.holiday_region, dates[0]!, dates[dates.length - 1]!, lang);
+    for (const c of changes) {
+      const name = hol.get(c.to);
+      if (!name) continue;
+      const p = posts.find((x) => x.key === c.post_key)!;
+      conflicts.push({ level: "warn", post_key: c.post_key, steps: [c.step], message: `${label(p)}: ${t$(`${labelOf(lang, c.step)} am ${c.to} fällt auf einen Feiertag (${name}).`, `${labelOf(lang, c.step)} on ${c.to} falls on a public holiday (${name}).`)}` });
+    }
+  }
   const seen = new Set<string>();
   for (const b of blocked) {
     const k = `${b.post_key}/${b.step}`; if (seen.has(k) || (b.step === "shoot" && shootDone.has(b.post_key))) continue;
@@ -103,7 +116,7 @@ export function shift(i: Input) {
     needs_confirmation: changes.length > 1 || conflicts.length > 0 || blocked.length > 0 || groupChange !== null,
     summary: { posts_changed: new Set(changes.map(c => c.post_key)).size, dates_changed: changes.length, errors: conflicts.filter(c => c.level === "error").length, warnings: conflicts.filter(c => c.level === "warn").length },
     posts,
-    coverage: "Stateless date arithmetic on the posts you send. Weekends, holidays, people and shoot-day capacity are not checked here; run shoot-day-plan for a shoot day. Nothing is stored or written to any calendar.",
+    coverage: `Stateless date arithmetic on the posts you send. ${i.holiday_region === "none" ? "Holidays are not checked (set holiday_region)." : "Changed dates on public holidays of the chosen region get a note; they are not moved automatically."} Weekends, people and shoot-day capacity are not checked; run shoot-day-plan for a shoot day. Nothing is stored or written to any calendar.`,
   };
 }
 

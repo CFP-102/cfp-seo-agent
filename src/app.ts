@@ -11,7 +11,6 @@ import { createWishlist } from "./wishlist.js";
 import { createFreeSample } from "./freeSample.js";
 import { createSiteRouter } from "./web/site.js";
 import { createPageViewCounter } from "./lib/pageViews.js";
-import { findService } from "./services/index.js";
 import { searchDachLocations } from "./config/locales.js";
 
 /** Services whose upstream (Google SERP family) accepts city/region codes. */
@@ -116,7 +115,8 @@ export function createApp(deps: AppDeps) {
 
   // Free preflight: validates input and checks budget/limits without paying or calling DataForSEO.
   app.post("/api/v1/preflight/:serviceId", limiter, (req, res) => {
-    const service = findService(String(req.params.serviceId));
+    // Same service list as the paid routes, so preflight and purchase always agree on what is offered.
+    const service = services.find((s) => s.id === String(req.params.serviceId));
     if (!service) return void res.status(404).json({ error: "unknown_service" });
     store.bump(service.id, "preflight");
     const prep = pipeline.prepare(service, req.body);

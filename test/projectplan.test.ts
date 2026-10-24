@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { IDEAS, videoProjectPlan } from "../src/services/projectPlan.js";
 import { recipeDataset } from "../src/services/videoRecipes.js";
-import { bavarianHolidays } from "../src/services/dates.js";
+import { holidays } from "../src/services/holidays.js";
 import { matchTrade } from "../src/services/trades.js";
 
 const parse = (x: unknown) => videoProjectPlan.inputSchema.parse(x);
@@ -59,7 +59,7 @@ describe("video-project-plan", () => {
     expect(r.summary.on_time).toBe(false);
     for (const m of r.post_production.milestones) for (const d of [m.start, m.end]) expect(["2026-12-24", "2026-12-25", "2026-12-26", "2026-12-31"]).not.toContain(d);
     expect(r.warnings.join(" ")).toMatch(/Mit 1 Runde\(n\): fertig am 20\d\d-\d\d-\d\d/);
-    const h = bavarianHolidays(2026);
+    const h = holidays("DE-BY", 2026);
     expect(h.get("2026-04-06")).toBe("Ostermontag");
     expect(h.get("2026-06-04")).toBe("Fronleichnam");
     expect(h.get("2026-05-14")).toBe("Christi Himmelfahrt");

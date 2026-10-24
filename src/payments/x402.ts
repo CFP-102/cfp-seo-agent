@@ -210,6 +210,21 @@ export function hasUnverifiableSignature(p: PaymentPayload): boolean {
   return typeof sig === "string" && sig.length > 132;
 }
 
+const EXTENSION_LOG_FIELDS = ["status", "rejectedReason", "reason", "code"] as const;
+
+/** Public status fields of the facilitator's extension responses (e.g. Bazaar indexing), for correlating a settlement with its catalog entry. */
+export function extensionTrail(responses: unknown): Record<string, Record<string, unknown>> | undefined {
+  if (!responses || typeof responses !== "object" || Array.isArray(responses)) return undefined;
+  const out: Record<string, Record<string, unknown>> = {};
+  for (const [name, value] of Object.entries(responses as Record<string, unknown>).slice(0, 10)) {
+    const src = value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
+    const kept: Record<string, unknown> = {};
+    for (const f of EXTENSION_LOG_FIELDS) if (typeof src[f] === "string") kept[f] = (src[f] as string).slice(0, 120);
+    out[name.slice(0, 40)] = kept;
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 export function createPayments(cfg: PaymentsConfig, deps: { store: Store; pipeline: Pipeline; services: ServiceDefinition[] }) {
   const network = NETWORKS[cfg.mode];
   const { store, pipeline } = deps;
@@ -228,7 +243,7 @@ export function createPayments(cfg: PaymentsConfig, deps: { store: Store; pipeli
       const row = store.getByPaymentKey(key);
       if (row && result.success && result.transaction) {
         store.setSettled(row.id, result.transaction, result.payer?.toLowerCase() ?? null);
-        log.info("payment settled", { requestId: row.id, service: row.service_id, network: result.network, tx: result.transaction, phase });
+        log.info("payment settled", { requestId: row.id, service: row.service_id, network: result.network, tx: result.transaction, phase, extensions: extensionTrail(result.extensionResponses) });
       } else if (!row && result.success) {
         // Must never happen (the claim is only released when settlement did not happen). If it does, leave a trail for a manual refund.
         log.error("settled payment without ledger row", { tx: result.transaction, payer: result.payer ?? payer, network: result.network });

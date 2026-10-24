@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Content-Planer für Agenturen – {{NAME}}</title>
+<meta name="description" content="Content-Monatsplan mit verknüpften Terminen bestellen, als Datei behalten, Termine verschieben und einen Kundenbericht drucken. Bezahlung pro Plan, kein Konto.">
+<link rel="canonical" href="{{BASE_URL}}/de/planer">
+<link rel="alternate" hreflang="en" href="{{BASE_URL}}/planner">
+<link rel="alternate" hreflang="de" href="{{BASE_URL}}/de/planer">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body class="planner-page" data-pay-to="{{PAY_TO_ADDRESS}}" data-network="{{NETWORK}}">
+<header class="top no-print">
+  <div class="wrap bar">
+    <a class="brand" href="/de/"><img src="/logo-white.png" alt="Chiemgau Films" width="62" height="30"><span class="brandname">{{NAME}}</span></a>
+    <div class="navgroup">
+      <nav aria-label="Planer"><a href="#plan">Plan</a><a href="#plan-view">Ergebnis</a><a href="#shift">Termin verschieben</a><a href="#report-setup">Kundenbericht</a><a href="/de/projekt-planer">Videoprojekt</a></nav>
+      <a class="lang" href="/planner" hreflang="en" lang="en">EN</a>
+    </div>
+  </div>
+</header>
+<main>
+<section class="hero wrap no-print">
+  <p class="eyebrow">Für Agenturen und Videoteams</p>
+  <h1>Content-Monat planen, Termine verschieben, an Kunden berichten</h1>
+  <p class="lead">Zeitraum, Themenmix sowie Veröffentlichungs- und Produktionstage eingeben. Vor der Freigabe sehen Sie den genauen Preis und bestätigen genau einen Kauf mit Ihrer Browser-Wallet. Der Plan bleibt als Datei bei Ihnen: kein Konto, kein Eintrag in fremde Kalender.</p>
+  {{MODE_NOTE}}{{TASK_STATUS}}
+  <p class="fine">Gesendet werden nur die Planungsangaben unten (Termine, Anzahlen, Wochentage, belegte Termine). Projekt- oder Kundentitel bleiben in Ihrem Browser. Eingaben und Ergebnisse werden auf unserem Server nach 30 Tagen gelöscht.</p>
+</section>
+
+<section id="plan" class="wrap no-print">
+  <h2>1. Ihr Plan <span class="price" id="price-plan"></span></h2>
+  <noscript><p class="note">Der Planer braucht JavaScript. Ohne JavaScript bitte die Seite zur Content-Planung verwenden.</p></noscript>
+  <form id="planner" class="tester" novalidate>
+    <div class="field-row">
+      <label class="field"><span>Erster Veröffentlichungstag (von)</span><input id="f-from" type="date" required></label>
+      <label class="field"><span>Letzter Tag (bis)</span><input id="f-to" type="date" required></label>
+    </div>
+    <fieldset class="field"><legend>Anzahl Beiträge</legend>
+      <label class="check"><input type="radio" name="mode" id="f-mode-weekly" checked><span>Beiträge pro Woche, Themen gleichmäßig verteilt</span></label>
+      <label class="check"><input type="radio" name="mode" id="f-mode-mix"><span>Genaue Anzahl je Thema</span></label>
+      <div id="f-ppw-box">
+        <label class="field small"><span>Beiträge pro Woche</span><input id="f-ppw" type="number" value="3" step="1"></label>
+        <p class="fine">Themen</p><div id="f-cats" class="checks"></div>
+      </div>
+      <div id="f-mix-box" hidden><p class="fine">Anzahl Beiträge je Thema (0 = nicht verwenden).</p><div id="f-mix" class="field-row wrapgrid"></div></div>
+    </fieldset>
+    <fieldset class="field"><legend>Veröffentlichungstage</legend><div id="f-pub" class="checks"></div></fieldset>
+    <fieldset class="field"><legend>Produktionstage (Drehs)</legend><div id="f-prod" class="checks"></div></fieldset>
+    <div class="field-row">
+      <label class="field"><span>Schon belegte Veröffentlichungstermine (einer pro Zeile)</span><textarea id="f-ex-pub" rows="3" placeholder="2026-11-05"></textarea></label>
+      <label class="field"><span>Schon gebuchte Drehtage (einer pro Zeile)</span><textarea id="f-ex-shoot" rows="3" placeholder="2026-11-12"></textarea></label>
+    </div>
+    <p class="fine">Format JJJJ-MM-TT. Der Planer kennt nur diese Termine: Ihren Kalender, Feiertage, Urlaub oder die Verfügbarkeit von Personen sieht er nicht. (max. <span id="f-existing-max"></span>)</p>
+    <div class="field-row">
+      <label class="check"><input id="f-weekends" type="checkbox" checked><span>Vorbereitungsschritte nicht aufs Wochenende legen</span></label>
+      <label class="field small"><span>Drehbeginn</span><input id="f-start" type="time" value="09:00"></label>
+    </div>
+    <label class="field"><span>Feiertage (keine Veröffentlichung, kein Dreh und keine Vorbereitung an diesen Tagen)</span><select id="f-region"></select></label>
+    <p class="note">Die Grenzen kommen vom Dienst selbst: Die kostenlose Prüfung sagt, ob Zeitraum oder Anzahl zu groß sind.</p>
+    <div class="cta">
+      <button type="submit" class="btn primary" id="btn-check" data-busy-lock>Eingabe kostenlos prüfen</button>
+      <label class="btn filebtn">Gespeicherten Plan öffnen (.json)<input id="f-load" type="file" accept="application/json,.json"></label>
+    </div>
+    <p id="plan-msg" class="fine" role="status" aria-live="polite"></p>
+  </form>
+  <div id="buy-plan" class="buybox" hidden>
+    <p data-price></p>
+    <label class="check"><input type="checkbox"><span data-approve-label></span></label>
+    <div class="cta"><button type="button" class="btn primary" id="btn-buy-plan" data-busy-lock>Diesen Plan mit Wallet kaufen</button><button type="button" class="btn" id="btn-cancel-plan" data-busy-lock>Abbrechen</button></div>
+    <details><summary>Expertenansicht: genaue Anfrage (JSON)</summary><pre><code data-expert></code></pre></details>
+    <p class="fine">Ihre Wallet zeigt Betrag und Empfänger nochmals an und fragt nach Bestätigung. Ist der Ausgang unklar, nicht erneut bezahlen: Die Seite ruft dann nur das vorhandene Ergebnis ab.</p>
+  </div>
+</section>
+
+<section id="plan-view" class="wrap" hidden>
+  <h2 class="no-print">2. Ihr Plan</h2>
+  <p class="no-print"><span id="plan-status" class="status"></span> <span id="plan-meta" class="fine"></span></p>
+  <div class="cta no-print">
+    <button type="button" class="btn" id="dl-ics">Kalender herunterladen (.ics)</button>
+    <button type="button" class="btn" id="dl-plan">Plan als Datei speichern</button>
+    <button type="button" class="btn" id="dl-receipt" hidden>Kaufbeleg (privat)</button>
+    <button type="button" class="btn" id="btn-restore" hidden>Zurück zum Ausgangsplan</button>
+  </div>
+  <p class="fine no-print">Die Plan-Datei enthält nur den Plan, nie Zahlungsdaten oder Ergebnisschlüssel. Den privaten Kaufbeleg getrennt aufbewahren: Damit lässt sich das bezahlte Ergebnis 30 Tage lang erneut abrufen.</p>
+  <div class="no-print">
+    <h3>Beiträge und Terminkette (erledigte Schritte abhaken)</h3><div id="plan-list"></div>
+    <h3>Drehtage</h3><div id="plan-days" class="grid"></div>
+    <h3>Kalender</h3><div id="plan-calendar"></div>
+    <h3>Konflikte und Hinweise</h3><div id="plan-conflicts"></div>
+    <h3>Drehbuch-Infos</h3><p class="fine">Für Beiträge mit Vorlage können Sie Einstieg, Einstellungen, Interviewfragen und Ausrüstung kaufen, jeweils für einen Beitrag.</p>
+    <p id="script-msg" class="fine" role="status" aria-live="polite"></p>
+    <div id="buy-script" class="buybox" hidden>
+      <p data-price></p>
+      <label class="check"><input type="checkbox"><span data-approve-label></span></label>
+      <div class="cta"><button type="button" class="btn primary" id="btn-buy-script" data-busy-lock>Drehbuch-Infos mit Wallet kaufen</button><button type="button" class="btn" id="btn-cancel-script" data-busy-lock>Abbrechen</button></div>
+    </div>
+  </div>
+</section>
+
+<section id="shift" class="wrap no-print" hidden>
+  <h2>3. Termin verschieben <span class="price" id="price-shift"></span></h2>
+  <p class="sub">Jede Verschiebung ist ein eigener Kauf. Abhängige Termine ziehen mit, gemeinsame Drehtage bewegen sich zusammen, abgehakte Schritte bleiben. Wochenenden, Feiertage und Kapazitäten werden nicht geprüft. Sie prüfen das Ergebnis, bevor es Ihren Plan ändert.</p>
+  <form id="shift-form" class="tester" novalidate>
+    <div class="field-row">
+      <label class="field"><span>Beitrag</span><select id="s-post"></select></label>
+      <label class="field"><span>Schritt</span><select id="s-step"></select></label>
+      <label class="field"><span>Neues Datum</span><input id="s-date" type="date" required></label>
+    </div>
+    <label class="field" id="s-publish-mode-box" hidden><span>Wenn die Veröffentlichung verschoben wird</span><select id="s-publish-mode"><option value="shift_all">Offene Schritte um gleich viele Tage mitverschieben</option><option value="only_publish">Nur den Veröffentlichungstermin verschieben</option></select></label>
+    <label class="field" id="s-shoot-mode-box" hidden><span>Bei gemeinsamem Drehtag</span><select id="s-shoot-mode"><option value="group">Ganzen Drehtag verschieben</option><option value="detach">Nur diesen Beitrag verschieben (Gruppe verlassen)</option></select></label>
+    <div class="cta"><button type="submit" class="btn primary" id="btn-shift-check" data-busy-lock>Verschiebung kostenlos prüfen</button></div>
+    <p id="shift-msg" class="fine" role="status" aria-live="polite"></p>
+  </form>
+  <div id="buy-shift" class="buybox" hidden>
+    <p data-price></p>
+    <label class="check"><input type="checkbox"><span data-approve-label></span></label>
+    <div class="cta"><button type="button" class="btn primary" id="btn-buy-shift" data-busy-lock>Diese Verschiebung mit Wallet kaufen</button><button type="button" class="btn" id="btn-cancel-shift" data-busy-lock>Abbrechen</button></div>
+    <details><summary>Expertenansicht: genaue Anfrage (JSON)</summary><pre><code data-expert></code></pre></details>
+  </div>
+  <div id="shift-review" class="buybox" hidden>
+    <h3>Änderungen prüfen</h3>
+    <p id="shift-confirm-note" class="note"></p>
+    <div id="shift-changes"></div>
+    <h3>Konflikte und Hinweise</h3><div id="shift-conflicts"></div>
+    <p id="shift-note" class="fine"></p>
+    <div class="cta"><button type="button" class="btn primary" id="btn-apply-shift">In meinen Plan übernehmen</button><button type="button" class="btn" id="btn-discard-shift">Verwerfen</button></div>
+  </div>
+</section>
+
+<section id="report-setup" class="wrap no-print" hidden>
+  <h2>4. Kundenbericht</h2>
+  <p class="sub">Eine saubere Übersicht für Ihren Kunden: Zeitraum, Beiträge, Drehtage, Termine, Konflikte, nächste Entscheidungen und Datengrundlage. Der Titel bleibt in Ihrem Browser. Drucken oder im Druckdialog als PDF speichern.</p>
+  <label class="field"><span>Projekt- oder Kundentitel (optional, bleibt lokal)</span><input id="r-title" type="text" maxlength="120" autocomplete="off"></label>
+  <div class="field-row">
+    <label class="field"><span>Agenturlogo für den Bericht (PNG, JPG oder WebP, max. 1 MB)</span><input id="r-logo" type="file" accept="image/png,image/jpeg,image/webp"></label>
+    <label class="field small"><span>Akzentfarbe</span><input id="r-color" type="color" value="#ec6b01"></label>
+  </div>
+  <p class="fine">Das Logo bleibt in diesem Browser: Es wird nicht hochgeladen, nicht an uns gesendet und nicht in der Plan-Datei gespeichert. Verwendet werden nur die reinen Bildpunkte. <button type="button" class="btn small" id="btn-logo-remove">Logo entfernen</button></p>
+  <div class="cta"><button type="button" class="btn" id="btn-report">Bericht anzeigen</button><button type="button" class="btn primary" id="btn-print">Drucken / als PDF speichern</button></div>
+  <p id="report-msg" class="fine" role="status" aria-live="polite"></p>
+</section>
+<section id="report" class="wrap report" hidden></section>
+</main>
+<footer class="no-print">
+  <div class="wrap foot">
+    <div><strong>{{NAME}}</strong><br><span class="fine"><a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a></span></div>
+    <div class="fine"><a href="/legal-de.html#datenschutz">Datenschutz</a> · <a href="/status">Status</a></div>
+  </div>
+</footer>
+<script src="/agentur.js" defer></script>
+<script src="/planner.js" defer></script>
+</body>
+</html>

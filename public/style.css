@@ -180,3 +180,62 @@ th { font: 500 10px/1.6 var(--body); letter-spacing: 0.2em; text-transform: uppe
 
 /* Task guides keep copyable prose readable on narrow screens. */
 .task-page pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* Content planner */
+.planner-page [hidden] { display: none !important; } /* buttons are display:inline-flex, which would override the hidden attribute */
+.planner-page fieldset.field { border: 1px solid var(--line); padding: 12px 14px 14px; margin: 0 0 14px; }
+.planner-page legend { padding: 0 6px; color: var(--mute); font-size: 0.9rem; }
+.checks { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 6px 0 4px; }
+.check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.planner-page .check input { accent-color: var(--or); width: 16px; height: 16px; padding: 0; margin: 0; flex: none; }
+.field.small { max-width: 220px; }
+.wrapgrid { flex-wrap: wrap; }
+.filebtn { position: relative; overflow: hidden; }
+.filebtn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.buybox { border: 1px solid var(--line-strong); background: var(--s1); padding: 16px 18px; margin: 14px 0; }
+.buybox pre { max-height: 280px; overflow: auto; }
+.status.ok { color: var(--ok); } .status.bad { color: var(--err); }
+#plan-status { font-weight: 650; }
+.chain { display: flex; flex-wrap: wrap; gap: 6px; }
+.chain .step { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); padding: 3px 8px; font-size: 0.82rem; white-space: nowrap; }
+.chain .step b { font-weight: 600; color: var(--mute); }
+.chain .step.done { border-color: var(--ok); }
+.chain .step.done span { text-decoration: line-through; color: var(--mute); }
+.schedule { margin: 6px 0 0; padding-left: 18px; font-size: 0.85rem; color: var(--mute); }
+.calgrid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; margin-bottom: 18px; }
+.calhead { font-size: 0.75rem; color: var(--mute); text-transform: uppercase; padding: 4px; }
+.calcell { min-height: 78px; background: var(--s1); border: 1px solid var(--line); padding: 4px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.calcell.out { opacity: 0.35; }
+.calday { font-size: 0.72rem; color: var(--low); }
+.ev { font-size: 0.7rem; line-height: 1.25; padding: 2px 4px; border-left: 3px solid var(--line-strong); background: var(--s2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ev-concept { border-color: var(--mute); } .ev-shoot { border-color: var(--or); } .ev-edit { border-color: #7aa7d9; } .ev-review { border-color: var(--warn); } .ev-publish { border-color: var(--ok); }
+.ev.done { opacity: 0.5; text-decoration: line-through; }
+.report { background: #fff; color: #111; padding: 28px; }
+.report h1, .report h2 { color: #111; }
+.report table, .report th, .report td { color: #111; border-color: #ccc; }
+.report .fine { color: #444; }
+.btn.small { min-height: 32px; padding: 0 12px; font-size: 10px; margin-top: 6px; }
+.calcell.hol { background: #1d1410; }
+.calcell.hol .calday { color: var(--or); }
+details.script { margin-top: 6px; font-size: 0.85rem; }
+details.script h4 { margin: 10px 0 4px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mute); }
+details.script ul { margin: 0; padding-left: 18px; }
+.report-logo { display: block; max-width: 240px; max-height: 80px; margin-bottom: 18px; }
+.report h1, .report h2 { border-left: 4px solid var(--report-accent, #ec6b01); padding-left: 10px; }
+.report details.script summary { color: #111; }
+.report details.script h4 { color: #555; }
+@media (max-width: 640px) {
+  .planner-page nav a:nth-child(n+3) { display: none; }
+  .calgrid { grid-template-columns: 1fr; }
+  .calhead, .calcell.out { display: none; }
+  .calcell { min-height: 0; }
+}
+@media print {
+  body { background: #fff; color: #111; }
+  .no-print, .hero::before { display: none !important; }
+  .report { display: block !important; padding: 0; }
+  .report table { page-break-inside: auto; font-size: 10pt; }
+  .report tr { page-break-inside: avoid; }
+  .report h2 { page-break-after: avoid; margin-top: 18px; }
+  .tablewrap { overflow: visible; max-height: none; border: 0; }
+}
