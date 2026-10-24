@@ -3,7 +3,7 @@ import { inputJsonSchema, toolNameOf } from "../services/common.js";
 import type { Pipeline } from "../services/pipeline.js";
 import type { ServiceDefinition } from "../services/types.js";
 
-export const API_VERSION = "0.1.0";
+export const API_VERSION = "0.2.0";
 
 export interface OpenApiDeps {
   /** True when the free sample route is active. */

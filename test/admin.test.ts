@@ -170,11 +170,11 @@ describe("/admin", () => {
       const res = await fetch(base + file);
       expect(res.status, file).toBe(200);
       const text = await res.text();
-      expect(text.length, file).toBeLessThan(20_000);
+      expect(text.length, file).toBeLessThan(30_000);
       expect(text, file).not.toContain(PASSWORD);
       expect(text, file).not.toMatch(/0x[0-9a-fA-F]{40}|XMLHttpRequest|sendBeacon|https?:\/\/(?!www\.w3\.org\/2000\/svg)/);
-      // The only network call allowed: the same-origin insights JSON (behind the same Basic auth).
-      expect([...text.matchAll(/fetch\(([^,)]*)/g)].map((m) => m[1]!.trim()), file).toEqual(file === "/admin.js" ? ['"/admin/insights.json"'] : []);
+      // The only network calls allowed: the same-origin insights and live JSON (behind the same Basic auth).
+      expect([...text.matchAll(/fetch\(([^,)]*)/g)].map((m) => m[1]!.trim()), file).toEqual(file === "/admin.js" ? ['"/admin/insights.json"', '"/admin/live.json"'] : []);
     }
   });
 });
@@ -202,7 +202,7 @@ describe("/admin insights", () => {
     expect(d.locations.find((l: any) => l.location_code === 1004269).name).toMatch(/Rosenheim/);
     expect(JSON.stringify(d)).not.toMatch(/0xCUSTOMER|0xTEST/);
     const html = await (await fetch(base + "/admin", { headers: { authorization: basic("boss", PASSWORD) } })).text();
-    expect(html).toContain("Insights (live)");
+    expect(html).toContain("Trends (live, 30 days)");
   });
 });
 
@@ -231,5 +231,61 @@ describe("admin hides test data without deleting it", () => {
     expect(store.get("own1")).toBeTruthy();
     expect(store.get("test1")).toBeTruthy();
     expect(store.get("real1")).toBeTruthy();
+  });
+});
+
+describe("admin live panel and anonymous page counters", () => {
+  it("counts page views per group without personal data and shows them in the live data", async () => {
+    const { app, store } = buildTestApp({ fetchImpl: routedUpstream([]).impl, env: adminEnv });
+    const base = await start(app);
+    const browser = { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Safari/605.1.15" };
+    expect((await fetch(base + "/", { headers: browser })).status).toBe(200);
+    expect((await fetch(base + "/de/", { headers: browser })).status).toBe(200);
+    expect((await fetch(base + "/status", { headers: { "user-agent": "curl/8.0" } })).status).toBe(200);
+    await fetch(base + "/does-not-exist", { headers: browser });
+    await fetch(base + "/admin/", { headers: browser }); // 401 and never a counted page
+    const rows = store.countersDaily(new Date().toISOString().slice(0, 10));
+    const n = (k: string) => rows.filter((r) => r.kind === k).reduce((a, r) => a + Number(r.n), 0);
+    expect(n("view_home_human")).toBe(2);
+    expect(n("view_status_bot")).toBe(1);
+    expect(rows.map((r) => r.kind).filter((k) => k.startsWith("view_"))).toEqual(expect.not.arrayContaining(["view_admin_human"]));
+    expect(JSON.stringify(rows)).not.toMatch(/Mozilla|curl|127\.0\.0\.1|::1/);
+    expect((await fetch(base + "/admin/live.json")).status).toBe(401);
+    const live = await (await fetch(base + "/admin/live.json", { headers: { authorization: basic("boss", PASSWORD) } })).json();
+    expect(live.today).toMatchObject({ site_views_human: 2, site_views_bot: 1, revenue_usdc: 0, paid_calls: 0 });
+    expect(live.hourly).toHaveLength(24);
+    expect(live.pages.find((p: any) => p.page === "home")).toMatchObject({ human: 2, bot: 0 });
+  });
+
+  it("shows revenue, hourly figures, the live feed and the service split from the ledger; hides test wallets and testnet rows", async () => {
+    const OWN = "0xe6a2dddb4c395a393e6035d7194119f62c969fad";
+    const { app, store } = buildTestApp({ fetchImpl: routedUpstream([]).impl, env: { ...adminEnv, PAYMENT_MODE: "mainnet", NODE_ENV: "production", PUBLIC_BASE_URL: "https://x.example.com", TRUST_PROXY: "1", ADMIN_PASSWORD: PASSWORD, DATAFORSEO_MODE: "live", ADMIN_EXCLUDE_PAYERS: OWN, CDP_API_KEY_ID: "id", CDP_API_KEY_SECRET: "secret" } });
+    const row = (id: string, payer: string, network: string, price: number) => {
+      store.claim({ id, service_id: "google-serp", data_source: "live", price_usdc: price, payment_key: "pk" + id, network, payer, input_hash: "h", input_json: "{}", result_token_hash: "t" });
+      store.setSettled(id, "0x" + id, payer);
+      store.complete(id, { resultJson: "{}", upstreamCostUsd: 0.002, cacheHit: false });
+    };
+    row("a1", "0x2222222222222222222222222222222222222222", "eip155:8453", 0.025);
+    row("a2", "0x3333333333333333333333333333333333333333", "eip155:8453", 0.04);
+    row("t1", "0x4444444444444444444444444444444444444444", "eip155:84532", 0.5);
+    row("o1", OWN, "eip155:8453", 0.5);
+    store.bump("google-serp", "payment_required");
+    const base = await start(app);
+    const live = await (await fetch(base + "/admin/live.json", { headers: { authorization: basic("boss", PASSWORD) } })).json();
+    expect(live.today.revenue_usdc).toBeCloseTo(0.065);
+    expect(live.today).toMatchObject({ paid_calls: 2, buyers: 2, new_buyers: 2, quotes: 1 });
+    expect(live.today.margin_usd).toBeCloseTo(0.065 - 0.004);
+    expect(live.month).toMatchObject({ paid_calls: 2 });
+    expect(live.hourly.reduce((a: number, h: any) => a + h.paid, 0)).toBe(2);
+    expect(live.recent.map((r: any) => r.id).sort()).toEqual(["a1", "a2"]);
+    expect(live.by_service[0]).toMatchObject({ id: "google-serp", paid: 2, quotes: 1 });
+    expect(JSON.stringify(live)).not.toMatch(/0x2222222222222222222222222222222222222222|0xe6a2/); // wallets only shortened
+    const html = await (await fetch(base + "/admin", { headers: { authorization: basic("boss", PASSWORD) } })).text();
+    const page = await fetch(base + "/admin", { headers: { authorization: basic("boss", PASSWORD) } });
+    expect(page.headers.get("content-security-policy")).toContain("connect-src 'self'"); // the live panel and trends fetch same-origin JSON
+    expect(html).toContain('id="live"');
+    expect(html).toContain('id="lbigval"');
+    expect(html).toMatch(/<a href="#money">Money<\/a>/);
+    expect(html).not.toMatch(/ style=|<script(?![^>]*src=)/); // no inline styles or scripts under the CSP
   });
 });

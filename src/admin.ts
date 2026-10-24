@@ -3,6 +3,7 @@ import express, { type RequestHandler, type Router } from "express";
 import type { Env } from "./config/env.js";
 import { FACILITATOR_FEE_USD } from "./config/services.js";
 import { buildInsights } from "./adminInsights.js";
+import { buildLive, type Live } from "./adminLive.js";
 import { FailureThrottle } from "./lib/rateLimit.js";
 import { today, type Store } from "./lib/store.js";
 import type { Pipeline } from "./services/pipeline.js";
@@ -147,7 +148,81 @@ function meter(label: string, spent: number, limit: number): string {
   return `<div class="meterrow"><div class="meterhead"><span>${esc(label)}</span><span><strong>$${usd(spent)}</strong> of $${esc(limit)} · ${pct.toFixed(0)}%</span></div><svg class="meter" viewBox="0 0 100 6" preserveAspectRatio="none" role="img" aria-label="${esc(label)} ${pct.toFixed(0)} percent"><rect class="meter-bg" width="100" height="6"/><rect class="meter-fill ${level}" width="${pct.toFixed(1)}" height="6"/></svg></div>`;
 }
 
-function renderPage(env: Env, st: Stats): string {
+
+/** Live panel (server-rendered first, then refreshed by admin.js every few seconds). Numbers carry data-v for the count-up animation. */
+const TILE_DEFS: { key: keyof Live["today"]; label: string; unit?: "usdc" | "usd"; good?: "up" | "down" }[] = [
+  { key: "revenue_usdc", label: "Revenue", unit: "usdc" },
+  { key: "paid_calls", label: "Paid calls" },
+  { key: "buyers", label: "Buyers" },
+  { key: "new_buyers", label: "New buyers" },
+  { key: "requests", label: "Requests (all)" },
+  { key: "margin_usd", label: "Margin", unit: "usd" },
+  { key: "quotes", label: "Price quotes (402)" },
+  { key: "free_samples", label: "Free samples" },
+  { key: "mcp_calls", label: "MCP calls" },
+  { key: "site_views_human", label: "Website visits" },
+  { key: "site_views_bot", label: "Bot / crawler visits" },
+  { key: "failed", label: "Failed paid calls", good: "down" },
+];
+const fmtTile = (v: number, unit?: string) => (unit ? (unit === "usdc" ? v.toFixed(3) : v.toFixed(3)) : String(Math.round(v)));
+
+function livePanel(live: Live): string {
+  const tile = (d: (typeof TILE_DEFS)[number]) => {
+    const v = Number(live.today[d.key]);
+    const y = Number(live.yesterday[d.key]);
+    return `<div class="ltile" data-key="${d.key}"><span class="klabel">${esc(d.label)}</span><span class="lval${d.unit ? " dec" : ""}" data-v="${v}">${esc(fmtTile(v, d.unit))}</span><span class="lsub" data-y="${y}" data-good="${d.good ?? "up"}">yesterday ${esc(fmtTile(y, d.unit))}</span></div>`;
+  };
+  const peak = Math.max(0.0001, ...live.hourly.map((h) => h.revenue_usdc), ...live.hourly_yesterday_revenue);
+  const bars = live.hourly
+    .map((h, i) => {
+      const hh = (h.revenue_usdc / peak) * 56;
+      const rq = Math.min(56, h.requests * 4);
+      return `<g class="hr" data-hour="${i}"><title>${String(i).padStart(2, "0")}:00 UTC: ${usd(h.revenue_usdc)} USDC, ${h.paid} paid, ${h.requests} requests</title><rect class="hq" x="${i * 12 + 1}" y="${(60 - rq).toFixed(1)}" width="10" height="${rq.toFixed(1)}"/><rect class="hp" x="${i * 12 + 1}" y="${(60 - hh).toFixed(1)}" width="10" height="${hh.toFixed(1)}"/></g>`;
+    })
+    .join("");
+  return `<section id="live" class="live" aria-label="Live overview">
+  <div class="lstrip">
+    <span class="livebadge"><span class="dot"></span>LIVE</span>
+    <span class="lclock" id="lclock">${esc(live.generated_at.slice(11, 19))} UTC</span>
+    <span class="fine" id="lupdated">updated just now</span>
+    <svg class="ring" viewBox="0 0 20 20" role="img" aria-label="Next refresh"><circle class="ring-bg" cx="10" cy="10" r="8"/><circle class="ring-fg" id="lring" cx="10" cy="10" r="8"/></svg>
+    <span class="lspacer"></span>
+    <span class="pill">${esc(live.mode.payments)}</span><span class="pill">${esc(live.mode.data_source)} data</span>
+    <span class="pill" id="luptime">uptime today ${esc(live.uptime_today_pct)} %</span>
+    <span class="pill ${live.needs_attention ? "alert" : ""}" id="lattention">${live.needs_attention ? `${live.needs_attention} need attention` : "all clear"}</span>
+  </div>
+  <div class="lhero">
+    <div class="lbig"><span class="klabel">Revenue today (USDC, settled)</span><span class="lbigval" id="lbigval" data-v="${live.today.revenue_usdc}">${esc(live.today.revenue_usdc.toFixed(3))}</span>
+      <span class="lsub" id="lbigsub">this month ${esc(live.month.revenue_usdc.toFixed(3))} USDC · ${esc(live.month.paid_calls)} paid calls</span></div>
+    <div class="lchart"><span class="klabel">Today by hour (UTC): revenue bars, requests behind</span>
+      <svg class="hourly" id="lhourly" viewBox="0 0 288 60" preserveAspectRatio="none" role="img" aria-label="Revenue and requests per hour today">${bars}</svg>
+      <div class="hlabels"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div></div>
+  </div>
+  <div class="ltiles" id="ltiles">${TILE_DEFS.map(tile).join("")}</div>
+  <div class="lcols">
+    <div class="lbox"><h3>Live feed</h3><ul class="feed" id="lfeed">${live.recent.map(feedItem).join("") || '<li class="empty">No requests yet.</li>'}</ul></div>
+    <div class="lbox"><h3>Today by service</h3><div id="lservices">${liveServices(live)}</div><h3>Website visits today</h3><div id="lpages">${livePages(live)}</div></div>
+  </div>
+  <noscript><p class="fine">Enable JavaScript for the live refresh. The numbers above are from the page load.</p></noscript>
+</section>`;
+}
+function feedItem(r: Live["recent"][number]): string {
+  const kind = r.paid ? (r.real ? "paid" : "test") : r.price_usdc === 0 ? "free" : "other";
+  const label = kind === "paid" ? `${usd(r.price_usdc)} USDC` : kind === "test" ? "testnet" : "free";
+  return `<li class="fi ${kind} ${r.status === "failed" ? "fail" : ""}" data-id="${esc(r.id)}"><span class="ft">${esc(r.time.slice(11, 19))}</span><span class="fs">${esc(r.service)}</span><span class="fp">${esc(label)}</span><span class="fw">${esc(r.payer ?? "")}</span><span class="fst">${esc(r.status)}${r.cached ? " · cache" : ""}${r.error ? ` · ${esc(r.error)}` : ""}</span></li>`;
+}
+function liveServices(live: Live): string {
+  if (!live.by_service.length) return '<p class="empty">Nothing yet today.</p>';
+  const max = Math.max(1, ...live.by_service.map((s) => s.quotes + s.paid + s.free_samples));
+  return live.by_service.map((s) => `<div class="srow"><span class="sname">${esc(s.id)}</span><svg class="sbar" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true"><rect class="sb-q" width="${(((s.quotes + s.paid + s.free_samples) / max) * 100).toFixed(1)}" height="6"/><rect class="sb-p" width="${((s.paid / max) * 100).toFixed(1)}" height="6"/></svg><span class="snum">${s.paid} paid · ${s.quotes} quotes · ${s.free_samples} free · ${usd(s.revenue_usdc)}</span></div>`).join("");
+}
+function livePages(live: Live): string {
+  const rows = live.pages.filter((p) => p.human || p.bot);
+  if (!rows.length) return '<p class="empty">No page views counted yet today.</p>';
+  return `<div class="tablewrap"><table><thead><tr><th>page</th><th>visitors</th><th>bots</th></tr></thead><tbody>${rows.map((p) => `<tr><td>${esc(p.page)}</td><td class="num">${p.human}</td><td class="num">${p.bot}</td></tr>`).join("")}</tbody></table></div>`;
+}
+
+function renderPage(env: Env, st: Stats, liveData: Live): string {
   const realSum = (p: Stats["day"], k: "revenue_usdc" | "paid" | "approx_margin_usd") =>
     p.per_network.filter((r) => r.real_money).reduce((a, r) => a + Number((r as Record<string, unknown>)[k] ?? 0), 0);
   const section = (p: Stats["day"]) => `
@@ -180,26 +255,14 @@ function renderPage(env: Env, st: Stats): string {
   const attention = st.needs_attention.length;
   const flagged = st.margins.filter((m) => m.flag).length;
   const monthMargin = realSum(st.month, "approx_margin_usd");
-  const body = [
-    panel("DataForSEO budget", meter("Today", st.budget.daily_spent_usd, st.budget.daily_limit_usd) + meter("This month", st.budget.monthly_spent_usd, st.budget.monthly_limit_usd)),
-    panel(
-      "Needs attention",
-      `<p class="fine">Failed delivery or payment outcome pending. Candidates for a refund or a manual check against the chain.</p>` +
-        table(
-          ["created", "service", "status", "error", "retries", "price USDC", "network", "payer", "tx", "request id"],
-          st.needs_attention.map((r) => [r.created_at as string, r.service_id as string, tag(String(r.status ?? ""), "bad"), r.error_code as string, r.retries as number, r.price_usdc as number, r.network as string, mono(r.payer as string), mono(r.tx_hash as string), mono(r.id as string)]),
-        ),
-      { badge: attention ? String(attention) : "all clear", tone: attention ? "bad" : "" },
-    ),
-    panel(
-      "Insights (live)",
-      `<p class="fine">Trends from counters and the payment ledger. Real money only; own test wallets are excluded via ADMIN_EXCLUDE_PAYERS. Updates every 60 seconds. <span id="ins-updated"></span></p>
-      <div id="ins-kpis" class="kpis"></div>
-      <div id="ins-charts" class="ins-charts"></div>
-      <h3>Services, last 7 days</h3><div id="ins-services"></div>
-      <h3>Requested locations, last 30 days</h3><div id="ins-locations"></div>
-      <noscript><p class="fine">Enable JavaScript for live insights, or open <a href="/admin/insights.json">insights.json</a>.</p></noscript>`,
-    ),
+  const group = (id: string, title: string, intro: string, panels: string[]) => `<section id="${id}" class="group"><h2>${esc(title)}</h2><p class="fine group-intro">${esc(intro)}</p>${panels.join("\n")}</section>`;
+
+  const money = group("money", "Money", "Revenue, margin and buyers. Real money only; own test wallets are hidden.", [
+    `<div class="kpis">
+      ${kpi("Revenue this month", `${usd(realSum(st.month, "revenue_usdc"))} USDC`, `${realSum(st.month, "paid")} paid calls`)}
+      ${kpi("Margin this month", `$${usd(monthMargin)}`, "revenue − DataForSEO − fee", monthMargin < 0 ? "bad" : "")}
+      ${kpi("Buyers this month", String(st.buyers.buyers), `${st.buyers.repeat_buyers} repeat`)}
+    </div>`,
     panel("Last 30 days", chart(st.history) + `<p class="fine">Hover a bar for the numbers.</p>`),
     panel(
       "Margin and reliability per service",
@@ -226,30 +289,52 @@ function renderPage(env: Env, st: Stats): string {
         table(["wallet", "paid calls", "USDC", "last seen"], st.buyers.top.map((b) => [mono(b.payer), b.calls, usd(b.usdc), b.last_seen])) +
         `<p class="fine"><a href="/admin/payments.csv">Download this month as CSV</a> · other month: /admin/payments.csv?month=YYYY-MM</p>`,
     ),
+    panel("This month", section(st.month), { open: false }),
+  ]);
+
+  const traffic = group("traffic", "Traffic", "Who looks, who asks, who buys: website visits, price quotes, free samples, MCP use. Counters only, no IP addresses.", [
+    panel(
+      "Trends (live, 30 days)",
+      `<p class="fine">Daily counters and 7-day comparisons. Website visits are counted anonymously per page group (browser or bot guess). Updates every 60 seconds. <span id="ins-updated"></span></p>
+      <div id="ins-kpis" class="kpis"></div>
+      <div id="ins-charts" class="ins-charts"></div>
+      <h3>Services, last 7 days</h3><div id="ins-services"></div>
+      <h3>Requested locations, last 30 days</h3><div id="ins-locations"></div>
+      <noscript><p class="fine">Enable JavaScript for live trends, or open <a href="/admin/insights.json">insights.json</a>.</p></noscript>`,
+    ),
     panel("Wishlist", `<p class="fine">What visitors would pay for (latest 50, untrusted text from the public, shown escaped).</p>` + table(["time", "wish"], st.wishes.map((w) => [w.created_at, w.text])), { open: false, badge: st.wishes.length ? String(st.wishes.length) : "" }),
     panel("Today", section(st.day), { open: false }),
-    panel("This month", section(st.month), { open: false }),
+  ]);
+
+  const operations = group("operations", "Operations", "Failed payments to check, the DataForSEO budget and the service list.", [
+    panel(
+      "Needs attention",
+      `<p class="fine">Failed delivery or payment outcome pending. Candidates for a refund or a manual check against the chain.</p>` +
+        table(
+          ["created", "service", "status", "error", "retries", "price USDC", "network", "payer", "tx", "request id"],
+          st.needs_attention.map((r) => [r.created_at as string, r.service_id as string, tag(String(r.status ?? ""), "bad"), r.error_code as string, r.retries as number, r.price_usdc as number, r.network as string, mono(r.payer as string), mono(r.tx_hash as string), mono(r.id as string)]),
+        ),
+      { badge: attention ? String(attention) : "all clear", tone: attention ? "bad" : "" },
+    ),
+    panel("DataForSEO budget", meter("Today", st.budget.daily_spent_usd, st.budget.daily_limit_usd) + meter("This month", st.budget.monthly_spent_usd, st.budget.monthly_limit_usd)),
     panel("Services", table(["service", "price USDC", "enabled"], st.services.map((s) => [s.id, s.price_usdc, s.enabled ? tag("yes", "ok") : tag("no", "bad")])), { open: false }),
-  ].join("\n");
+  ]);
 
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><title>Admin – ${esc(env.SITE_NAME)}</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/admin.css"><script src="/admin.js" defer></script></head>
-<body class="admin"><header class="top"><div class="wrap bar"><span class="brand"><img src="/logo-white.png" alt="Chiemgau Films" width="62" height="30"><span class="brandname">${esc(env.SITE_NAME)} · admin</span></span><span class="modes"><span class="pill">${esc(st.mode.payments)}</span><span class="pill">${esc(st.mode.data_source)} data</span></span></div></header>
+<body class="admin"><header class="top"><div class="wrap bar"><span class="brand"><img src="/logo-white.png" alt="Chiemgau Films" width="62" height="30"><span class="brandname">${esc(env.SITE_NAME)} · admin</span></span>
+<nav class="anchors" aria-label="Sections"><a href="#live">Live</a><a href="#money">Money</a><a href="#traffic">Traffic</a><a href="#operations">Operations</a></nav></div></header>
 <main class="wrap wide">
-  <div class="kpis">
-    ${kpi("Paid today", String(realSum(st.day, "paid")), `${usd(realSum(st.day, "revenue_usdc"))} USDC`)}
-    ${kpi("Revenue this month", `${usd(realSum(st.month, "revenue_usdc"))} USDC`, `${realSum(st.month, "paid")} paid calls`)}
-    ${kpi("Margin this month", `$${usd(monthMargin)}`, "revenue − DataForSEO − fee", monthMargin < 0 ? "bad" : "")}
-    ${kpi("Buyers this month", String(st.buyers.buyers), `${st.buyers.repeat_buyers} repeat`)}
-    ${kpi("Needs attention", String(attention), attention ? "check below" : "all clear", attention ? "bad" : "")}
-  </div>
+  ${livePanel(liveData)}
   <div class="toolbar">
     <input id="q" type="search" placeholder="Search all tables: service, wallet, tx, status …" autocomplete="off" aria-label="Search tables">
     <span id="qcount" class="fine"></span>
     <button type="button" id="expand">Expand all</button><button type="button" id="collapse">Collapse all</button>
-    <span class="fine">Generated ${esc(st.generated_at)} · <a href="/admin/stats.json">stats.json</a></span>
+    <span class="fine">Generated ${esc(st.generated_at)} · <a href="/admin/stats.json">stats.json</a> · <a href="/admin/live.json">live.json</a></span>
   </div>
-  ${body}
+  ${money}
+  ${traffic}
+  ${operations}
 </main></body></html>`;
 }
 
@@ -276,8 +361,8 @@ export function createAdminRouter(deps: { env: Env; store: Store; pipeline: Pipe
   router.use(enabled, auth);
 
   router.get("/", (_req, res) => {
-    res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'self'; font-src 'self'; img-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'");
-    res.type("html").send(renderPage(env, buildAdminStats(env, store, pipeline)));
+    res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'self'; font-src 'self'; img-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'");
+    res.type("html").send(renderPage(env, buildAdminStats(env, store, pipeline), buildLive(env, store, pipeline)));
   });
   router.get("/payments.csv", (req, res) => {
     const asked = typeof req.query.month === "string" ? req.query.month : "";
@@ -290,6 +375,9 @@ export function createAdminRouter(deps: { env: Env; store: Store; pipeline: Pipe
     const rows = store.paymentsOfMonth(month).map((r) => [r.created_at, r.service_id, r.price_usdc, "USDC", r.network, r.payer, r.tx_hash, r.status].map(cell).join(","));
     res.setHeader("Content-Disposition", `attachment; filename="payments-${month}.csv"`);
     res.type("text/csv").send(["time_utc,service,amount,asset,network,payer,tx_hash,status", ...rows].join("\n") + "\n");
+  });
+  router.get("/live.json", (_req, res) => {
+    res.json(buildLive(env, store, pipeline));
   });
   router.get("/insights.json", (_req, res) => {
     res.json(buildInsights(env, store, pipeline));

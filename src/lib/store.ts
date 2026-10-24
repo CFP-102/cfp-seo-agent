@@ -525,6 +525,35 @@ export class Store {
       .all(since) as { loc: number | null; n: number }[];
   }
 
+  /** Admin live panel: requests and settled real-money payments per UTC hour of one day ("YYYY-MM-DD"). */
+  hourly(day: string) {
+    const rows = this.db
+      .prepare(
+        `SELECT CAST(substr(created_at, 12, 2) AS INTEGER) AS hour, COUNT(*) AS requests,
+                SUM(CASE WHEN tx_hash IS NOT NULL THEN 1 ELSE 0 END) AS paid,
+                COALESCE(SUM(CASE WHEN tx_hash IS NOT NULL AND network = ? THEN price_usdc ELSE 0 END), 0) AS revenue_usdc
+         FROM admin_requests WHERE substr(created_at, 1, 10) = ? GROUP BY hour`,
+      )
+      .all(MAINNET_NETWORK, day) as { hour: number; requests: number; paid: number; revenue_usdc: number }[];
+    const byHour = new Map(rows.map((r) => [r.hour, r]));
+    return Array.from({ length: 24 }, (_, hour) => byHour.get(hour) ?? { hour, requests: 0, paid: 0, revenue_usdc: 0 });
+  }
+
+  /** Admin live panel: the latest requests (no input, no result), newest first. */
+  recentRequests(limit = 14) {
+    return this.db
+      .prepare(
+        `SELECT id, created_at, service_id, status, price_usdc, network, payer, data_source, cache_hit, error_code, tx_hash IS NOT NULL AS paid
+         FROM admin_requests ORDER BY created_at DESC LIMIT ?`,
+      )
+      .all(limit) as { id: string; created_at: string; service_id: string; status: string; price_usdc: number; network: string | null; payer: string | null; data_source: string; cache_hit: number; error_code: string | null; paid: number }[];
+  }
+
+  /** Minutes the server was up on one UTC day, from the heartbeats. */
+  minutesUp(day: string): number {
+    return this.heartbeatsBetween(`${day}T00:00`, `${day}T23:59`);
+  }
+
   /** Settled real-money payments of one month ("YYYY-MM") for bookkeeping, oldest first. */
   paymentsOfMonth(month: string) {
     return this.db

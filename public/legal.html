@@ -64,6 +64,7 @@
     To prevent overload and abuse (per-minute request limits and blocking after repeated failed logins to the operator area), the address (only the network prefix for IPv6) is held <strong>only in memory</strong> for a few minutes and then discarded; it is neither written to disk nor logged.
     <strong>Free sample:</strong> To limit free samples to one per user and service per day, the address (network prefix for IPv6) is held only in memory until the end of the day (UTC) and discarded on service restart. The input of a sample is treated like other request inputs (section 4).
     <strong>Wishlist:</strong> For the free wishlist (up to three submissions per user per day), the address (network prefix for IPv6) is also held only in memory until the end of the day (UTC) and discarded on restart.
+    <strong>Page-view counters:</strong> For the public website pages we count visits anonymously: per day only a number per page group and visitor type (browser or bot, guessed from the user agent, which is not stored). No IP address, cookie, user agent or referrer is stored, and nothing is shared with third parties. The counters help the operator understand how much the site is used.
     Legal basis: Article 6(1)(f) GDPR (availability and security).
   </p>
   <p><strong>Web server access logs:</strong> Our reverse proxy (Caddy) logs the time, method, requested path, status code, response size and duration. <strong>No IP addresses, headers or request bodies</strong> are logged.

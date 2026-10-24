@@ -2,18 +2,103 @@
 
 [![TDQS](https://tdqs.dev/reports/akhiqdtjjd/badge.svg)](https://tdqs.dev/reports/akhiqdtjjd) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Pay-per-call SEO-Daten-APIs für KI-Agenten: DataForSEO als Datenquelle, Bezahlung per **x402 v2** in USDC auf Base.
-Ein Node.js-Service (Express + TypeScript) hinter Caddy, SQLite für Request-Ledger, kein LLM, keine GPU.
+**Pay-per-call data and planning APIs for AI agents.** No account, no API key: an agent pays per call in USDC on Base using the [x402](https://www.x402.org) protocol (v2). 31 services as REST, MCP and OpenAPI: SEO and web data (DataForSEO), open data, and content planning for agencies and video teams.
 
-## Projektstatus
+- Live: https://agent.chiemgaufilms.com (catalog: `/api/v1/services`, OpenAPI: `/openapi.json`, MCP: `/mcp`, agent hints: `/llms.txt`)
+- Built with Node.js, TypeScript, Express, SQLite, Docker and Caddy. No LLM, no GPU. B2B only.
+- Content services answer in **English or German**: send `"language": "en"` (default `de`).
 
-| Phase | Inhalt | Status |
+## How it works
+
+1. Call any service route without payment: you get HTTP `402` with the price and payment details.
+2. An x402 client signs a USDC payment (EIP-3009) and repeats the call with the `PAYMENT-SIGNATURE` header.
+3. Inputs are validated **before** any price is quoted. Payment is settled **before** the data is fetched, and one paid call triggers at most one upstream call (fixed packages are labelled).
+4. You get the result plus a `request_id` and `result_token` to fetch it again for 30 days. A failed upstream call can be retried once for free.
+
+Free (no payment): `list_services`, `preflight`, `find_location`, `wishlist`, `get_result`, `retry_request`, and one **free sample** per service and day for cheap single-call data services (up to 0.05 USDC).
+
+## Services
+
+**Content planning for agencies and video teams** (rule-based, no AI model, nothing is stored or written to a calendar)
+
+| Service | USDC | What you get |
 |---|---|---|
-| 1 | Grundgerüst, DataForSEO-Client, Keyword-Metrics mit Sandbox | ✅ fertig, Sandbox-Abnahme erfolgreich (2026-10-20) |
-| 2 | x402 Testnet-Zahlung, Settlement, E2E-Test | ✅ fertig, echte Base-Sepolia-Zahlung erfolgreich (2026-10-20) |
-| 3 | Restliche fünf Endpunkte | ✅ fertig, alle sechs per echter Base-Sepolia-Zahlung bestätigt (2026-10-21) |
-| 4 | MCP, OpenAPI, Discovery, Landingpage | ✅ fertig, MCP-Zahlung auf Base Sepolia für alle sechs Tools bestätigt (2026-10-21) |
-| 5 | Admin, Docker/Caddy, Sicherheitsprüfung, Mainnet-Vorbereitung, Marktplätze | ✅ Server mit HTTPS läuft im Testbetrieb (Testnet + Sandbox); Mainnet wartet auf deine Freigabe |
+| `video-project-plan` | 0.08 | One video job: reel ideas, one shoot day in your time window, call sheet, sun times, post-production to delivery |
+| `content-month-plan` | 0.05 | Content month: topics, publish dates, linked production dates, shoot days, .ics |
+| `content-plan-shift` | 0.02 | Move one date, linked dates follow |
+| `shoot-day-plan` | 0.03 | Up to 12 videos into realistic shoot days with timed schedule and checklist |
+| `video-recipes` | 0.01 | 75 video recipes with hook, shot list, questions, equipment (DE/EN) |
+| `shoot-location-check` | 0.04 | Package: sun times, DWD weather, Bavarian protected areas for a location and date |
+
+Example job: *"Recruiting reels for a metal workshop in Chieming, shoot on 20 Nov from 08:00 to 17:00, deliver by 23 Dec, 5-10 reel ideas"* is one `video-project-plan` call: ideas fitted to trade and town, a timed shoot day with reserve ideas, a call sheet, sun times, and post-production with feedback rounds, working days and Bavarian holidays.
+
+**SEO, web and open data**
+
+| Service | USDC | What you get |
+|---|---|---|
+| `keyword-metrics` | 0.12 | Google Ads search volume, CPC, competition, 12-month history, up to 1000 keywords |
+| `keyword-ideas` | 0.025 | Up to 25 keyword suggestions for one seed phrase |
+| `keyword-difficulty` | 0.04 | Keyword difficulty 0-100, up to 100 keywords |
+| `search-intent` | 0.04 | Search intent with probability, up to 10 keywords |
+| `ai-keyword-demand` | 0.04 | Modeled AI-search demand, up to 10 keywords |
+| `google-trends` | 0.025 | Google Trends over 12 months, up to 5 keywords |
+| `google-serp` | 0.025 | Top 10 organic Google results |
+| `bing-serp` | 0.02 | Top 10 organic Bing results |
+| `news-search` | 0.02 | Top 10 Google News results |
+| `image-search` | 0.02 | Up to 20 Google Images results |
+| `local-business` | 0.03 | Up to 20 Google Maps businesses for a query |
+| `competitors` | 0.04 | Up to 10 organic competitors of a domain |
+| `ranked-keywords` | 0.04 | Top 25 keywords a domain ranks for |
+| `keywords-for-site` | 0.04 | 25 relevant keywords for a website |
+| `keyword-gap` | 0.045 | Keywords a competitor ranks for and you do not |
+| `domain-overview` | 0.04 | Keyword count, traffic and ranking distribution of a domain |
+| `traffic-estimate` | 0.04 | Estimated traffic for up to 10 domains |
+| `domain-technologies` | 0.03 | CMS, analytics and server technologies of a website |
+| `page-audit` | 0.02 | Technical SEO quick check of one page |
+| `website-content` | 0.02 | Main text, headings and links of one page as JSON |
+| `website-changes` | 0.025 | Compare one page with a previous snapshot |
+| `website-check` | 0.04 | Package: TLS, status, sitemap and two links of a website |
+| `local-market-check` | 0.09 | Package: local Google results + Maps + competitors for one local search |
+| `regional-data` | 0.01 | Curated Chiemgau places (Wikidata, CC0) |
+| `open-data-search` | 0.01 | Search GovData and open.bydata catalogs |
+
+Prices are set in `src/config/services.ts` only. Location codes: country level for most services, city/region codes in Germany, Austria and Switzerland for the Google SERP family (`GET /api/v1/locations?q=`).
+
+## Quick start
+
+```bash
+npm install
+cp .env.example .env && chmod 600 .env   # add DATAFORSEO_LOGIN / DATAFORSEO_PASSWORD (or stay in sandbox)
+npm test
+npm run dev                               # http://localhost:3000
+```
+
+```bash
+curl -s -X POST http://localhost:3000/api/v1/video-project-plan \
+  -H 'content-type: application/json' \
+  -d '{"goal":"recruiting","industry":"metal fabrication","town":"Chieming","shoot_date":"2026-11-20","deliver_by":"2026-12-23","reel_count_max":8,"language":"en"}'
+# -> HTTP 402 with the price; an x402 client then pays and repeats the call
+```
+
+`npm start` runs the MCP server over stdio in sandbox mode (used by directories such as Glama); `npm run start:http` runs the full HTTP server.
+
+## Safety and privacy
+
+Secrets live only in git-ignored env files. No IP addresses are stored, results and inputs are deleted after 30 days, the Caddy log keeps no IP or headers, and website visits are counted anonymously (a number per page group and day). See [docs/SECURITY.md](docs/SECURITY.md) and [public/legal.html](public/legal.html).
+
+## License
+
+MIT, see [LICENSE](LICENSE). Data licenses of DataForSEO and the open data sources, and the service's terms of use, remain unaffected. The full recipe set of the content services is proprietary and not part of this repository (a small sample file is included).
+
+---
+
+# Deutsch
+
+**Pay-per-call-Daten- und Planungs-APIs für KI-Agenten.** Kein Konto, kein API-Schlüssel: Ein Agent bezahlt jeden Aufruf in USDC auf Base per [x402](https://www.x402.org) (v2). 31 Dienste als REST, MCP und OpenAPI: SEO- und Webdaten (DataForSEO), offene Daten und Content-Planung für Agenturen und Videoteams. Die Content-Dienste antworten auf Deutsch (Standard) oder Englisch (`"language": "en"`).
+
+**Ablauf:** Aufruf ohne Zahlung liefert HTTP 402 mit dem Preis. Ein x402-Client zahlt und wiederholt den Aufruf. Eingaben werden vor jeder Preisanfrage geprüft, bezahlt wird vor dem Datenabruf, ein bezahlter Aufruf löst höchstens einen Abruf aus (feste Pakete sind gekennzeichnet). Ergebnisse bleiben 30 Tage abrufbar.
+
+**Beispiel:** „Recruiting-Reels für einen Metallbauer in Chieming, Dreh am 20.11. von 8 bis 17 Uhr, Abgabe 23.12., 5-10 Reel-Ideen“ ist ein Aufruf von `video-project-plan`: Ideen passend zu Branche und Ort, ein Drehtag im Zeitfenster mit Reserve, Rollen-Zeitplan, Sonnenzeiten und Postproduktion bis zur Abgabe (Feedbackrunden, Arbeitstage, Feiertage in Bayern).
 
 ## Schnellstart (Mac)
 
@@ -27,106 +112,39 @@ npm run dev                               # http://localhost:3000
 npm run smoke:sandbox                     # zweites Terminal
 ```
 
-## API
-
-| Methode | Pfad | Preis (USDC) | Inhalt |
-|---|---|---|---|
-| GET | `/health` | frei | Status |
-| GET | `/api/v1/services` | frei | Katalog mit Preisen, Limits, Beispiel-Requests |
-| POST | `/api/v1/preflight/:serviceId` | frei | Validierung + Kosten-/Budgetprüfung, kein DataForSEO-Call |
-| POST | `/api/v1/keyword-metrics` | 0.12 | Suchvolumen, CPC, Wettbewerb, 12 Monate; bis 1000 Keywords |
-| POST | `/api/v1/keyword-ideas` | 0.025 | bis 25 Wortvarianten zu einem Startbegriff (Keyword Suggestions) |
-| POST | `/api/v1/google-serp` | 0.025 | Top-10 organische Treffer |
-| POST | `/api/v1/competitors` | 0.04 | bis 10 Wettbewerber-Domains mit Überschneidung und Kennzahlen |
-| POST | `/api/v1/search-intent` | 0.04 | Suchintention + Wahrscheinlichkeit, bis 10 Keywords |
-| POST | `/api/v1/ranked-keywords` | 0.04 | Top 25 Keywords, für die eine Domain rankt |
-| POST | `/api/v1/keyword-difficulty` | 0.04 | Keyword-Difficulty 0–100, bis 100 Keywords |
-| POST | `/api/v1/domain-overview` | 0.04 | Traffic, Keyword-Anzahl und Ranking-Verteilung einer Domain |
-| POST | `/api/v1/keyword-gap` | 0.045 | Keywords, für die ein Konkurrent rankt und du nicht (Top 25) |
-| POST | `/api/v1/google-trends` | 0.025 | Google-Trends-Verlauf, bis 5 Keywords, 12 Monate |
-| POST | `/api/v1/local-business` | 0.03 | Google-Maps-Firmen (20) zu einer Suche: Adresse, Telefon, Bewertung |
-| POST | `/api/v1/bing-serp` | 0.02 | Top 10 organische Bing-Ergebnisse |
-| POST | `/api/v1/page-audit` | 0.02 | Technischer SEO-Schnellcheck einer Seite (ohne JavaScript) |
-| POST | `/api/v1/domain-technologies` | 0.03 | Technologien einer Website (CMS, Analytics, Server …) |
-| POST | `/api/v1/keywords-for-site` | 0.04 | Relevante Keywords einer Website (25) |
-| POST | `/api/v1/traffic-estimate` | 0.04 | Geschätzter Traffic für bis zu 10 Domains |
-| POST | `/api/v1/news-search` | 0.02 | Google-News-Ergebnisse (10) |
-| POST | `/api/v1/image-search` | 0.02 | Google-Bilder-Ergebnisse (20) |
-| POST | `/api/v1/local-market-check` | 0.1 | **Paket**: Google-Treffer + Maps-Betriebe + Wettbewerber-Domains + Beobachtungen für eine lokale Suche (2 Datenabrufe, keine Gratis-Probe) |
-| POST | `/api/v1/wishlist` | gratis | Wunsch für ein neues Werkzeug (nur schreibend) |
-| POST | `/api/v1/free-sample/{service-id}` | gratis | 1 Probe pro Dienst und Tag (Dienste bis 0,05 USDC, keine Pakete) |
-
-Weitere Seiten: `/de/` (deutsche Startseite), `/status` und `/de/status` (Verfügbarkeit, Zusagen), `/status.json`, `/.well-known/agent.json`, `/.well-known/mcp/server-card.json`.
-| POST | `/api/v1/ai-keyword-demand` | 0.04 | **geschätzte** AI-Search-Nachfrage, bis 10 Keywords |
-| POST | `/mcp` | frei/bezahlt | MCP (Streamable HTTP): 4 kostenlose + 6 Bezahl-Tools (x402-fähiger Client nötig) |
-| GET | `/openapi.json` | frei | OpenAPI 3.1 inkl. x402-Preisangaben |
-| GET | `/`, `/llms.txt`, `/legal.html`, `/.well-known/x402` | frei | Website, Kurzbeschreibung für LLMs, Impressum-Platzhalter, Kompatibilitätsdatei |
-| GET | `/api/v1/results/:requestId` | frei | Ergebnis/Status mit `Authorization: Bearer <result_token>` |
-| POST | `/api/v1/results/:requestId/retry` | frei | ein kostenloser Wiederholungsversuch nach Upstream-Fehler (bezahlte Anfragen) |
-
-`location_code` = Länder-Code von DataForSEO (Standard 2840 = USA; 2276 Deutschland; 2826 Großbritannien),
-`language_code` z. B. `en`/`de` (Standard je nach Land). Nicht unterstützte Kombinationen werden **vor** der Zahlung mit 422 abgelehnt.
-Bezahlt wird per x402 (USDC); ohne `PAYMENT-SIGNATURE` antwortet jede Service-Route mit HTTP 402 und dem Preis.
-
-Beispiel:
-
-```bash
-curl -s -X POST http://localhost:3000/api/v1/keyword-metrics \
-  -H 'content-type: application/json' \
-  -d '{"keywords":["seo tools","keyword research"],"location_code":2276,"language_code":"de"}'
-```
-
-Antwort (Struktur):
-
-```json
-{
-  "request_id": "…uuid…",
-  "service": "keyword-metrics",
-  "data_source": "sandbox",
-  "cached": false,
-  "result": { "location_code": 2276, "language_code": "de",
-    "keywords": [{ "keyword": "seo tools", "search_volume": 0, "competition": "…", "competition_index": 0,
-                   "cpc": 0, "low_top_of_page_bid": 0, "high_top_of_page_bid": 0,
-                   "monthly_searches": [{ "year": 2026, "month": 9, "search_volume": 0 }] }] },
-  "result_token": "…"
-}
-```
-
-`data_source: "sandbox"` kennzeichnet Dummy-Daten der DataForSEO-Sandbox.
-
 ## Struktur
 
 ```
 src/
-  config/env.ts        Umgebungsvariablen (Zod) inkl. Sicherheits-Kombinationsregeln
   config/services.ts   zentrale Preise, Limits, Kostendeckel, Cache-TTL, an/aus
+  config/env.ts        Umgebungsvariablen (Zod) inkl. Sicherheits-Kombinationsregeln
   dataforseo/client.ts DataForSEO-Client (Sandbox/Live, kein Retry, Timeout, Kosten)
-  services/            ein Adapter pro Service + Pipeline (prepare → [Zahlung] → execute)
+  services/            ein Adapter pro Dienst + Pipeline (prüfen → [Zahlung] → ausführen)
   lib/                 Cache, Kostenschutz, SQLite-Store, Rate-Limit, Logger mit Redaction
+  mcp/, discovery/, web/   MCP-Server, OpenAPI-Erzeugung, Website und Statusseite
+  admin.ts, adminLive.ts   Betreiberbereich mit Live-Panel (Umsätze, Zugriffe, Feed)
 test/                  Vitest (Fixtures sind als Testdaten markiert)
-docs/                  DATAFORSEO.md, PAYMENTS.md, AGENTS.md, DISCOVERY.md, TESTING.md (weitere folgen in Phase 5)
-public/                Website (Vorlagen mit {{Platzhaltern}}), llms.txt, Impressum-Platzhalter
-src/mcp/, src/discovery/, src/web/   MCP-Server, OpenAPI-Erzeugung, Website-Auslieferung
+docs/                  Betrieb, Sicherheit, Zahlungen, Rechtliches, Tests
+public/                Website (DE/EN), llms.txt, Rechtstexte
 ```
 
-## Service hinzufügen
+## Neuen Dienst hinzufügen
 
 1. Eintrag in `src/config/services.ts` (Preis, Limits, Endpoint, Kostendeckel, TTL).
-2. Adapter `src/services/<name>.ts` nach Vorbild `keywordMetrics.ts` (Zod-Schema, `estimateCostUsd`, `buildRequest`, `mapResult`).
-3. In `src/services/index.ts` registrieren, Fixture + Tests ergänzen.
+2. Adapter in `src/services/<name>.ts` (Zod-Schema, `estimateCostUsd`, `buildRequest`, `mapResult`), in `src/services/index.ts` registrieren.
+3. Fixture und Tests ergänzen (`test/services.test.ts`, `test/payments.test.ts`).
 
-## Betrieb und Deployment
+## Betrieb
 
 ```bash
 ./scripts/deploy.sh          # Mac -> Server: hochladen, bauen, starten, HTTPS-Check
 ```
 
-- Server, Befehle, Update und Fehlersuche: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
-- Tägliche Kontrolle (`/admin`), Erstattung, Backups, Notfälle: [docs/OPERATIONS.md](docs/OPERATIONS.md)
-- Mainnet-Umstieg: Checkliste in [docs/PAYMENTS.md](docs/PAYMENTS.md)
-- Eintrag in Verzeichnisse (alles manuelle Schritte): [docs/MARKETPLACES.md](docs/MARKETPLACES.md)
-- Sicherheit, Prüfung, Restrisiken: [docs/SECURITY.md](docs/SECURITY.md)
-- Rechtlicher Abgleich (Datenschutz, Nutzungsbedingungen, offene Punkte): [docs/LEGAL-CHECK.md](docs/LEGAL-CHECK.md)
+- Server, Update, Fehlersuche: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) · Tägliche Kontrolle, Erstattung, Backups: [docs/OPERATIONS.md](docs/OPERATIONS.md)
+- Zahlungen und Mainnet-Checkliste: [docs/PAYMENTS.md](docs/PAYMENTS.md) · Verzeichnisse: [docs/MARKETPLACES.md](docs/MARKETPLACES.md)
+- Sicherheit: [docs/SECURITY.md](docs/SECURITY.md) · Rechtlicher Abgleich: [docs/LEGAL-CHECK.md](docs/LEGAL-CHECK.md)
+- Content-Planung (Umfang, Preise, Sprachen, Vorlagen): [docs/CONTENT-PLANUNG.md](docs/CONTENT-PLANUNG.md)
 
 ## Lizenz
-MIT, siehe [LICENSE](LICENSE). Die Datenlizenz von DataForSEO und die Nutzungsbedingungen des Dienstes (`public/legal.html`) bleiben davon unberührt.
+
+MIT, siehe [LICENSE](LICENSE). Die Datenlizenzen von DataForSEO und der offenen Datenquellen sowie die Nutzungsbedingungen des Dienstes bleiben unberührt. Der vollständige Vorlagensatz der Content-Dienste ist proprietär und nicht Teil des Repositorys (eine kleine Musterdatei liegt bei).

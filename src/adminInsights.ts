@@ -34,6 +34,8 @@ export function buildInsights(env: Env, store: Store, pipeline: Pipeline, now: D
       preflights: c(day, "preflight"),
       wishes: c(day, "wish"),
       mcp_calls: c(day, (k) => k.endsWith("_call_mcp")),
+      site_views_human: c(day, (k) => k.startsWith("view_") && k.endsWith("_human")),
+      site_views_bot: c(day, (k) => k.startsWith("view_") && k.endsWith("_bot")),
       paid_calls: p.length,
       revenue_usdc: Math.round(p.reduce((a, r) => a + Number(r.price_usdc), 0) * 1e6) / 1e6,
       cost_usd: Math.round(p.reduce((a, r) => a + Number(r.upstream_cost_usd), 0) * 1e6) / 1e6,
@@ -44,7 +46,7 @@ export function buildInsights(env: Env, store: Store, pipeline: Pipeline, now: D
 
   // 7 days vs the 7 days before
   const sum = (from: number, to: number, k: keyof (typeof series)[number]) => series.slice(from, to).reduce((a, r) => a + Number(r[k]), 0);
-  const kpis = (["paid_calls", "revenue_usdc", "buyers", "new_buyers", "free_samples", "quotes", "mcp_calls", "wishes"] as const).map((k) => {
+  const kpis = (["paid_calls", "revenue_usdc", "buyers", "new_buyers", "free_samples", "quotes", "mcp_calls", "site_views_human", "wishes"] as const).map((k) => {
     const cur = sum(days - 7, days, k);
     const prev = sum(days - 14, days - 7, k);
     return { key: k, last_7d: Math.round(cur * 1e6) / 1e6, prev_7d: Math.round(prev * 1e6) / 1e6, change_pct: prev ? Math.round(((cur - prev) / prev) * 1000) / 10 : null };
