@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { PLAN_LIMITS, serviceConfig } from "../config/services.js";
-import { recipeDataset } from "./videoRecipes.js";
+import { recipeIn } from "./videoRecipes.js";
+import { languageInput, tr, type Lang } from "./i18n.js";
 import { plain } from "./common.js";
 import { addDays, isoDate } from "./dates.js";
 import { compactExample } from "./exampleCompact.js";
@@ -28,6 +29,7 @@ const inputSchema = z.strictObject({
   max_day_minutes: z.number().int().min(240).max(720).default(480),
   break_minutes: z.number().int().min(0).max(60).default(15),
   lunch_minutes: z.number().int().min(0).max(90).default(45),
+  language: languageInput,
 });
 type Input = z.output<typeof inputSchema>;
 export type Shoot = Input["shoots"][number];
@@ -35,34 +37,43 @@ export type Shoot = Input["shoots"][number];
 export interface Rules { start_time: string; max_shoots_per_day: number; max_day_minutes: number; break_minutes: number; lunch_minutes: number }
 
 const EXTRA_MIN: Record<string, number> = { foto: 10, karussell: 15, zitat: 5, detailclip: 10, kurzclip: 5, einzeltipp: 5, teaser: 5, story: 5, longform: 0 };
-const VARIANT_HINT: Record<string, string> = {
-  story: "Zusätzlich: 3–4 kurze Hochformat-Clips für Stories aufnehmen", zitat: "Zusätzlich: ruhiges Porträtfoto für den Zitat-Beitrag",
-  foto: "Zusätzlich: 3 Fotos (Übersicht, Detail, Person)", karussell: "Zusätzlich: 5–7 Fotos für ein Karussell",
-  detailclip: "Zusätzlich: Detailaufnahmen (Hände, Produkt, Material)", kurzclip: "Antworten jeweils in einem Satz wiederholen lassen (für Kurzclips)",
-  einzeltipp: "Jeden Tipp einzeln mit kurzer Pause aufnehmen", teaser: "Zusätzlich: 5-Sekunden-Teaser-Aufnahme", longform: "Komplettes Interview ungeschnitten mitlaufen lassen",
+const VARIANT_HINT: Record<Lang, Record<string, string>> = {
+  de: {
+    story: "Zusätzlich: 3–4 kurze Hochformat-Clips für Stories aufnehmen", zitat: "Zusätzlich: ruhiges Porträtfoto für den Zitat-Beitrag",
+    foto: "Zusätzlich: 3 Fotos (Übersicht, Detail, Person)", karussell: "Zusätzlich: 5–7 Fotos für ein Karussell",
+    detailclip: "Zusätzlich: Detailaufnahmen (Hände, Produkt, Material)", kurzclip: "Antworten jeweils in einem Satz wiederholen lassen (für Kurzclips)",
+    einzeltipp: "Jeden Tipp einzeln mit kurzer Pause aufnehmen", teaser: "Zusätzlich: 5-Sekunden-Teaser-Aufnahme", longform: "Komplettes Interview ungeschnitten mitlaufen lassen",
+  },
+  en: {
+    story: "Also record 3–4 short vertical clips for stories", zitat: "Also take a calm portrait photo for the quote post",
+    foto: "Also take 3 photos (overview, detail, person)", karussell: "Also take 5–7 photos for a carousel",
+    detailclip: "Also record close-ups (hands, product, material)", kurzclip: "Have each answer repeated in one sentence (for short clips)",
+    einzeltipp: "Record each tip separately with a short pause", teaser: "Also record a 5-second teaser shot", longform: "Keep the full interview recording running uncut",
+  },
 };
 type Variant = { type: string; label: string; count: number; mediaType: string };
-const DEFAULT_VARIANTS: Record<string, Variant[]> = {
-  reel: [{ type: "kurzclip", label: "Kurze Clips", count: 2, mediaType: "reel" }, { type: "foto", label: "Fotos vom Dreh (Bild-Beitrag)", count: 1, mediaType: "post" }, { type: "story", label: "Story-Ausschnitte", count: 2, mediaType: "story" }],
-  video: [{ type: "kurzclip", label: "Kurze Antwort-Clips", count: 3, mediaType: "reel" }, { type: "zitat", label: "Zitat-Beitrag (Bild)", count: 1, mediaType: "post" }, { type: "foto", label: "Fotos vom Dreh", count: 1, mediaType: "post" }],
-  story: [{ type: "foto", label: "Foto-Beitrag aus dem Dreh", count: 1, mediaType: "post" }],
-  post: [{ type: "story", label: "Story mit Verweis", count: 1, mediaType: "story" }],
-  carousel: [{ type: "story", label: "Story-Ausschnitte", count: 2, mediaType: "story" }],
+const v = (type: string, de: string, en: string, count: number, mediaType: string) => ({ type, label: { de, en }, count, mediaType });
+const DEFAULT_VARIANTS: Record<string, ReturnType<typeof v>[]> = {
+  reel: [v("kurzclip", "Kurze Clips", "Short clips", 2, "reel"), v("foto", "Fotos vom Dreh (Bild-Beitrag)", "Photos from the shoot (image post)", 1, "post"), v("story", "Story-Ausschnitte", "Story snippets", 2, "story")],
+  video: [v("kurzclip", "Kurze Antwort-Clips", "Short answer clips", 3, "reel"), v("zitat", "Zitat-Beitrag (Bild)", "Quote post (image)", 1, "post"), v("foto", "Fotos vom Dreh", "Photos from the shoot", 1, "post")],
+  story: [v("foto", "Foto-Beitrag aus dem Dreh", "Photo post from the shoot", 1, "post")],
+  post: [v("story", "Story mit Verweis", "Story pointing to the post", 1, "story")],
+  carousel: [v("story", "Story-Ausschnitte", "Story snippets", 2, "story")],
 };
 const SETUP_RANK: Record<string, number> = { interview: 0, screen: 1, detail: 2, mixed: 3, broll: 4 };
-const recipeOf = (s: Shoot) => (s.recipe_id ? recipeDataset.recipes.find(r => r.id === s.recipe_id) : undefined);
+const recipeOf = (s: Shoot, lang: Lang = "de") => recipeIn(lang, s.recipe_id);
 export const norm = (s: string | undefined) => (s ?? "").toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss").replace(/[^a-z0-9]+/g, " ").trim();
 const round15 = (n: number) => Math.round(n / 15) * 15;
 export const hhmm = (min: number) => `${String(Math.floor(min / 60) % 24).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
 export const toMin = (v: string) => Number(v.slice(0, 2)) * 60 + Number(v.slice(3));
 
-export function block(index: number, s: Shoot) {
-  const recipe = recipeOf(s);
+export function block(index: number, s: Shoot, lang: Lang = "de") {
+  const recipe = recipeOf(s, lang);
   const mediaType = s.media_type ?? recipe?.mediaType ?? "reel";
   const video = mediaType === "reel" || mediaType === "video";
   const core = s.minutes ?? recipe?.shootMinutes ?? 40;
-  const variants: Variant[] = recipe?.variants ?? DEFAULT_VARIANTS[mediaType] ?? DEFAULT_VARIANTS.reel!;
-  const extras = variants.map(v => ({ type: v.type, label: v.label, count: v.count, minutes: EXTRA_MIN[v.type] ?? 5, hint: VARIANT_HINT[v.type] ?? "" }));
+  const variants: Variant[] = recipe?.variants ?? (DEFAULT_VARIANTS[mediaType] ?? DEFAULT_VARIANTS.reel!).map(x => ({ ...x, label: x.label[lang] }));
+  const extras = variants.map(x => ({ type: x.type, label: x.label, count: x.count, minutes: EXTRA_MIN[x.type] ?? 5, hint: VARIANT_HINT[lang][x.type] ?? "" }));
   const extraMinutes = Math.min(30, extras.reduce((a, x) => a + x.minutes, 0));
   const setup = video ? 20 : 10;
   const lo = video ? 90 : 45, hi = video ? 120 : 75;
@@ -93,20 +104,21 @@ export function order(blocks: Block[]): Block[] {
 }
 
 export type Row = { start: string; end: string; minutes: number; label: string; kind: "setup" | "pause" | "shoot"; shoot_index: number | null };
-export function timeline(blocks: Block[], startMin: number, o: Rules) {
+export function timeline(blocks: Block[], startMin: number, o: Rules, lang: Lang = "de") {
+  const t$ = (de: string, en: string) => tr(lang, de, en), other = t$("anderer Ort", "next location");
   let t = startMin; const rows: Row[] = []; let lunch = false; let prev: Block | null = null;
   const add = (label: string, minutes: number, kind: Row["kind"], b?: Block) => { rows.push({ start: hhmm(t), end: hhmm(t + minutes), minutes, label, kind, shoot_index: b ? b.index : null }); t += minutes; };
-  add("Ankommen, Aufbau & Technik-Check", 30, "setup");
+  add(t$("Ankommen, Aufbau & Technik-Check", "Arrival, set-up & tech check"), 30, "setup");
   blocks.forEach((b, i) => {
     if (i > 0 && prev) {
       const moved = norm(prev.location ?? "") !== norm(b.location ?? "");
-      if (!lunch && t - startMin >= 210) { add(`Mittagspause${moved ? ` · danach Ortswechsel → ${b.location ?? "anderer Ort"}` : ""}`, o.lunch_minutes, "pause"); lunch = true; }
-      else if (moved) add(`Pause & Ortswechsel → ${b.location ?? "anderer Ort"}`, Math.max(20, o.break_minutes), "pause");
-      else add(prev.setup_type !== b.setup_type ? "Pause & Kamera umbauen" : "Pause", o.break_minutes, "pause");
+      if (!lunch && t - startMin >= 210) { add(`${t$("Mittagspause", "Lunch break")}${moved ? ` · ${t$("danach Ortswechsel", "then move")} → ${b.location ?? other}` : ""}`, o.lunch_minutes, "pause"); lunch = true; }
+      else if (moved) add(`${t$("Pause & Ortswechsel", "Break & move")} → ${b.location ?? other}`, Math.max(20, o.break_minutes), "pause");
+      else add(prev.setup_type !== b.setup_type ? t$("Pause & Kamera umbauen", "Break & camera rebuild") : t$("Pause", "Break"), o.break_minutes, "pause");
     }
     add(b.title, b.minutes, "shoot", b); prev = b;
   });
-  add("Abbau & Datensicherung", 20, "setup");
+  add(t$("Abbau & Datensicherung", "Teardown & data backup"), 20, "setup");
   return { rows, total: t - startMin, end: t };
 }
 
@@ -136,27 +148,29 @@ function ics(date: string, startMin: number, endMin: number, name: string, locat
 
 function plan(i: Input) {
   // Same place first (stable), so days are split along places before they are split by count.
-  const blocks = groupByPlace(i.shoots.map((s, n) => block(n, s)));
+  const lang = i.language, t$ = (de: string, en: string) => tr(lang, de, en);
+  const blocks = groupByPlace(i.shoots.map((s, n) => block(n, s, lang)));
   let days = blocks.length;
   for (let n = 1; n <= blocks.length; n++) { if (chunks(blocks, n).every(c => fits(c, i))) { days = n; break; } }
   const startMin = toMin(i.start_time);
   const warnings: string[] = [];
   const out = chunks(blocks, days).map((chunk, d) => {
     const ordered = order(chunk);
-    const tl = timeline(ordered, startMin, i);
+    const tl = timeline(ordered, startMin, i, lang);
     if (tl.total > i.max_day_minutes) warnings.push(`Day ${d + 1} takes ${Math.round(tl.total / 60 * 10) / 10} h, longer than the ${i.max_day_minutes / 60} h limit: a single shoot does not fit. Shorten it or allow a longer day.`);
     const equipment = new Map<string, number>();
     for (const b of ordered) for (const e of b.equipment) { const k = e.trim(); if (k) equipment.set(k, (equipment.get(k) ?? 0) + 1); }
-    const mic = ordered.some(b => b.equipment.some(e => /mikro/i.test(e)));
+    const mic = ordered.some(b => b.equipment.some(e => /mikro|mic/i.test(e)));
     const checklist = [
-      "Drehort reservieren und Zugang klären", "Beteiligte einladen",
-      ordered.some(b => b.has_questions) ? "Interviewfragen vorab an die Beteiligten schicken" : null,
-      "Einverständnis für Foto/Video der gefilmten Personen klären", "Akkus laden und Speicherplatz frei machen",
-      mic ? "Ansteckmikrofon testen" : null, "Drehplan auf dem Handy oder ausgedruckt dabeihaben", "Nach dem Dreh: Material doppelt sichern",
+      t$("Drehort reservieren und Zugang klären", "Book the location and clarify access"), t$("Beteiligte einladen", "Invite the people involved"),
+      ordered.some(b => b.has_questions) ? t$("Interviewfragen vorab an die Beteiligten schicken", "Send the interview questions to the people involved in advance") : null,
+      t$("Einverständnis für Foto/Video der gefilmten Personen klären", "Get consent for photo/video from everyone filmed"), t$("Akkus laden und Speicherplatz frei machen", "Charge batteries and free up storage"),
+      mic ? t$("Ansteckmikrofon testen", "Test the lavalier microphone") : null, t$("Drehplan auf dem Handy oder ausgedruckt dabeihaben", "Have the shoot plan on your phone or printed"),
+      t$("Nach dem Dreh: Material doppelt sichern", "After the shoot: back up the footage twice"),
     ].filter((c): c is string => c !== null);
     const date = i.first_date ? addDays(i.first_date, d * 2) : null;
     const locations = [...new Set(ordered.map(b => b.location).filter((l): l is string => !!l))];
-    const name = `Videodreh: ${ordered.length} ${ordered.length === 1 ? "Beitrag" : "Beiträge"}${locations.length ? ` · ${locations.join(" / ")}` : ""}`;
+    const name = `${t$("Videodreh", "Video shoot")}: ${ordered.length} ${ordered.length === 1 ? t$("Beitrag", "post") : t$("Beiträge", "posts")}${locations.length ? ` · ${locations.join(" / ")}` : ""}`;
     const description = tl.rows.map(r => `${r.start}–${r.end} ${r.label}`).join("\n");
     return {
       day: d + 1, date, start: hhmm(startMin), end: hhmm(tl.end), total_minutes: tl.total,
@@ -168,7 +182,7 @@ function plan(i: Input) {
     };
   });
   return {
-    language: "de", rules: { max_shoots_per_day: i.max_shoots_per_day, max_day_minutes: i.max_day_minutes, break_minutes: i.break_minutes, lunch_minutes: i.lunch_minutes, start_time: i.start_time },
+    language: lang, rules: { max_shoots_per_day: i.max_shoots_per_day, max_day_minutes: i.max_day_minutes, break_minutes: i.break_minutes, lunch_minutes: i.lunch_minutes, start_time: i.start_time },
     summary: { shoots: blocks.length, shoot_days: out.length, extra_content_pieces: out.reduce((n, d) => n + d.extra_content_pieces, 0) },
     days: out, warnings,
     coverage: "Rule-based planning from the shoots you list. No travel times, no weather, no permits, no availability of people or sites. Day dates, if given, are spaced two days apart. Calendar files are plain .ics text you import yourself; nothing is written to any calendar.",

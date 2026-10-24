@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { PLAN_LIMITS, serviceConfig } from "../config/services.js";
-import { CHAIN, LABEL_DE, STEPS, propagate, validateDates, type Dates, type Step } from "./contentPhases.js";
+import { CHAIN, STEPS, labelOf, propagate, validateDates, type Dates, type Step } from "./contentPhases.js";
+import { languageInput, tr } from "./i18n.js";
 import { plain } from "./common.js";
 import { addDays, diffDays, isoDate } from "./dates.js";
 import { compactExample } from "./exampleCompact.js";
@@ -22,6 +23,7 @@ const postSchema = z.strictObject({
 });
 const inputSchema = z.strictObject({
   posts: z.array(postSchema).min(1).max(cfg.maxInputs),
+  language: languageInput,
   move: z.strictObject({
     post_key: z.string().min(1).max(40), step: z.enum(CHAIN), new_date: isoDate,
     publish_mode: z.enum(["shift_all", "only_publish"]).default("shift_all").describe("Publish moves: also shift the unfinished steps by the same number of days, or only the publish date."),
@@ -32,10 +34,12 @@ type Input = z.output<typeof inputSchema>;
 type Post = Input["posts"][number];
 
 const datesOf = (p: Post): Dates => { const d: Dates = { publish: p.publish }; for (const k of STEPS) if (p[k]) d[k] = p[k]; return d; };
-const label = (p: Post) => (p.title ? `„${p.title}"` : `„${p.key}"`);
+const label = (p: Post) => `"${p.title ?? p.key}"`;
 interface Change { post_key: string; step: Step; from: string | null; to: string; created: boolean }
 
 export function shift(i: Input) {
+  const lang = i.language, t$ = (de: string, en: string) => tr(lang, de, en);
+  const shootDone = new Set<string>();
   const posts = i.posts.map(p => ({ ...p }));
   const post = posts.find(p => p.key === i.move.post_key)!;
   const changes: Change[] = [], blocked: { post_key: string; step: Step }[] = [];
@@ -46,7 +50,7 @@ export function shift(i: Input) {
   const collect = (p: Post, before: Dates, after: Dates) => {
     for (const k of CHAIN) if (after[k] && after[k] !== before[k]) changes.push({ post_key: p.key, step: k, from: before[k] ?? null, to: after[k]!, created: !before[k] });
   };
-  const check = (p: Post, dates: Dates) => { for (const c of validateDates(dates)) conflicts.push({ level: c.level, post_key: p.key, steps: c.steps, message: `${label(p)}: ${c.message}` }); };
+  const check = (p: Post, dates: Dates) => { for (const c of validateDates(dates, lang)) conflicts.push({ level: c.level, post_key: p.key, steps: c.steps, message: `${label(p)}: ${c.message}` }); };
   const apply = (p: Post, after: Dates) => { for (const k of CHAIN) if (after[k]) (p as Record<string, unknown>)[k] = after[k]; };
   const members = post.shoot_group ? posts.filter(p => p.shoot_group === post.shoot_group) : [];
 
@@ -54,7 +58,7 @@ export function shift(i: Input) {
     groupChange = { group: post.shoot_group, from: post.shoot ?? null, to: i.move.new_date, post_keys: members.map(m => m.key) };
     for (const m of members) {
       const done = new Set<Step>(m.done ?? []);
-      if (done.has("shoot")) { blocked.push({ post_key: m.key, step: "shoot" }); conflicts.push({ level: "warn", post_key: m.key, steps: ["shoot"], message: `${label(m)}: Dreh bereits erledigt – bleibt unverändert.` }); continue; }
+      if (done.has("shoot")) { blocked.push({ post_key: m.key, step: "shoot" }); shootDone.add(m.key); conflicts.push({ level: "warn", post_key: m.key, steps: ["shoot"], message: `${label(m)}: ${t$("Dreh bereits erledigt – bleibt unverändert.", "shoot already done, stays unchanged.")}` }); continue; }
       const before = datesOf(m), after: Dates = { ...before, shoot: i.move.new_date }, stuck: Step[] = [];
       propagate(after, done, "shoot", stuck);
       for (const k of stuck) blocked.push({ post_key: m.key, step: k });
@@ -81,20 +85,20 @@ export function shift(i: Input) {
     for (const k of stuck) blocked.push({ post_key: post.key, step: k });
     collect(post, before, after); check(post, after);
     if (grouped && i.move.step === "publish" && post.shoot && i.move.new_date <= post.shoot) {
-      conflicts.push({ level: "error", post_key: post.key, steps: ["shoot", "publish"], message: `${label(post)}: Die Veröffentlichung läge vor dem gemeinsamen Drehtag (${post.shoot}).` });
+      conflicts.push({ level: "error", post_key: post.key, steps: ["shoot", "publish"], message: `${label(post)}: ${t$("Die Veröffentlichung läge vor dem gemeinsamen Drehtag", "publishing would be before the shared shoot day")} (${post.shoot}).` });
     }
     apply(post, after);
     if (detached) delete post.shoot_group;
   }
   const seen = new Set<string>();
   for (const b of blocked) {
-    const k = `${b.post_key}/${b.step}`; if (seen.has(k) || (b.step === "shoot" && conflicts.some(c => c.post_key === b.post_key && c.message.includes("Dreh bereits erledigt")))) continue;
+    const k = `${b.post_key}/${b.step}`; if (seen.has(k) || (b.step === "shoot" && shootDone.has(b.post_key))) continue;
     seen.add(k);
     const p = posts.find(x => x.key === b.post_key)!;
-    conflicts.push({ level: "warn", post_key: b.post_key, steps: [b.step], message: `${label(p)}: Abgeschlossene Phase „${LABEL_DE[b.step]}" wird nicht automatisch verschoben.` });
+    conflicts.push({ level: "warn", post_key: b.post_key, steps: [b.step], message: `${label(p)}: ${t$(`Abgeschlossene Phase „${labelOf(lang, b.step)}“ wird nicht automatisch verschoben.`, `finished step "${labelOf(lang, b.step)}" is not moved automatically.`)}` });
   }
   return {
-    language: "de", move: { post_key: i.move.post_key, step: i.move.step, new_date: i.move.new_date },
+    language: lang, move: { post_key: i.move.post_key, step: i.move.step, new_date: i.move.new_date },
     changes, blocked, conflicts, group_change: groupChange, detached_from_group: detached,
     needs_confirmation: changes.length > 1 || conflicts.length > 0 || blocked.length > 0 || groupChange !== null,
     summary: { posts_changed: new Set(changes.map(c => c.post_key)).size, dates_changed: changes.length, errors: conflicts.filter(c => c.level === "error").length, warnings: conflicts.filter(c => c.level === "warn").length },
@@ -116,7 +120,7 @@ export const contentPlanShift: ServiceDefinition<Input, ReturnType<typeof shift>
   cacheTtlSeconds: cfg.cacheTtlSeconds, limits: { maxInputs: cfg.maxInputs, maxResults: cfg.maxResults },
   upstream: { endpoint: cfg.dataforseoEndpoint, maxCostUsd: cfg.maxUpstreamCostUsd },
   summary: "Move one date in a content calendar and let the linked dates follow: concept, shoot, edit, review and publish stay in order, a shared shoot day moves all its posts together, finished steps never move. Returns the change list, conflicts, blocked steps, a confirmation flag and the updated posts. Stateless: you send up to 40 posts, nothing is stored.",
-  notice: "Pure date arithmetic, German messages, no AI model. Send keys, optional short titles and dates only, no personal data. A confirmation flag means you should review the change list before you apply it to your own calendar; nothing is written anywhere by this service.",
+  notice: "Pure date arithmetic, German or English messages (language), no AI model. Send keys, optional short titles and dates only, no personal data. A confirmation flag means you should review the change list before you apply it to your own calendar; nothing is written anywhere by this service.",
   inputSchema, estimateCostUsd: () => 0,
   validateInput: i => {
     const keys = i.posts.map(p => p.key);

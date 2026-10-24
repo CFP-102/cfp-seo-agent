@@ -1,0 +1,351 @@
+{
+ "dataset": "chiemgau-films-video-recipes",
+ "language": "en",
+ "categories": [
+  {
+   "id": "produkt",
+   "label": "Products & services",
+   "description": "Show and explain products and services clearly."
+  },
+  {
+   "id": "mitarbeiter",
+   "label": "People & team",
+   "description": "Make the people behind the company visible."
+  },
+  {
+   "id": "bts",
+   "label": "Behind the scenes",
+   "description": "Show processes, daily work and craft customers normally never see."
+  },
+  {
+   "id": "wissen",
+   "label": "Tips & know-how",
+   "description": "Share expertise, answer questions and give real value."
+  },
+  {
+   "id": "kunde",
+   "label": "Customers & references",
+   "description": "Show results, projects and customer voices as proof."
+  },
+  {
+   "id": "unternehmen",
+   "label": "Company & events",
+   "description": "History, figures, celebrations and trade fairs around the company."
+  },
+  {
+   "id": "recruiting",
+   "label": "Apprenticeships & recruiting",
+   "description": "Win new colleagues and apprentices with real insights."
+  }
+ ],
+ "recipes": [
+  {
+   "id": "tpl-produkt-in-30-sekunden",
+   "title": "Produkt in 30 Sekunden",
+   "category": "produkt",
+   "description": "Sample recipe (public sample file). The full recipe set is not part of this repository.",
+   "length": "20–40 sec",
+   "mediaType": "reel",
+   "hook": "Sample hook.",
+   "hookAlternatives": [],
+   "shots": [
+    "Overview",
+    "Close-up",
+    "Closing shot"
+   ],
+   "questions": [
+    "Sample question?"
+   ],
+   "equipment": [
+    "Smartphone",
+    "Tripod"
+   ],
+   "shootMinutes": 20,
+   "effortLabel": "15–25 min recording time",
+   "platforms": [
+    "Instagram"
+   ],
+   "locationHint": "Workshop",
+   "peopleHint": "One person from the team",
+   "setup": "mixed",
+   "tips": [
+    "Sample tip."
+   ],
+   "variants": [
+    {
+     "type": "story",
+     "label": "Story",
+     "count": 1,
+     "mediaType": "story"
+    }
+   ],
+   "ideas": [
+    "Sample idea"
+   ]
+  },
+  {
+   "id": "tpl-mitarbeiter-vorstellen",
+   "title": "Mitarbeiter stellt sich vor",
+   "category": "mitarbeiter",
+   "description": "Sample recipe (public sample file). The full recipe set is not part of this repository.",
+   "length": "20–40 sec",
+   "mediaType": "reel",
+   "hook": "Sample hook.",
+   "hookAlternatives": [],
+   "shots": [
+    "Overview",
+    "Close-up",
+    "Closing shot"
+   ],
+   "questions": [
+    "Sample question?"
+   ],
+   "equipment": [
+    "Smartphone",
+    "Tripod"
+   ],
+   "shootMinutes": 20,
+   "effortLabel": "15–25 min recording time",
+   "platforms": [
+    "Instagram"
+   ],
+   "locationHint": "Workshop",
+   "peopleHint": "One person from the team",
+   "setup": "interview",
+   "tips": [
+    "Sample tip."
+   ],
+   "variants": [
+    {
+     "type": "story",
+     "label": "Story",
+     "count": 1,
+     "mediaType": "story"
+    }
+   ],
+   "ideas": [
+    "Sample idea"
+   ]
+  },
+  {
+   "id": "tpl-blick-hinter-die-kulissen",
+   "title": "Blick hinter die Kulissen",
+   "category": "bts",
+   "description": "Sample recipe (public sample file). The full recipe set is not part of this repository.",
+   "length": "20–40 sec",
+   "mediaType": "reel",
+   "hook": "Sample hook.",
+   "hookAlternatives": [],
+   "shots": [
+    "Overview",
+    "Close-up",
+    "Closing shot"
+   ],
+   "questions": [
+    "Sample question?"
+   ],
+   "equipment": [
+    "Smartphone",
+    "Tripod"
+   ],
+   "shootMinutes": 20,
+   "effortLabel": "15–25 min recording time",
+   "platforms": [
+    "Instagram"
+   ],
+   "locationHint": "Workshop",
+   "peopleHint": "One person from the team",
+   "setup": "broll",
+   "tips": [
+    "Sample tip."
+   ],
+   "variants": [
+    {
+     "type": "story",
+     "label": "Story",
+     "count": 1,
+     "mediaType": "story"
+    }
+   ],
+   "ideas": [
+    "Sample idea"
+   ]
+  },
+  {
+   "id": "tpl-kurzer-experten-tipp",
+   "title": "Kurzer Experten-Tipp",
+   "category": "wissen",
+   "description": "Sample recipe (public sample file). The full recipe set is not part of this repository.",
+   "length": "20–40 sec",
+   "mediaType": "reel",
+   "hook": "Sample hook.",
+   "hookAlternatives": [],
+   "shots": [
+    "Overview",
+    "Close-up",
+    "Closing shot"
+   ],
+   "questions": [
+    "Sample question?"
+   ],
+   "equipment": [
+    "Smartphone",
+    "Tripod"
+   ],
+   "shootMinutes": 20,
+   "effortLabel": "15–25 min recording time",
+   "platforms": [
+    "Instagram"
+   ],
+   "locationHint": "Workshop",
+   "peopleHint": "One person from the team",
+   "setup": "mixed",
+   "tips": [
+    "Sample tip."
+   ],
+   "variants": [
+    {
+     "type": "story",
+     "label": "Story",
+     "count": 1,
+     "mediaType": "story"
+    }
+   ],
+   "ideas": [
+    "Sample idea"
+   ]
+  },
+  {
+   "id": "tpl-kundenfragen",
+   "title": "Kundenfragen beantwortet",
+   "category": "kunde",
+   "description": "Sample recipe (public sample file). The full recipe set is not part of this repository.",
+   "length": "20–40 sec",
+   "mediaType": "reel",
+   "hook": "Sample hook.",
+   "hookAlternatives": [],
+   "shots": [
+    "Overview",
+    "Close-up",
+    "Closing shot"
+   ],
+   "questions": [
+    "Sample question?"
+   ],
+   "equipment": [
+    "Smartphone",
+    "Tripod"
+   ],
+   "shootMinutes": 20,
+   "effortLabel": "15–25 min recording time",
+   "platforms": [
+    "Instagram"
+   ],
+   "locationHint": "Workshop",
+   "peopleHint": "One person from the team",
+   "setup": "interview",
+   "tips": [
+    "Sample tip."
+   ],
+   "variants": [
+    {
+     "type": "story",
+     "label": "Story",
+     "count": 1,
+     "mediaType": "story"
+    }
+   ],
+   "ideas": [
+    "Sample idea"
+   ]
+  },
+  {
+   "id": "tpl-zahlen-und-fakten",
+   "title": "Zahlen und Fakten",
+   "category": "unternehmen",
+   "description": "Sample recipe (public sample file). The full recipe set is not part of this repository.",
+   "length": "20–40 sec",
+   "mediaType": "reel",
+   "hook": "Sample hook.",
+   "hookAlternatives": [],
+   "shots": [
+    "Overview",
+    "Close-up",
+    "Closing shot"
+   ],
+   "questions": [
+    "Sample question?"
+   ],
+   "equipment": [
+    "Smartphone",
+    "Tripod"
+   ],
+   "shootMinutes": 20,
+   "effortLabel": "15–25 min recording time",
+   "platforms": [
+    "Instagram"
+   ],
+   "locationHint": "Workshop",
+   "peopleHint": "One person from the team",
+   "setup": "broll",
+   "tips": [
+    "Sample tip."
+   ],
+   "variants": [
+    {
+     "type": "story",
+     "label": "Story",
+     "count": 1,
+     "mediaType": "story"
+    }
+   ],
+   "ideas": [
+    "Sample idea"
+   ]
+  },
+  {
+   "id": "tpl-azubi-interview",
+   "title": "Azubi-Interview",
+   "category": "recruiting",
+   "description": "Sample recipe (public sample file). The full recipe set is not part of this repository.",
+   "length": "20–40 sec",
+   "mediaType": "reel",
+   "hook": "Sample hook.",
+   "hookAlternatives": [],
+   "shots": [
+    "Overview",
+    "Close-up",
+    "Closing shot"
+   ],
+   "questions": [
+    "Sample question?"
+   ],
+   "equipment": [
+    "Smartphone",
+    "Tripod"
+   ],
+   "shootMinutes": 20,
+   "effortLabel": "15–25 min recording time",
+   "platforms": [
+    "Instagram"
+   ],
+   "locationHint": "Workshop",
+   "peopleHint": "One person from the team",
+   "setup": "interview",
+   "tips": [
+    "Sample tip."
+   ],
+   "variants": [
+    {
+     "type": "story",
+     "label": "Story",
+     "count": 1,
+     "mediaType": "story"
+    }
+   ],
+   "ideas": [
+    "Sample idea"
+   ]
+  }
+ ]
+}

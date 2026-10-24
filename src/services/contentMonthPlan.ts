@@ -1,10 +1,11 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
 import { PLAN_LIMITS, serviceConfig } from "../config/services.js";
-import { CHAIN, LABEL_DE, MIN_GAP, validateDates, type Step } from "./contentPhases.js";
+import { CHAIN, MIN_GAP, labelOf, validateDates, type Step } from "./contentPhases.js";
+import { languageInput, tr, type Lang } from "./i18n.js";
 import { WEEKDAY_NAMES, addDays, berlinToday, diffDays, isWeekend, isoDate, weekday } from "./dates.js";
 import { block, chunks, fits, hhmm, icsEscape, icsFold, norm, order, timeline, toMin, type Block, type Rules } from "./shootPlan.js";
-import { recipeDataset } from "./videoRecipes.js";
+import { recipeDataset, recipesIn, type Recipe } from "./videoRecipes.js";
 import { compactExample } from "./exampleCompact.js";
 import type { ServiceDefinition } from "./types.js";
 
@@ -42,12 +43,13 @@ const inputSchema = z.strictObject({
   existing_publish_dates: z.array(isoDate).max(PLAN_LIMITS.existingDates).default([]).describe("Publish dates already taken."),
   existing_shoot_dates: z.array(isoDate).max(PLAN_LIMITS.existingDates).default([]).describe("Shoot days already booked."),
   seed: z.number().int().min(0).max(99).default(0),
+  language: languageInput,
 }).refine(d => d.to >= d.from, { message: "to must not be before from", path: ["to"] })
   .refine(d => diffDays(d.from, d.to) <= PLAN_LIMITS.planSpanDays, { message: `The period may span at most ${PLAN_LIMITS.planSpanDays} days`, path: ["to"] })
   .refine(d => { if (!d.mix_counts) return true; const n = Object.values(d.mix_counts).reduce<number>((a, b) => a + (b ?? 0), 0); return n >= 1 && n <= PLAN_LIMITS.planPosts; }, { message: `mix_counts must add up to 1-${PLAN_LIMITS.planPosts} posts`, path: ["mix_counts"] });
 type Input = z.output<typeof inputSchema>;
 
-function pickIdea(recipe: (typeof recipeDataset.recipes)[number], used: Set<string>, n: number): string {
+function pickIdea(recipe: Recipe, used: Set<string>, n: number): string {
   const ideas = recipe.ideas.length ? recipe.ideas : [recipe.title];
   for (let i = 0; i < ideas.length; i++) { const cand = ideas[(i + n) % ideas.length]!; if (!used.has(norm(cand))) { used.add(norm(cand)); return cand; } }
   for (let k = 2; k < 99; k++) { const c = `${recipe.title} #${k}`; if (!used.has(norm(c))) { used.add(norm(c)); return c; } }
@@ -55,6 +57,7 @@ function pickIdea(recipe: (typeof recipeDataset.recipes)[number], used: Set<stri
 }
 
 export function plan(i: Input) {
+  const lang = i.language, t$ = (de: string, en: string) => tr(lang, de, en), set = recipesIn(lang);
   const today = i.today ?? berlinToday();
   const warnings: string[] = [];
   const pubDays = i.publish_weekdays.map(d => WEEKDAY_NAMES.indexOf(d)), prodDays = i.production_weekdays.map(d => WEEKDAY_NAMES.indexOf(d));
@@ -70,7 +73,7 @@ export function plan(i: Input) {
   const weeks = Math.max(1, Math.round((diffDays(from, i.to) + 1) / 7));
   const counts = i.mix_counts ? Object.entries(i.mix_counts).filter((e): e is [string, number] => (e[1] ?? 0) > 0) : null;
   let total = counts ? counts.reduce((a, [, n]) => a + n, 0) : Math.round(i.posts_per_week * weeks);
-  if (total > PLAN_LIMITS.planPosts) { warnings.push(`Es werden höchstens ${PLAN_LIMITS.planPosts} Beiträge je Plan geplant.`); total = PLAN_LIMITS.planPosts; }
+  if (total > PLAN_LIMITS.planPosts) { warnings.push(t$(`Es werden höchstens ${PLAN_LIMITS.planPosts} Beiträge je Plan geplant.`, `At most ${PLAN_LIMITS.planPosts} posts are planned per plan.`)); total = PLAN_LIMITS.planPosts; }
   let free = slots.filter(d => !used.has(d));
   if (free.length < total) {
     for (let d = from; d <= i.to && free.length < total; d = addDays(d, 1)) { if (d < earliestPublish || isWeekend(d) || used.has(d) || free.includes(d)) continue; free.push(d); }
@@ -78,7 +81,7 @@ export function plan(i: Input) {
   }
   if (free.length < total) {
     const usedSlots = slots.filter(d => used.has(d));
-    if (free.length + usedSlots.length < total) warnings.push(`Im Zeitraum gibt es nur ${free.length + usedSlots.length} passende Veröffentlichungstage – geplant werden ${free.length + usedSlots.length} Beiträge. Frühestmöglicher Veröffentlichungstag: ${earliestPublish}.`);
+    if (free.length + usedSlots.length < total) warnings.push(t$(`Im Zeitraum gibt es nur ${free.length + usedSlots.length} passende Veröffentlichungstage – geplant werden ${free.length + usedSlots.length} Beiträge. Frühestmöglicher Veröffentlichungstag: ${earliestPublish}.`, `The period has only ${free.length + usedSlots.length} suitable publish days, so ${free.length + usedSlots.length} posts are planned. Earliest possible publish day: ${earliestPublish}.`));
     total = Math.min(total, free.length + usedSlots.length); free = free.concat(usedSlots);
   }
   const chosen: string[] = [];
@@ -87,7 +90,7 @@ export function plan(i: Input) {
     for (let n = 0; n < total; n++) chosen.push(pool[Math.min(pool.length - 1, Math.floor(n * step))]!);
   }
   const dates = [...new Set(chosen)].sort();
-  if (dates.some(d => used.has(d))) warnings.push("Einige Tage haben bereits Beiträge – dort entstehen Doppelungen. Die Termine lassen sich mit content-plan-shift ändern.");
+  if (dates.some(d => used.has(d))) warnings.push(t$("Einige Tage haben bereits Beiträge – dort entstehen Doppelungen. Die Termine lassen sich mit content-plan-shift ändern.", "Some days already have posts, so there are doubles. Move dates with content-plan-shift."));
 
   // 2) categories, evenly interleaved
   const cats = counts ? counts.map(([c]) => c) : [...new Set(i.categories)];
@@ -102,17 +105,17 @@ export function plan(i: Input) {
   }
 
   // 3) recipes and concrete topics (no repeats inside the plan)
-  const byCat = new Map<string, typeof recipeDataset.recipes>();
-  for (const r of recipeDataset.recipes) byCat.set(r.category, [...(byCat.get(r.category) ?? []), r]);
+  const byCat = new Map<string, Recipe[]>();
+  for (const r of set.recipes) byCat.set(r.category, [...(byCat.get(r.category) ?? []), r]);
   const cursor = new Map<string, number>(); const usedTitles = new Set<string>();
   const items = dates.map((date, idx) => {
     const category = sequence[idx] ?? cats[idx % cats.length]!;
-    const list = byCat.get(category) ?? recipeDataset.recipes;
+    const list = byCat.get(category) ?? set.recipes;
     const k = cursor.has(category) ? cursor.get(category)! + 1 : i.seed; cursor.set(category, k);
     const recipe = list[k % list.length]!;
     const title = pickIdea(recipe, usedTitles, k + idx);
     const media_type = i.media_type ?? recipe.mediaType;
-    const b: Block = block(idx, { title, recipe_id: recipe.id, media_type, location: recipe.locationHint });
+    const b: Block = block(idx, { title, recipe_id: recipe.id, media_type, location: recipe.locationHint }, lang);
     return { key: `p${idx + 1}`, date, category, recipe, title, media_type, b, shoot_day: null as string | null, phases: null as Partial<Record<Step, string>> | null };
   });
 
@@ -148,14 +151,14 @@ export function plan(i: Input) {
       it.shoot_day = `d${n + 1}`;
       const sd = day.date;
       if (!sd) {
-        conflicts.push({ level: "error", post_key: it.key, steps: ["shoot", "publish"], message: `„${it.title}": kein Drehtermin vor der Veröffentlichung möglich.` });
+        conflicts.push({ level: "error", post_key: it.key, steps: ["shoot", "publish"], message: `"${it.title}": ${t$("kein Drehtermin vor der Veröffentlichung möglich.", "no shoot date possible before publishing.")}` });
         it.phases = { publish: it.date }; continue;
       }
       let concept = wk(addDays(sd, -Math.max(0, off.concept - off.shoot)), today, true); if (concept < today) concept = today;
       let edit = wk(addDays(it.date, -off.edit), sd, false); if (edit <= sd) edit = addDays(sd, 1);
       let review = wk(addDays(it.date, -off.review), edit, true); if (review < edit) review = edit; if (review > it.date) review = it.date;
       it.phases = { concept, shoot: sd, edit, review, publish: it.date };
-      for (const c of validateDates(it.phases)) conflicts.push({ level: c.level, post_key: it.key, steps: c.steps, message: `„${it.title}": ${c.message}` });
+      for (const c of validateDates(it.phases, lang)) conflicts.push({ level: c.level, post_key: it.key, steps: c.steps, message: `"${it.title}": ${c.message}` });
     }
   });
 
@@ -163,7 +166,7 @@ export function plan(i: Input) {
   const startMin = toMin(i.start_time);
   const keyByIndex = new Map(items.map(x => [x.b.index, x.key]));
   const shootDays = days.map((day, n) => {
-    const ordered = order(day.items.map(x => x.b)); const tl = timeline(ordered, startMin, rules);
+    const ordered = order(day.items.map(x => x.b)); const tl = timeline(ordered, startMin, rules, lang);
     return { key: `d${n + 1}`, date: day.date, post_keys: day.items.map(x => x.key), shoots: day.items.length, total_minutes: tl.total, start: hhmm(startMin), end: hhmm(tl.end), schedule: tl.rows.map(r => ({ ...r, shoot_index: r.shoot_index === null ? null : (keyByIndex.get(r.shoot_index) ?? null) })) };
   });
   const posts = items.map(it => {
@@ -171,25 +174,26 @@ export function plan(i: Input) {
     return {
       key: it.key, title: it.title, category: it.category, recipe_id: it.recipe.id, media_type: it.media_type, location: it.b.location, slot_minutes: it.b.minutes, recording_minutes: it.b.recording_minutes,
       publish: it.date, concept: ph.concept ?? null, shoot: ph.shoot ?? null, edit: ph.edit ?? null, review: ph.review ?? null, shoot_day: it.shoot_day,
-      linked_dates: CHAIN.map((step, n) => ({ step, label_de: LABEL_DE[step], date: ph[step] ?? null, depends_on: n ? CHAIN[n - 1]! : null, min_days_after_previous: n ? MIN_GAP[CHAIN[n - 1]!] : null })),
+      linked_dates: CHAIN.map((step, n) => ({ step, label: labelOf(lang, step), date: ph[step] ?? null, depends_on: n ? CHAIN[n - 1]! : null, min_days_after_previous: n ? MIN_GAP[CHAIN[n - 1]!] : null })),
     };
   });
   const planId = createHash("sha256").update(JSON.stringify({ i, today })).digest("hex").slice(0, 12);
   const potential = items.reduce((n, it) => n + it.recipe.variants.reduce((a, v) => a + v.count, 0), 0);
   return {
-    language: "de", plan_id: planId, period: { from: i.from, to: i.to, planning_start: from }, today,
+    language: lang, plan_id: planId, period: { from: i.from, to: i.to, planning_start: from }, today,
     summary: { posts: items.length, shoot_days: shootDays.length, shoot_days_total_minutes: shootDays.reduce((n, d) => n + d.total_minutes, 0), recording_minutes_total: items.reduce((n, it) => n + it.b.recording_minutes, 0), potential_extra_pieces: potential, first_shoot: shootDays.find(d => d.date)?.date ?? null },
     posts, shoot_days: shootDays, conflicts, warnings,
     posts_for_reschedule: posts.map(p => ({ key: p.key, title: p.title, publish: p.publish, ...(p.concept ? { concept: p.concept } : {}), ...(p.shoot ? { shoot: p.shoot } : {}), ...(p.edit ? { edit: p.edit } : {}), ...(p.review ? { review: p.review } : {}), ...(p.shoot_day ? { shoot_group: p.shoot_day } : {}) })),
     next_step: "Send posts_for_reschedule to content-plan-shift together with one move to shift a date; the linked dates and shared shoot days follow.",
-    calendar_file_ics: ics(planId, today, posts, shootDays),
+    calendar_file_ics: ics(planId, today, posts, shootDays, lang),
     coverage: "Rule-based plan from your settings and the built-in recipes (video-recipes): topics are suggestions, not a strategy. No holidays, vacations, people or capacities are checked; existing_publish_dates and existing_shoot_dates are the only things it knows about your calendar. Calendar files are text you import yourself; nothing is written to any calendar.",
   };
 }
 
 interface IcsPost { key: string; title: string; media_type: string; linked_dates: { step: Step; date: string | null }[] }
 interface IcsDay { key: string; date: string | null; post_keys: string[]; shoots: number; start: string; end: string; schedule: { start: string; end: string; label: string }[] }
-function ics(planId: string, today: string, posts: IcsPost[], shootDays: IcsDay[]): string {
+function ics(planId: string, today: string, posts: IcsPost[], shootDays: IcsDay[], lang: Lang): string {
+  const t$ = (de: string, en: string) => tr(lang, de, en), L = (s: Step) => labelOf(lang, s);
   const stamp = `${today.replace(/-/g, "")}T000000Z`, day = (d: string) => d.replace(/-/g, "");
   const events: string[][] = [];
   for (const p of posts) {
@@ -199,8 +203,8 @@ function ics(planId: string, today: string, posts: IcsPost[], shootDays: IcsDay[
       if (!date || step === "shoot") continue; // the shoot appears once per shoot day below
       events.push([
         "BEGIN:VEVENT", `UID:${step === "publish" ? publishUid : `${planId}-${p.key}-${step}@agent.chiemgaufilms.com`}`, `DTSTAMP:${stamp}`,
-        `DTSTART;VALUE=DATE:${day(date)}`, `DTEND;VALUE=DATE:${day(addDays(date, 1))}`, `SUMMARY:${icsEscape(`${LABEL_DE[step]} · ${p.title}`)}`,
-        `DESCRIPTION:${icsEscape(`Kette: Konzept → Dreh → Schnitt → Freigabe → Veröffentlichung. Format: ${p.media_type}.`)}`, `CATEGORIES:${LABEL_DE[step]}`,
+        `DTSTART;VALUE=DATE:${day(date)}`, `DTEND;VALUE=DATE:${day(addDays(date, 1))}`, `SUMMARY:${icsEscape(`${L(step)} · ${p.title}`)}`,
+        `DESCRIPTION:${icsEscape(`${t$("Kette", "Chain")}: ${CHAIN.map(L).join(" → ")}. Format: ${p.media_type}.`)}`, `CATEGORIES:${L(step)}`,
         ...(step === "publish" ? [] : [`RELATED-TO;RELTYPE=PARENT:${publishUid}`]), "END:VEVENT",
       ]);
     }
@@ -212,8 +216,8 @@ function ics(planId: string, today: string, posts: IcsPost[], shootDays: IcsDay[
     const stampTime = (date: string, m: number) => `${day(date)}T${hhmm(m).replace(":", "")}00`;
     events.push([
       "BEGIN:VEVENT", `UID:${planId}-${d.key}-shoot@agent.chiemgaufilms.com`, `DTSTAMP:${stamp}`, `DTSTART:${stampTime(d.date, startMin)}`,
-      `DTEND:${stampTime(endMin <= startMin ? addDays(d.date, 1) : d.date, endMin)}`, `SUMMARY:${icsEscape(`Drehtag ${d.key}: ${d.shoots} ${d.shoots === 1 ? "Beitrag" : "Beiträge"}`)}`,
-      `DESCRIPTION:${icsEscape(titles.join("\n") + "\n\n" + d.schedule.map(r => `${r.start}–${r.end} ${r.label}`).join("\n"))}`, "CATEGORIES:Dreh", "END:VEVENT",
+      `DTEND:${stampTime(endMin <= startMin ? addDays(d.date, 1) : d.date, endMin)}`, `SUMMARY:${icsEscape(`${t$("Drehtag", "Shoot day")} ${d.key}: ${d.shoots} ${d.shoots === 1 ? t$("Beitrag", "post") : t$("Beiträge", "posts")}`)}`,
+      `DESCRIPTION:${icsEscape(titles.join("\n") + "\n\n" + d.schedule.map(r => `${r.start}–${r.end} ${r.label}`).join("\n"))}`, `CATEGORIES:${L("shoot")}`, "END:VEVENT",
     ]);
   }
   return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Chiemgau Films Agent Data API//Content Month Plan//DE", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", ...events.flat(), "END:VCALENDAR"].map(icsFold).join("\r\n") + "\r\n";
@@ -227,9 +231,9 @@ export const contentMonthPlan: ServiceDefinition<Input, ReturnType<typeof plan>>
   cacheTtlSeconds: cfg.cacheTtlSeconds, limits: { maxInputs: cfg.maxInputs, maxResults: cfg.maxResults },
   upstream: { endpoint: cfg.dataforseoEndpoint, maxCostUsd: cfg.maxUpstreamCostUsd },
   summary: "Plan a content month for a social media team or agency: up to 30 posts with topics, spread publish dates and linked dates per post (concept, shoot, edit, review, publish), bundled into realistic shoot days. Returns conflicts, input for content-plan-shift and one .ics file.",
-  notice: "Rule-based, German labels, no AI model, stateless. Send periods, counts, weekdays and your already booked dates only, no personal data. Topics are suggestions from built-in recipes, not a content strategy. Nothing is written to any calendar; the .ics text is yours to import.",
+  notice: "Rule-based, German or English (language), no AI model, stateless. Send periods, counts, weekdays and your already booked dates only, no personal data. Topics are suggestions from built-in recipes, not a content strategy. Nothing is written to any calendar; the .ics text is yours to import.",
   inputSchema, estimateCostUsd: () => 0,
   validateInput: i => { const earliest = addDays(i.today ?? berlinToday(), 2 + i.min_shoot_lead_days + 2); return i.to < earliest ? `The period ends before the first possible publish date (${earliest}): preparation, shoot and edit need time. Choose a later "to".` : null; },
   buildRequest: i => [i], mapResult: (_task, i) => plan(i), executeLocal: plan,
-  example: exampleInput as unknown as Input, outputExample: compactExample(plan(example), 1, 40),
+  example: exampleInput as unknown as Input, outputExample: compactExample(plan(example), 1, 30),
 };

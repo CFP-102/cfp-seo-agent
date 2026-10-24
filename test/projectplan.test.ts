@@ -84,6 +84,21 @@ describe("video-project-plan", () => {
     for (const goal of Object.keys(IDEAS)) expect(run({ ...chieming, goal, reel_count_min: 1, reel_count_max: 12 }).reels.length).toBeGreaterThan(0);
   });
 
+  it.skipIf(recipeDataset.sample)("answers in English when asked: ideas, schedule, post-production, checklist and trade texts", () => {
+    const r = run({ ...chieming, industry: "metal fabrication", town: "Leeds", language: "en" });
+    expect(r.language).toBe("en");
+    expect(r.project.trade_matched).toBe("Metalwork");
+    expect(r.shoot_day.schedule[0]!.label).toBe("Arrival, set-up & tech check");
+    expect(r.post_production.milestones.map(m => m.label)).toContain("Feedback round 1 (customer)");
+    expect(r.checklist[0]).toContain("GDPR");
+    expect(r.reels.some(x => x.title.includes("Leeds"))).toBe(true);
+    expect(r.calendar_file_ics).toContain("SUMMARY:Delivery to the customer");
+    const all = JSON.stringify({ s: r.shoot_day.schedule.filter(x => x.kind !== "shoot"), m: r.post_production.milestones, c: r.checklist, w: r.warnings, n: r.next_steps });
+    expect(all).not.toMatch(/[äöüß]|Mittag|Pause|Ortswechsel|Abgabe/);
+    expect(run({ ...chieming, goal: "product", language: "en" }).project.goal).toBe("produkt");
+    expect(run({ ...chieming, language: "de" }).shoot_day.schedule[0]!.label).toBe("Ankommen, Aufbau & Technik-Check");
+  });
+
   it("validates dates, window and recipes before any price is quoted", () => {
     const v = (x: object) => videoProjectPlan.validateInput!(parse({ ...chieming, ...x }));
     expect(v({})).toBeNull();

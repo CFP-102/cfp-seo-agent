@@ -4,7 +4,7 @@ import { buyer, fakeFacilitator, post, routedUpstream, start, type Event } from 
 import { SERVICES } from "../src/services/index.js";
 import { SERVICE_CONFIG, FACILITATOR_FEE_USD, PLAN_LIMITS, PLAN_SOURCES } from "../src/config/services.js";
 import { sunTimes } from "../src/services/sunTimes.js";
-import { videoRecipes, recipeDataset } from "../src/services/videoRecipes.js";
+import { videoRecipes, recipeDataset, recipesIn } from "../src/services/videoRecipes.js";
 import { shootDayPlan } from "../src/services/shootPlan.js";
 import { checkLocation, createShootLocationCheck, mapProtectedAreas, nearestStation, parseMosmix, protectedAreasUrl, simulatedAreas, simulatedKml, unzipKmz, weatherUrl } from "../src/services/shootLocationCheck.js";
 import { deflateRawSync, crc32 } from "node:zlib";
@@ -43,6 +43,19 @@ describe("sun times", () => {
 });
 
 describe("video-recipes", () => {
+  it.skipIf(recipeDataset.sample)("serves every recipe in English with the same structure as in German", () => {
+    const de = recipesIn("de"), en = recipesIn("en");
+    expect(en.recipes.map(r => r.id)).toEqual(de.recipes.map(r => r.id));
+    for (const [k, r] of en.recipes.entries()) {
+      const g = de.recipes[k]!;
+      expect([r.category, r.setup, r.shootMinutes, r.variants.map(v => v.type)], r.id).toEqual([g.category, g.setup, g.shootMinutes, g.variants.map(v => v.type)]);
+    }
+    expect(en.recipes.filter(r => /[äöüß]/.test(r.title + r.hook + r.description))).toEqual([]);
+    const out = videoRecipes.executeLocal!(videoRecipes.inputSchema.parse({ recipe_id: "tpl-produkt-in-30-sekunden", language: "en" }));
+    expect(out).toMatchObject({ language: "en", recipes: [{ title: "Product in 30 Seconds" }] });
+    expect(out.categories.find(c => c.id === "recruiting")!.label).toBe("Apprenticeships & recruiting");
+  });
+
   it.skipIf(recipeDataset.sample)("serves the operator's 75 recipes with a complete index and filters by category, words and exact id", () => {
     expect(recipeDataset.recipes).toHaveLength(75);
     const all = videoRecipes.executeLocal!(videoRecipes.inputSchema.parse({}));

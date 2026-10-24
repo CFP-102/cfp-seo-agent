@@ -26,6 +26,7 @@
 {{SERVICE_LINES_CONTENT}}
 
 ## Notes
+- Content planning services answer in German (default) or English: send "language": "en". Recipe, category and goal ids stay the same in both languages.
 - For businesses only (B2B). Calling a paid endpoint means you act as a business and accept the terms of use: {{BASE_URL}}/legal.html#terms
 - location_code is a country-level DataForSEO code (2840 United States, 2276 Germany, 2826 United Kingdom); the Google SERP family (google-serp, local-business, news-search, image-search, local-market-check) also takes DACH city/region codes from /api/v1/locations. Unsupported location/language pairs are rejected with HTTP 422 before any payment is requested.
 - AI keyword demand values are modeled estimates, not measured prompt counts.
