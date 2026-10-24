@@ -205,3 +205,31 @@ describe("/admin insights", () => {
     expect(html).toContain("Insights (live)");
   });
 });
+
+describe("admin hides test data without deleting it", () => {
+  it("excludes own test wallets and testnet rows from every admin aggregate, keeps the ledger intact", async () => {
+    const OWN = "0xe6a2dddb4c395a393e6035d7194119f62c969fad";
+    const { app, store } = buildTestApp({ fetchImpl: routedUpstream([]).impl, env: { ...adminEnv, PAYMENT_MODE: "mainnet", NODE_ENV: "production", PUBLIC_BASE_URL: "https://x.example.com", TRUST_PROXY: "1", ADMIN_PASSWORD: PASSWORD, DATAFORSEO_MODE: "live", ADMIN_EXCLUDE_PAYERS: OWN, CDP_API_KEY_ID: "id", CDP_API_KEY_SECRET: "secret" } });
+    const row = (id: string, payer: string, network: string, price: number, fail = false) => {
+      store.claim({ id, service_id: "keyword-ideas", data_source: "live", price_usdc: price, payment_key: "pk" + id, network, payer, input_hash: "h", input_json: "{}", result_token_hash: "t" });
+      store.setSettled(id, "0x" + id, payer);
+      if (fail) store.fail(id, "50000", 0);
+      else store.complete(id, { resultJson: "{}", upstreamCostUsd: 0.01, cacheHit: false });
+    };
+    row("own1", OWN.toUpperCase().replace("0X", "0x"), "eip155:8453", 0.025, true); // own wallet, failed: must not show up as a problem
+    row("test1", "0x1111111111111111111111111111111111111111", "eip155:84532", 0.04, true); // testnet failure
+    row("real1", "0x2222222222222222222222222222222222222222", "eip155:8453", 0.04);
+    const base = await start(app);
+    const d = await (await fetch(base + "/admin/stats.json", { headers: { authorization: basic("boss", PASSWORD) } })).json();
+    expect(d.needs_attention).toHaveLength(0);
+    expect(d.day.per_network.map((r: any) => r.network)).toEqual(["eip155:8453"]);
+    expect(d.day.per_network[0]).toMatchObject({ paid: 1 });
+    expect(d.day.per_network[0].revenue_usdc).toBeCloseTo(0.04);
+    expect(d.buyers.buyers).toBe(1);
+    expect(d.margins.find((m: any) => m.service_id === "keyword-ideas").paid).toBe(1);
+    // Nothing was deleted: the ledger still has all three rows.
+    expect(store.get("own1")).toBeTruthy();
+    expect(store.get("test1")).toBeTruthy();
+    expect(store.get("real1")).toBeTruthy();
+  });
+});

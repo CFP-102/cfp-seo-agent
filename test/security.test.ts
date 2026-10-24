@@ -880,3 +880,152 @@ it("keeps each reconciliation query within the public RPC 200-block limit and re
     expect(calls[1]![0]).toBe(calls[0]![1] + 1n);
   } finally { store.close(); }
 });
+
+import { createDataForSeoClient } from "../src/dataforseo/client.js";
+import { Pipeline } from "../src/services/pipeline.js";
+import { SERVICES } from "../src/services/index.js";
+import { createFreeSample } from "../src/freeSample.js";
+import { runInNewContext } from "node:vm";
+
+describe("2026-10-23 cost protection regressions", () => {
+  function livePipeline(fetchImpl: typeof fetch, dailyUsd = 5) {
+    const store = new Store(":memory:");
+    const guard = new CostGuard(store, { dailyUsd, monthlyUsd: 100, countSpend: true });
+    const dfs = createDataForSeoClient({ mode: "live", login: "dummy", password: "dummy", timeoutMs: 1000, fetchImpl });
+    return { store, pipeline: new Pipeline({ store, guard, dfs, services: SERVICES }) };
+  }
+
+  it.each(["network", "invalid-json"])("keeps the sample slot and reserves worst-case cost after ambiguous %s failure", async (kind) => {
+    const fetchImpl = (async () => {
+      if (kind === "network") throw new TypeError("connection lost after submission");
+      return new Response("truncated response", { status: 200 });
+    }) as typeof fetch;
+    const { store, pipeline } = livePipeline(fetchImpl);
+    try {
+      const sample = createFreeSample({ store, pipeline, dailyLimit: 1 });
+      expect((await sample.run("192.0.2.1", { keyword: "alpha" })).status).toBe(502);
+      expect(store.upstreamSpendSince(new Date().toISOString().slice(0, 10))).toBeCloseTo(0.09);
+      expect(sample.info().available_today).toBe(false);
+      expect((await sample.run("192.0.2.2", { keyword: "beta" })).status).toBe(429);
+    } finally { store.close(); }
+  });
+
+  it("counts a retry of an older purchase against today's and this month's budget", async () => {
+    const ff = fakeFetch(fixture("google-ads-search-volume.json"));
+    const { store, pipeline } = livePipeline(ff.impl, 0.09);
+    try {
+      const service = SERVICES.find((s) => s.id === "keyword-metrics")!;
+      const prep = pipeline.prepare(service, { keywords: ["alpha"] });
+      if (!prep.ok) throw new Error("invalid fixture");
+      const claim = pipeline.claim(prep.prepared, { key: "old-paid-call", network: "eip155:8453", payer: null, priceUsdc: 0.12 })!;
+      store.setSettled(claim.requestId, "offline-tx", null);
+      store.fail(claim.requestId, "upstream_error");
+      store.db.prepare("UPDATE requests SET created_at='2020-01-01T00:00:00.000Z' WHERE id=?").run(claim.requestId);
+      expect((await pipeline.retry(claim.requestId, claim.resultToken)).status).toBe(200);
+      expect(ff.calls).toHaveLength(1);
+      const day = new Date().toISOString().slice(0, 10);
+      expect(store.upstreamSpendSince(day)).toBeCloseTo(0.09);
+      expect(store.upstreamSpendSince(day.slice(0, 7) + "-01")).toBeCloseTo(0.09);
+      const next = pipeline.prepare(service, { keywords: ["beta"] });
+      expect(next).toMatchObject({ ok: false, body: { error: "daily_budget" } });
+    } finally { store.close(); }
+  });
+
+  it("migrates historical costs once and retains new execution-day costs across reopening and backup", () => {
+    const directory = mkdtempSync(join(tmpdir(), "cost-migration-"));
+    const database = join(directory, "ledger.db");
+    let store = new Store(database);
+    try {
+      store.claim({ id: "old", service_id: "keyword-metrics", data_source: "live", price_usdc: 0.12,
+        payment_key: "old", network: "eip155:8453", payer: null, input_hash: null, input_json: null, result_token_hash: null });
+      store.db.exec("DROP TRIGGER book_upstream_spend; DROP TABLE upstream_spend;");
+      store.db.exec("UPDATE requests SET created_at='2020-01-01T00:00:00.000Z', upstream_cost_usd=0.09");
+      store.close();
+      store = new Store(database);
+      expect(store.upstreamSpendSince("2020-01-01")).toBeCloseTo(0.09);
+      expect(store.upstreamSpendSince("2021-01-01")).toBe(0);
+      store.fail("old", "network", 0.09);
+      store.close();
+      store = new Store(database);
+      expect(store.upstreamSpendSince("2020-01-01")).toBeCloseTo(0.18);
+      expect(store.upstreamSpendSince(new Date().toISOString().slice(0, 10))).toBeCloseTo(0.09);
+      const file = backupLedger(database, join(directory, "backups"), 30);
+      const restored = new Store(join(directory, "backups", file));
+      try { expect(restored.upstreamSpendSince("2020-01-01")).toBeCloseTo(0.18); }
+      finally { restored.close(); }
+    } finally { store.close(); rmSync(directory, { recursive: true, force: true }); }
+  });
+});
+
+describe("browser purchase recovery", () => {
+  function setup() {
+    const window: Record<string, any> = {};
+    runInNewContext(readFileSync(new URL("../public/agentur.js", import.meta.url), "utf8"), { window });
+    const data = new Map<string, string>();
+    const storage = { getItem: (k: string) => data.get(k) ?? null, setItem: (k: string, v: string) => { data.set(k, v); }, removeItem: (k: string) => { data.delete(k); } };
+    let locked = false;
+    const locks = { request: async (_k: string, _opts: unknown, fn: (l: object | null) => Promise<unknown>) => {
+      if (locked) return fn(null);
+      locked = true;
+      try { return await fn({}); } finally { locked = false; }
+    } };
+    const make = (send: typeof fetch, s = storage, l: unknown = locks) => window.AgenturPay.createPurchaseSession(s, l, send);
+    const authorize = vi.fn(async () => ({ path: "/api/v1/google-serp", input: { keyword: "coffee" }, header: "secret-signature" }));
+    const confirm = vi.fn(async () => true);
+    return { storage, data, make, authorize, confirm };
+  }
+
+  it("blocks another authorization after response loss, including after reload", async () => {
+    const t = setup();
+    const send = vi.fn(async () => { throw new Error("lost response after settlement"); });
+    await expect(t.make(send).run(t.authorize, t.confirm)).rejects.toThrow("lost response");
+    await expect(t.make(send).run(t.authorize, t.confirm)).rejects.toThrow(/ungeklärt/);
+    expect(t.authorize).toHaveBeenCalledTimes(1);
+    expect(send).toHaveBeenCalledTimes(1);
+    expect([...t.data.values()].join()).not.toContain("secret-signature");
+  });
+
+  it("serializes tabs and blocks signing when durable storage is unavailable", async () => {
+    const t = setup();
+    let finish!: () => void;
+    const send = vi.fn(async () => { await new Promise<void>((r) => { finish = r; }); return Response.json({ request_id: "r", result: {} }); });
+    const first = t.make(send).run(t.authorize, t.confirm);
+    await vi.waitFor(() => expect(send).toHaveBeenCalledTimes(1));
+    await expect(t.make(send).run(t.authorize, t.confirm)).rejects.toThrow(/anderen Tab/);
+    finish(); await first;
+    const unavailable = { ...t.storage, setItem: () => { throw new Error("storage unavailable"); } };
+    t.data.clear();
+    await expect(t.make(send, unavailable).run(t.authorize, t.confirm)).rejects.toThrow("storage unavailable");
+    await expect(t.make(send, t.storage, null).run(t.authorize, t.confirm)).rejects.toThrow(/Web Locks/);
+    expect(t.authorize).toHaveBeenCalledTimes(1);
+  });
+
+  it("recovers a known paid result with GET and never signs or pays again", async () => {
+    const t = setup();
+    const send = vi.fn(async (_url: unknown, opts?: RequestInit) => opts?.method === "POST"
+      ? Response.json({ request_id: "r", result_token: "private-result-token", error: "upstream_timeout" }, { status: 504 })
+      : Response.json({ request_id: "r", service: "google-serp", result: { items: [] } }));
+    expect((await t.make(send).run(t.authorize, t.confirm)).ok).toBe(false);
+    const restored = await t.make(send).run(t.authorize, t.confirm);
+    expect(restored.body.result_token).toBe("private-result-token");
+    expect(send.mock.calls[1]).toEqual(["/api/v1/results/r", { headers: { authorization: "Bearer private-result-token" }, cache: "no-store" }]);
+    expect(t.authorize).toHaveBeenCalledTimes(1);
+    expect(t.make(send).read().state).toBe("completed");
+    const no = vi.fn(async () => false);
+    await t.make(send).run(t.authorize, no);
+    expect(t.authorize).toHaveBeenCalledTimes(1);
+    expect(no).toHaveBeenCalledTimes(1);
+  });
+
+  it("allows a new purchase only after completion and explicit confirmation; cancellation stores nothing", async () => {
+    const t = setup();
+    const send = vi.fn(async () => Response.json({ request_id: "r", result: {} }));
+    await t.make(send).run(async () => null, t.confirm);
+    expect(t.data.size).toBe(0);
+    await t.make(send).run(t.authorize, t.confirm);
+    await t.make(send).run(t.authorize, t.confirm);
+    expect(t.confirm).toHaveBeenCalledTimes(1);
+    expect(t.authorize).toHaveBeenCalledTimes(2);
+    expect(send).toHaveBeenCalledTimes(2);
+  });
+});

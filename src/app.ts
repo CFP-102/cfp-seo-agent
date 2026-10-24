@@ -39,6 +39,8 @@ const isEmptyBody = (body: unknown) => body === undefined || body === null || (t
 
 export function createApp(deps: AppDeps) {
   const { env, store, pipeline } = deps;
+  // Admin and status aggregates hide own test wallets and (on mainnet) testnet rows. The ledger itself is never changed.
+  store.setAdminFilter({ excludePayers: env.ADMIN_EXCLUDE_PAYERS.split(","), onlyMainnet: env.PAYMENT_MODE === "mainnet" });
   const services = pipeline.services;
   const app = express();
   app.disable("x-powered-by");

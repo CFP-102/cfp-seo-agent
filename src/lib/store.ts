@@ -101,6 +101,8 @@ export class Store {
       );
     `);
     this.migrate();
+    this.migrateSpend();
+    this.setAdminFilter({ excludePayers: [], onlyMainnet: false });
   }
 
   /** Additive migrations for databases created by older versions (columns are only ever added). */
@@ -122,6 +124,43 @@ export class Store {
     ];
     for (const [name, type] of added) {
       if (!have.has(name)) this.db.exec(`ALTER TABLE requests ADD COLUMN ${name} ${type}`);
+    }
+  }
+
+  /** Daily anonymous cost buckets: retry costs belong to the execution day, not the purchase day.
+   * The trigger updates each bucket in the same SQLite transaction as the request ledger.
+   * Historical execution dates are unknown; preserve their existing purchase-day attribution once.
+   */
+  private migrateSpend(): void {
+    this.db.exec("BEGIN IMMEDIATE");
+    try {
+      const exists = this.db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='upstream_spend'").get();
+      if (!exists) {
+        this.db.exec(`
+          CREATE TABLE upstream_spend (
+            day TEXT NOT NULL,
+            data_source TEXT NOT NULL,
+            cost_usd REAL NOT NULL,
+            PRIMARY KEY (day, data_source)
+          );
+          INSERT INTO upstream_spend (day, data_source, cost_usd)
+            SELECT substr(created_at, 1, 10), data_source, SUM(upstream_cost_usd)
+            FROM requests GROUP BY substr(created_at, 1, 10), data_source;
+        `);
+      }
+      this.db.exec(`
+        CREATE TRIGGER IF NOT EXISTS book_upstream_spend AFTER UPDATE OF upstream_cost_usd ON requests
+        WHEN NEW.upstream_cost_usd > OLD.upstream_cost_usd
+        BEGIN
+          INSERT INTO upstream_spend (day, data_source, cost_usd)
+            VALUES (strftime('%Y-%m-%d', 'now'), NEW.data_source, NEW.upstream_cost_usd - OLD.upstream_cost_usd)
+            ON CONFLICT(day, data_source) DO UPDATE SET cost_usd=cost_usd+excluded.cost_usd;
+        END;
+        COMMIT;
+      `);
+    } catch (err) {
+      this.db.exec("ROLLBACK");
+      throw err;
     }
   }
 
@@ -246,7 +285,7 @@ export class Store {
   /** Real (live, not sandbox) upstream spend in USD since the given ISO date, e.g. '2026-10-20' or '2026-10-01'. */
   upstreamSpendSince(since: string): number {
     const row = this.db
-      .prepare(`SELECT COALESCE(SUM(upstream_cost_usd), 0) AS s FROM requests WHERE created_at >= ? AND data_source = 'live'`)
+      .prepare(`SELECT COALESCE(SUM(cost_usd), 0) AS s FROM upstream_spend WHERE day >= ? AND data_source = 'live'`)
       .get(since) as { s: number };
     return row.s;
   }
@@ -263,7 +302,7 @@ export class Store {
                 SUM(CASE WHEN tx_hash IS NOT NULL THEN price_usdc ELSE 0 END) AS revenue_usdc,
                 SUM(upstream_cost_usd) AS upstream_cost_usd,
                 SUM(cache_hit) AS cache_hits
-         FROM requests WHERE created_at >= ? GROUP BY service_id ORDER BY service_id`,
+         FROM admin_requests WHERE created_at >= ? GROUP BY service_id ORDER BY service_id`,
       )
       .all(since);
     const counters = this.db
@@ -318,7 +357,7 @@ export class Store {
                 COALESCE(SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END), 0) AS completed,
                 COALESCE(SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END), 0) AS failed,
                 COALESCE(SUM(cache_hit), 0) AS cache_hits
-         FROM requests WHERE created_at >= ?`,
+         FROM admin_requests WHERE created_at >= ?`,
       )
       .get(since) as Record<string, number>;
     const perNetwork = this.db
@@ -328,7 +367,7 @@ export class Store {
                 SUM(CASE WHEN tx_hash IS NOT NULL THEN 1 ELSE 0 END) AS paid,
                 COALESCE(SUM(CASE WHEN tx_hash IS NOT NULL THEN price_usdc ELSE 0 END), 0) AS revenue_usdc,
                 COALESCE(SUM(upstream_cost_usd), 0) AS upstream_cost_usd
-         FROM requests WHERE created_at >= ? GROUP BY network, data_source ORDER BY network, data_source`,
+         FROM admin_requests WHERE created_at >= ? GROUP BY network, data_source ORDER BY network, data_source`,
       )
       .all(since) as unknown as NetworkRow[];
     const { perService, counters } = this.stats(period);
@@ -340,7 +379,7 @@ export class Store {
     return this.db
       .prepare(
         `SELECT id, service_id, created_at, status, network, payer, tx_hash, price_usdc, retries, error_code
-         FROM requests
+         FROM admin_requests
          WHERE status != 'completed' AND (tx_hash IS NOT NULL OR error_code LIKE 'interrupted%' OR error_code='settlement_uncertain')
          ORDER BY created_at DESC LIMIT ?`,
       )
@@ -369,7 +408,7 @@ export class Store {
         `SELECT service_id,
                 SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END) AS delivered,
                 SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed
-         FROM requests WHERE created_at >= ? AND tx_hash IS NOT NULL AND network = ? GROUP BY service_id`,
+         FROM admin_requests WHERE created_at >= ? AND tx_hash IS NOT NULL AND network = ? GROUP BY service_id`,
       )
       .all(since, MAINNET_NETWORK) as { service_id: string; delivered: number; failed: number }[];
   }
@@ -383,6 +422,19 @@ export class Store {
     return this.db.prepare(`SELECT created_at, text FROM wishes ORDER BY id DESC LIMIT ?`).all(limit) as { created_at: string; text: string }[];
   }
 
+  /**
+   * Admin/public aggregates read from this view: it hides test data. `excludePayers` (own test wallets) and
+   * `onlyMainnet` (hide testnet rows) never delete anything; the ledger stays complete for bookkeeping.
+   */
+  setAdminFilter(opts: { excludePayers: string[]; onlyMainnet: boolean }): void {
+    const wallets = opts.excludePayers.map((a) => a.trim().toLowerCase()).filter((a) => /^0x[0-9a-f]{40}$/.test(a));
+    const where = [
+      wallets.length ? `(payer IS NULL OR lower(payer) NOT IN (${wallets.map((a) => `'${a}'`).join(",")}))` : "",
+      opts.onlyMainnet ? `(network IS NULL OR network = '${MAINNET_NETWORK}')` : "",
+    ].filter(Boolean);
+    this.db.exec(`DROP VIEW IF EXISTS admin_requests; CREATE TEMP VIEW admin_requests AS SELECT * FROM requests${where.length ? " WHERE " + where.join(" AND ") : ""}`);
+  }
+
   /** Real-money (mainnet) figures per day for the last `days` days, oldest first, missing days filled with zeros. */
   history(days = 30, now: Date = new Date()) {
     const first = new Date(now.getTime() - (days - 1) * 86_400_000).toISOString().slice(0, 10);
@@ -393,7 +445,7 @@ export class Store {
                 SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed,
                 COALESCE(SUM(CASE WHEN tx_hash IS NOT NULL THEN price_usdc ELSE 0 END), 0) AS revenue_usdc,
                 COALESCE(SUM(upstream_cost_usd), 0) AS cost_usd
-         FROM requests WHERE created_at >= ? AND network = ? GROUP BY day`,
+         FROM admin_requests WHERE created_at >= ? AND network = ? GROUP BY day`,
       )
       .all(first, MAINNET_NETWORK) as { day: string; paid: number; failed: number; revenue_usdc: number; cost_usd: number }[];
     const byDay = new Map(rows.map((r) => [r.day, r]));
@@ -413,7 +465,7 @@ export class Store {
                 SUM(CASE WHEN tx_hash IS NOT NULL AND status='failed' THEN 1 ELSE 0 END) AS failed,
                 COALESCE(SUM(CASE WHEN tx_hash IS NOT NULL THEN price_usdc ELSE 0 END), 0) AS revenue_usdc,
                 COALESCE(SUM(upstream_cost_usd), 0) AS cost_usd
-         FROM requests WHERE created_at >= ? AND network = ? GROUP BY service_id ORDER BY revenue_usdc DESC, service_id`,
+         FROM admin_requests WHERE created_at >= ? AND network = ? GROUP BY service_id ORDER BY revenue_usdc DESC, service_id`,
       )
       .all(since, MAINNET_NETWORK) as { service_id: string; paid: number; delivered: number; failed: number; revenue_usdc: number; cost_usd: number }[];
   }
@@ -423,13 +475,13 @@ export class Store {
     const totals = this.db
       .prepare(
         `SELECT COUNT(*) AS buyers, COALESCE(SUM(CASE WHEN calls >= 2 THEN 1 ELSE 0 END), 0) AS repeat_buyers
-         FROM (SELECT payer, COUNT(*) AS calls FROM requests WHERE created_at >= ? AND network = ? AND tx_hash IS NOT NULL AND payer IS NOT NULL GROUP BY payer)`,
+         FROM (SELECT payer, COUNT(*) AS calls FROM admin_requests WHERE created_at >= ? AND network = ? AND tx_hash IS NOT NULL AND payer IS NOT NULL GROUP BY payer)`,
       )
       .get(since, MAINNET_NETWORK) as { buyers: number; repeat_buyers: number };
     const topBuyers = this.db
       .prepare(
         `SELECT payer, COUNT(*) AS calls, SUM(price_usdc) AS usdc, MAX(created_at) AS last_seen
-         FROM requests WHERE created_at >= ? AND network = ? AND tx_hash IS NOT NULL AND payer IS NOT NULL
+         FROM admin_requests WHERE created_at >= ? AND network = ? AND tx_hash IS NOT NULL AND payer IS NOT NULL
          GROUP BY payer ORDER BY usdc DESC, calls DESC LIMIT ?`,
       )
       .all(since, MAINNET_NETWORK, top) as { payer: string; calls: number; usdc: number; last_seen: string }[];
@@ -451,7 +503,7 @@ export class Store {
     return this.db
       .prepare(
         `SELECT substr(created_at, 1, 10) AS day, service_id, payer, price_usdc, upstream_cost_usd, status
-         FROM requests WHERE created_at >= ? AND network = ? AND tx_hash IS NOT NULL`,
+         FROM admin_requests WHERE created_at >= ? AND network = ? AND tx_hash IS NOT NULL`,
       )
       .all(since, MAINNET_NETWORK) as { day: string; service_id: string; payer: string | null; price_usdc: number; upstream_cost_usd: number; status: string }[];
   }
@@ -459,7 +511,7 @@ export class Store {
   /** First real-money payment per payer (for "new buyers per day"). */
   firstPayments() {
     return this.db
-      .prepare(`SELECT payer, MIN(created_at) AS first FROM requests WHERE network = ? AND tx_hash IS NOT NULL AND payer IS NOT NULL GROUP BY payer`)
+      .prepare(`SELECT payer, MIN(created_at) AS first FROM admin_requests WHERE network = ? AND tx_hash IS NOT NULL AND payer IS NOT NULL GROUP BY payer`)
       .all(MAINNET_NETWORK) as { payer: string; first: string }[];
   }
 
@@ -467,7 +519,7 @@ export class Store {
   locationCounts(since: string) {
     return this.db
       .prepare(
-        `SELECT json_extract(input_json, '$.location_code') AS loc, COUNT(*) AS n FROM requests
+        `SELECT json_extract(input_json, '$.location_code') AS loc, COUNT(*) AS n FROM admin_requests
          WHERE created_at >= ? AND input_json IS NOT NULL AND json_valid(input_json) GROUP BY loc ORDER BY n DESC LIMIT 15`,
       )
       .all(since) as { loc: number | null; n: number }[];
@@ -478,7 +530,7 @@ export class Store {
     return this.db
       .prepare(
         `SELECT created_at, service_id, price_usdc, network, payer, tx_hash, status
-         FROM requests WHERE substr(created_at, 1, 7) = ? AND network = ? AND tx_hash IS NOT NULL ORDER BY created_at LIMIT 100000`,
+         FROM admin_requests WHERE substr(created_at, 1, 7) = ? AND network = ? AND tx_hash IS NOT NULL ORDER BY created_at LIMIT 100000`,
       )
       .all(month, MAINNET_NETWORK) as { created_at: string; service_id: string; price_usdc: number; network: string; payer: string | null; tx_hash: string; status: string }[];
   }

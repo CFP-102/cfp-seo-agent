@@ -160,8 +160,9 @@ export class Pipeline {
       return response;
     } catch (err) {
       const e = err instanceof DataForSeoError ? err : new DataForSeoError("internal error", "internal");
-      // A timeout may still be billed by the provider: book the worst-case estimate so the budget and margin stay honest.
-      const cost = e.code === "timeout" ? Math.max(e.costUsd, p.estimateUsd) : e.costUsd;
+      // Transport failures and unreadable responses may still be billed: reserve the full cost, even for a previously cached request.
+      const uncertain = ["timeout", "network", "bad_response"].includes(String(e.code)) || String(e.code).startsWith("http_");
+      const cost = uncertain ? Math.max(e.costUsd, service.estimateCostUsd(input)) : e.costUsd;
       this.deps.store.fail(requestId, String(e.code), cost);
       log.warn("upstream call failed", { requestId, service: service.id, code: e.code, cost });
       throw e;
