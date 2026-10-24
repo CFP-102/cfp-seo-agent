@@ -101,8 +101,11 @@ export function inputJsonSchema(schema: z.ZodType): Record<string, unknown> {
 /** MCP tool name for a service id: keyword-metrics -> keyword_metrics. */
 export const toolNameOf = (serviceId: string) => serviceId.replace(/-/g, "_");
 
-/** Trimmed, 1..max characters, no control characters (free-text labels of the planning services). */
-export const plain = (max: number) => z.string().trim().min(1).max(max).regex(/^[^\u0000-\u001f\u007f]+$/u, "Control characters are not allowed");
+/**
+ * Trimmed, 1..max characters, no control characters (free-text labels of the planning services).
+ * Written with \xNN escapes: the pattern is published in JSON Schema, and Coinbase Bazaar (Go RE2) rejects \uNNNN.
+ */
+export const plain = (max: number) => z.string().trim().min(1).max(max).regex(/^[^\x00-\x1f\x7f]+$/u, "Control characters are not allowed");
 
 /** Reads a response body up to `maxBytes`; larger or unreadable bodies are refused with a bad_response error. */
 export async function readBounded(response: Response, maxBytes: number): Promise<Buffer> {

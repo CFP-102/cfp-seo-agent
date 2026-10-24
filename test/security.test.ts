@@ -1334,3 +1334,26 @@ describe("admin and page-counter safety", () => {
     expect(csp).not.toMatch(/unsafe-inline|unsafe-eval|\*/);
   });
 });
+
+import { SERVICES as ALL_SERVICES } from "../src/services/index.js";
+import { inputJsonSchema } from "../src/services/common.js";
+
+describe("published input schemas work with every discovery service", () => {
+  it("uses only regex syntax that both JavaScript and Go RE2 (Coinbase Bazaar) accept, and still blocks control characters", () => {
+    const patterns: string[] = [];
+    const walk = (o: unknown) => {
+      if (Array.isArray(o)) o.forEach(walk);
+      else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) { if (k === "pattern" && typeof v === "string") patterns.push(v); else walk(v); }
+    };
+    for (const s of ALL_SERVICES) walk(inputJsonSchema(s.inputSchema));
+    expect(patterns.length).toBeGreaterThan(0);
+    for (const p of patterns) {
+      expect(p, p).not.toMatch(/\\u[0-9a-fA-F]{4}|\(\?<|\(\?=|\(\?!|\\k</); // no \uNNNN, lookarounds or named back-references
+      expect(() => new RegExp(p, "u"), p).not.toThrow();
+    }
+    const plainField = ALL_SERVICES.find((s) => s.id === "shoot-day-plan")!.inputSchema;
+    expect(plainField.safeParse({ shoots: [{ title: "ok\u0007" }] }).success).toBe(false);
+    expect(plainField.safeParse({ shoots: [{ title: "ok\u007f" }] }).success).toBe(false);
+    expect(plainField.safeParse({ shoots: [{ title: "Größe – ok" }] }).success).toBe(true);
+  });
+});
