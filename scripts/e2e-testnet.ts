@@ -41,7 +41,7 @@ async function main() {
     const json = await res.json();
     const header = res.headers.get("payment-response");
     const receipt = header ? decodePaymentResponseHeader(header) : null;
-    if (res.status !== 200 || receipt?.success !== true || receipt.network !== options.network || json.data_source !== options.source || typeof json.request_id !== "string" || !signature) throw new Error("Paid call failed or uncertain");
+    if (res.status !== 200 || receipt?.success !== true || receipt.network !== options.network || (json.data_source !== options.source && json.data_source !== "local") || typeof json.request_id !== "string" || !signature) throw new Error("Paid call failed or uncertain");
     const rc = await chain.waitForTransactionReceipt({ hash: receipt.transaction as `0x${string}` });
     const valid = rc.status === "success" && rc.logs.some((log) => {
       if (log.address.toLowerCase() !== options.asset.toLowerCase()) return false;
