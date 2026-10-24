@@ -211,7 +211,7 @@ describe("Bazaar discovery metadata and crawler probes", () => {
     for (const s of SERVICES) {
       const res = await fetch(base + s.route, post(s.example));
       const required = decodePaymentRequiredHeader(res.headers.get("payment-required")!) as unknown as { extensions?: Record<string, any> };
-      expect(res.headers.get("payment-required")!.length, s.id + " payment-required header size").toBeLessThan(8000);
+      expect(res.headers.get("payment-required")!.length, s.id + " payment-required header size").toBeLessThan(7500);
       const info = required.extensions?.bazaar?.info;
       expect(info, s.id).toBeTruthy();
       expect(JSON.stringify(info), s.id).toContain(JSON.stringify(Object.values(s.example as object)[0]).slice(0, 12));
@@ -384,5 +384,32 @@ describe("website and discovery files", () => {
     expect((await fetch(base + "/nope")).status).toBe(404);
     expect((await fetch(base + "/health")).status).toBe(200);
     expect((await fetch(base + "/api/v1/services")).status).toBe(200);
+  });
+});
+
+describe("discovery schema for the 402 header", () => {
+  it("drops prose and patterns but keeps names, types, bounds and data values", async () => {
+    const { discoverySchema } = await import("../src/services/common.js");
+    const out = discoverySchema({ type: "object", description: "x", default: { description: "keep", pattern: "keep" }, properties: { description: { type: "string", description: "d", pattern: "^a$", maxLength: 5 }, pattern: { type: "string" }, day: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "d" }, kind: { enum: ["description", "pattern"] } }, required: ["description"] }) as any;
+    expect(out.description).toBeUndefined();
+    expect(out.default).toEqual({ description: "keep", pattern: "keep" });
+    expect(out.properties.description).toEqual({ type: "string", maxLength: 5 });
+    expect(out.properties.pattern).toEqual({ type: "string" });
+    expect(out.properties.day).toEqual({ type: "string", format: "date" });
+    expect(out.properties.kind).toEqual({ enum: ["description", "pattern"] });
+    expect(out.required).toEqual(["description"]);
+  });
+
+  it("is what the 402 header publishes: no patterns or descriptions in the input schema", async () => {
+    const { app } = paid();
+    const base = await start(app);
+    for (const id of ["content-month-plan", "keyword-metrics"]) {
+      const s = SERVICES.find((x) => x.id === id)!;
+      const res = await fetch(base + s.route, post(s.example));
+      const required = decodePaymentRequiredHeader(res.headers.get("payment-required")!) as unknown as { extensions?: Record<string, any> };
+      const text = JSON.stringify(required.extensions!.bazaar.schema.properties.input);
+      expect(text, id).not.toContain('"pattern"');
+      expect(text, id).not.toContain('"description"');
+    }
   });
 });

@@ -98,6 +98,32 @@ export function inputJsonSchema(schema: z.ZodType): Record<string, unknown> {
   return js;
 }
 
+/** Schema keywords whose values are data (not sub-schemas): never rewritten. */
+const DATA_KEYWORDS = new Set(["default", "const", "enum", "examples", "example"]);
+const ISO_DATE_PATTERN = "^\\d{4}-\\d{2}-\\d{2}$";
+
+/**
+ * Compact copy of an input schema for the x402 `payment-required` header (Bazaar discovery): the header must stay well below the
+ * 8 KB per-line limit of some HTTP clients (Python aiohttp 8190). Keeps names, types, enums and bounds; drops prose descriptions and
+ * string patterns (the full schema stays in OpenAPI, MCP and llms.txt, and the server validates every input anyway). Calendar-date
+ * patterns become `format: "date"` so agents still see the shape.
+ */
+export function discoverySchema(schema: Record<string, unknown>): Record<string, unknown> {
+  const walk = (v: unknown): unknown => {
+    if (Array.isArray(v)) return v.map(walk);
+    if (!v || typeof v !== "object") return v;
+    const out: Record<string, unknown> = {};
+    for (const [k, x] of Object.entries(v as Record<string, unknown>)) {
+      if (DATA_KEYWORDS.has(k)) out[k] = x;
+      else if (k === "description" && typeof x === "string") continue;
+      else if (k === "pattern" && typeof x === "string") { if (x === ISO_DATE_PATTERN) out.format = "date"; }
+      else out[k] = walk(x);
+    }
+    return out;
+  };
+  return walk(schema) as Record<string, unknown>;
+}
+
 /** MCP tool name for a service id: keyword-metrics -> keyword_metrics. */
 export const toolNameOf = (serviceId: string) => serviceId.replace(/-/g, "_");
 

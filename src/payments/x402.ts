@@ -16,7 +16,7 @@ import { clientKey } from "../lib/rateLimit.js";
 import { log } from "../lib/log.js";
 import type { Store } from "../lib/store.js";
 import type { ServiceDefinition } from "../services/types.js";
-import { inputJsonSchema, toolNameOf } from "../services/common.js";
+import { discoverySchema, inputJsonSchema, toolNameOf } from "../services/common.js";
 import { hashToken, newToken, requestState, type Pipeline, type Prepared } from "../services/pipeline.js";
 
 /**
@@ -242,8 +242,9 @@ export function createPayments(cfg: PaymentsConfig, deps: { store: Store; pipeli
       const { key, payer } = paymentKeyOf(paymentPayload as PaymentPayload);
       const row = store.getByPaymentKey(key);
       if (row && result.success && result.transaction) {
-        store.setSettled(row.id, result.transaction, result.payer?.toLowerCase() ?? null);
-        log.info("payment settled", { requestId: row.id, service: row.service_id, network: result.network, tx: result.transaction, phase, extensions: extensionTrail(result.extensionResponses) });
+        const extensions = extensionTrail(result.extensionResponses);
+        store.setSettled(row.id, result.transaction, result.payer?.toLowerCase() ?? null, extensions ? JSON.stringify(extensions).slice(0, 500) : null);
+        log.info("payment settled", { requestId: row.id, service: row.service_id, network: result.network, tx: result.transaction, phase, extensions });
       } else if (!row && result.success) {
         // Must never happen (the claim is only released when settlement did not happen). If it does, leave a trail for a manual refund.
         log.error("settled payment without ledger row", { tx: result.transaction, payer: result.payer ?? payer, network: result.network });
@@ -390,7 +391,7 @@ export function createPayments(cfg: PaymentsConfig, deps: { store: Store; pipeli
         ...declareDiscoveryExtension({
           bodyType: "json",
           input: s.example as Record<string, unknown>,
-          inputSchema: inputJsonSchema(s.inputSchema),
+          inputSchema: discoverySchema(inputJsonSchema(s.inputSchema)),
           output: { example: s.outputExample },
         }),
       },

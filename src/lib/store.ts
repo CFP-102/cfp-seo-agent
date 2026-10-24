@@ -122,6 +122,7 @@ export class Store {
       ["input_json", "TEXT"],
       ["retries", "INTEGER NOT NULL DEFAULT 0"],
       ["result_token_hash", "TEXT"],
+      ["extension_status", "TEXT"],
     ];
     for (const [name, type] of added) {
       if (!have.has(name)) this.db.exec(`ALTER TABLE requests ADD COLUMN ${name} ${type}`);
@@ -229,8 +230,9 @@ export class Store {
   }
 
   /** Record a successful on-chain settlement for a claimed request. */
-  setSettled(id: string, txHash: string, payer: string | null): void {
-    this.db.prepare(`UPDATE requests SET tx_hash = ?, payer = COALESCE(?, payer) WHERE id = ?`).run(txHash, payer, id);
+  /** `extensionStatus`: short public status JSON of the facilitator's extension responses (e.g. Bazaar), kept for diagnosis only. */
+  setSettled(id: string, txHash: string, payer: string | null, extensionStatus: string | null = null): void {
+    this.db.prepare(`UPDATE requests SET tx_hash = ?, payer = COALESCE(?, payer), extension_status = COALESCE(?, extension_status) WHERE id = ?`).run(txHash, payer, extensionStatus, id);
   }
 
   complete(id: string, r: { resultJson: string; upstreamCostUsd: number; cacheHit: boolean }): void {

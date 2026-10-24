@@ -1534,4 +1534,12 @@ describe("extension responses in the settlement log", () => {
     expect(extensionTrail([1])).toBeUndefined();
     expect(extensionTrail({})).toBeUndefined();
   });
+
+  it("stores the short status with the settled ledger row and keeps it when none is given", () => {
+    const store = new Store(":memory:");
+    store.db.prepare("INSERT INTO requests (id, service_id, created_at, status, data_source) VALUES ('s1', 'x', ?, 'processing', 'live')").run(new Date().toISOString());
+    store.setSettled("s1", "0xtx", "0xabc", '{"bazaar":{"status":"processing"}}');
+    store.setSettled("s1", "0xtx", null);
+    expect((store.db.prepare("SELECT extension_status e FROM requests WHERE id='s1'").get() as { e: string }).e).toBe('{"bazaar":{"status":"processing"}}');
+  });
 });
