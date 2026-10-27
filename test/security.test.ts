@@ -1543,3 +1543,23 @@ describe("extension responses in the settlement log", () => {
     expect((store.db.prepare("SELECT extension_status e FROM requests WHERE id='s1'").get() as { e: string }).e).toBe('{"bazaar":{"status":"processing"}}');
   });
 });
+
+describe("agent commerce pages", () => {
+  it("serve with a strict CSP, no inline code, no leftover placeholders, and state that gift cards are not yet on sale", async () => {
+    const { app } = buildTestApp({ fetchImpl: routedUpstream([]).impl, env: { PAY_TO_ADDRESS: PAY_TO } });
+    const base = await start(app);
+    for (const path of ["/giftcards", "/de/gutscheine", "/finance", "/de/finanzen"]) {
+      const res = await fetch(base + path);
+      expect(res.status, path).toBe(200);
+      const csp = res.headers.get("content-security-policy") ?? "";
+      expect(csp).toContain("form-action 'none'");
+      expect(csp).not.toMatch(/unsafe-inline|unsafe-eval/);
+      const html = await res.text();
+      expect(html, path).not.toMatch(/\{\{[A-Z_0-9]+\}\}/);
+      expect(html, path).not.toMatch(/<script|\son[a-z]+=|style=/);
+      if (path.includes("gift") || path.includes("gutschein")) expect(html).toMatch(/In (preparation|Vorbereitung)/);
+      else expect(html).toMatch(/no partnership|keine Partnerschaft/);
+    }
+    for (const path of ["/", "/de/"]) expect(await (await fetch(base + path)).text()).toMatch(/href="\/(de\/gutscheine|giftcards)"/);
+  });
+});

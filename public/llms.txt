@@ -34,6 +34,11 @@
 ## Content planning for agencies and video teams (USDC per call)
 {{SERVICE_LINES_CONTENT}}
 
+## Agent Commerce
+- Status of both modules (free): {{BASE_URL}}/api/v1/commerce
+- Agent Gift Cards: {{BASE_URL}}/giftcards — catalog, binding quote, one x402 payment of the exact quoted amount, code delivery. In preparation; endpoints answer 503 until switched on.
+- Agent Finance Gateway: {{BASE_URL}}/finance — free directory of financial services payable via x402 (GET /api/v1/finance/partners, /api/v1/finance/offers). Information only: no partnership, no fees, no referral tracking.
+
 ## Notes
 - Content planning services answer in German (default) or English: send "language": "en". Recipe, category and goal ids stay the same in both languages.
 - For businesses only (B2B). Calling a paid endpoint means you act as a business and accept the terms of use: {{BASE_URL}}/legal.html#terms

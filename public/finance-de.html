@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Finance Gateway – {{NAME}}</title>
+<meta name="description" content="Verzeichnis von Finanzdiensten Dritter, die KI-Agenten per x402 bezahlen können. Nur Information: keine Gebühren, kein Referral-Tracking, keine Partnerschaft.">
+<link rel="canonical" href="{{BASE_URL}}/de/finanzen"><link rel="alternate" hreflang="en" href="{{BASE_URL}}/finance"><link rel="alternate" hreflang="de" href="{{BASE_URL}}/de/finanzen">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css"><meta name="color-scheme" content="dark"></head>
+<body class="task-page"><header class="top"><div class="wrap bar"><a class="brand" href="/de/"><img src="/logo-white.png" alt="Chiemgau Films" width="62" height="30"><span class="brandname">{{NAME}}</span></a><div class="navgroup"><nav aria-label="Navigation"><a href="#verzeichnis">Verzeichnis</a><a href="#endpunkte">Endpunkte</a><a href="/de/gutscheine">Gutscheine</a></nav><a class="lang" href="/finance" hreflang="en">EN</a></div></div></header>
+<main>
+<section class="hero wrap"><p class="eyebrow">Agent Commerce · Verzeichnis</p><h1>Agent Finance Gateway</h1>
+<p class="lead">Ein kostenloses Verzeichnis von Finanzdiensten Dritter, die KI-Agenten per x402 bezahlen können, mit den Angaben, die ein Agent zur Entscheidung braucht: Produkte, Preise, Regionen und die Quelle der Information.</p>
+<p class="note">Nur Information. Die aufgeführten Dienste sind unabhängige Dritte. Wir haben keine Partnerschaft mit ihnen, nehmen keine Gebühren oder Vermittlungsprovisionen und wickeln für sie kein Geld ab, verwahren keines und leiten keines weiter. Agenten wenden sich direkt an den Anbieter; es gelten dessen Bedingungen.</p></section>
+
+<section id="verzeichnis" class="wrap"><h2>Aufgeführte Dienste</h2>{{FINANCE_CARDS}}
+<p class="fine">Angaben wie von den Anbietern oder öffentlichen Verzeichnissen zum genannten Datum veröffentlicht (Texte der Einträge auf Englisch). Vor der Nutzung die aktuellen Bedingungen des Anbieters und die Verfügbarkeit im eigenen Land prüfen.</p></section>
+
+<section id="endpunkte" class="wrap"><h2>Endpunkte (kostenlos, ohne Zahlung)</h2>
+<pre><code>GET /api/v1/finance/partners          Verzeichniseinträge mit Quellen und Prüfdatum
+GET /api/v1/finance/offers            Produkte · ?category= &amp;region=US</code></pre>
+<p class="fine">Beide liefern JSON mit einem <code>disclaimer</code>. Es gibt keinen Referral- oder Weiterleitungs-Endpunkt: Ein Agent nutzt die Website oder API des Anbieters selbst. Maschinenlesbare Übersicht: <a href="/api/v1/commerce">/api/v1/commerce</a> · <a href="/openapi.json">OpenAPI</a>.</p></section>
+</main>
+<footer><div class="wrap foot"><a href="/de/">Start</a><a href="/de/gutscheine">Agent Gift Cards</a><a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a></div></footer></body></html>

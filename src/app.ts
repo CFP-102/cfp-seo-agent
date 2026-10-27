@@ -12,6 +12,9 @@ import { createFreeSample } from "./freeSample.js";
 import { createSiteRouter } from "./web/site.js";
 import { createPageViewCounter } from "./lib/pageViews.js";
 import { searchDachLocations } from "./config/locales.js";
+import { createCommerce } from "./commerce/index.js";
+import type { GiftCardProvider } from "./commerce/provider.js";
+import type { FacilitatorClient } from "@x402/core/server";
 
 /** Services whose upstream (Google SERP family) accepts city/region codes. */
 export const SERP_FAMILY = ["google-serp", "local-business", "news-search", "image-search", "local-market-check"];
@@ -31,6 +34,10 @@ export interface AppDeps {
   store: Store;
   pipeline: Pipeline;
   payments?: PaymentGate;
+  /** Facilitator for gift card payments (same as the data API's); absent = no x402 for gift cards. */
+  commerceFacilitator?: FacilitatorClient;
+  /** Gift card supplier; defaults to the mock supplier (tests inject their own). */
+  giftcardProvider?: GiftCardProvider;
 }
 
 type Locals = { prepared?: Prepared; service?: ServiceDefinition; requestId?: string; resultToken?: string; executed?: boolean };
@@ -219,17 +226,22 @@ export function createApp(deps: AppDeps) {
     });
   }
 
+  // Agent Commerce (gift cards, finance directory): own routes and tables, the data API above is unchanged.
+  const commerce = createCommerce({ env, store, limiter, facilitator: deps.commerceFacilitator, provider: deps.giftcardProvider });
+  app.locals.commerce = commerce;
+  app.use(commerce.router);
+
   // MCP over Streamable HTTP (stateless). Free tools need no payment; paid tools use x402 in the call's _meta.
   app.all("/mcp", limiter, createMcpHandler({ env, store, pipeline, payments: deps.payments, freeSample, wishlist }));
 
   // Internal monitoring (HTTP Basic auth; 404 unless ADMIN_PASSWORD is set).
   const pageViews = createPageViewCounter(store);
   app.locals.pageViews = pageViews;
-  app.use("/admin", createAdminRouter({ env, store, pipeline, beforeRead: pageViews.flush }));
+  app.use("/admin", createAdminRouter({ env, store, pipeline, beforeRead: pageViews.flush, commerce }));
 
   app.use(pageViews.middleware);
   // Website, llms.txt, /openapi.json, /.well-known/x402 (compat) and static assets.
-  app.use(createSiteRouter({ env, pipeline, network: deps.payments?.network, freeSample: freeSample.enabled(), freeSampleEligible: freeSample.enabled() ? (freeSample.info().per_service_eligible as string[]) : [], store }));
+  app.use(createSiteRouter({ env, pipeline, network: deps.payments?.network, freeSample: freeSample.enabled(), freeSampleEligible: freeSample.enabled() ? (freeSample.info().per_service_eligible as string[]) : [], store, commerce }));
 
   app.use((_req, res) => res.status(404).json({ error: "not_found" }));
   app.use((err: Error & { status?: number; statusCode?: number; type?: string }, _req: Request, res: Response, _next: express.NextFunction) => {

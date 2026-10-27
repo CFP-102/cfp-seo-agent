@@ -12,6 +12,10 @@ import { toolNameOf } from "../services/common.js";
 import type { Pipeline } from "../services/pipeline.js";
 import type { ServiceDefinition } from "../services/types.js";
 import { serviceConfig } from "../config/services.js";
+import type { Commerce } from "../commerce/index.js";
+import { FINANCE_DIRECTORY } from "../commerce/finance.js";
+import { formatBps } from "../commerce/pricing.js";
+import { DEFAULT_MARKUP_BPS } from "../config/commerce.js";
 
 const PUBLIC_DIR = new URL("../../public/", import.meta.url);
 
@@ -79,7 +83,7 @@ export function siteValues(env: Env, pipeline: Pipeline, network?: string): Reco
 }
 
 /** Website, llms.txt, OpenAPI document and the optional /.well-known/x402 compatibility file. */
-export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?: string; freeSample?: boolean; freeSampleEligible?: string[]; store?: Store; fetchImpl?: typeof fetch }): Router {
+export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?: string; freeSample?: boolean; freeSampleEligible?: string[]; store?: Store; fetchImpl?: typeof fetch; commerce?: Commerce }): Router {
   const { env, pipeline, network } = deps;
   const router = express.Router();
   const read = (name: string) => readFileSync(new URL(name, PUBLIC_DIR), "utf8");
@@ -149,6 +153,26 @@ export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?:
     }
   }
 
+  // Agent Commerce pages (EN/DE). Gift cards show their live switch state; the finance page lists the directory.
+  const financeCards = () =>
+    `<div class="grid">${FINANCE_DIRECTORY.map((e) => `<article class="card"><h3>${escapeHtml(e.name)}</h3><p>${escapeHtml(e.summary)}</p>${e.products.map((p) => `<p><strong>${escapeHtml(p.name)}</strong> · ${escapeHtml(p.regions.join(", "))}<br><span class="fine">${escapeHtml(p.pricing)}</span></p>`).join("")}<div class="meta"><span>${escapeHtml(e.payment.protocol)} · ${escapeHtml(e.payment.assets.join(", "))} · ${escapeHtml(e.payment.networks.join(", "))}</span><span>${escapeHtml(e.regulatory_note)}</span><span><a href="${escapeHtml(e.website)}" rel="nofollow noopener">${escapeHtml(e.website)}</a> · checked ${escapeHtml(e.last_checked)} · no partnership</span></div></article>`).join("")}</div>`;
+  for (const lang of ["en", "de"] as const) {
+    const giftcardValues = () => {
+      const info = deps.commerce?.giftcards.info();
+      const de = lang === "de";
+      const state = !info?.enabled
+        ? de ? "In Vorbereitung: Derzeit sind keine Käufe möglich. Die Endpunkte antworten mit 503." : "In preparation: no purchases are possible at the moment. The endpoints answer 503."
+        : info.paused
+          ? de ? "Neue Käufe sind derzeit pausiert." : "New purchases are paused at the moment."
+          : info.test_mode
+            ? de ? "Testbetrieb: fiktive Testprodukte mit wertlosen Codes, keine echten Gutscheine." : "Test operation: fictional test products with worthless codes, no real gift cards."
+            : "";
+      return { GIFTCARDS_STATUS: state ? `<p class="note">${escapeHtml(state)}</p>` : "", GIFTCARDS_MARKUP: escapeHtml(formatBps(deps.commerce?.cstore.markupBps() ?? DEFAULT_MARKUP_BPS).replace(".", de ? "," : ".")) };
+    };
+    router.get([lang === "de" ? "/de/gutscheine" : "/giftcards", `/giftcards-${lang}.html`], page(read(`giftcards-${lang}.html`), "html", giftcardValues));
+    router.get([lang === "de" ? "/de/finanzen" : "/finance", `/finance-${lang}.html`], page(read(`finance-${lang}.html`), "html", () => ({ FINANCE_CARDS: financeCards() })));
+  }
+
   router.get("/robots.txt", (_req, res) => {
     res
       .type("text/plain")
@@ -156,7 +180,7 @@ export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?:
   });
 
   router.get("/sitemap.xml", (_req, res) => {
-    const paths = ["/", "/de/", "/agencies", "/de/agenturen", "/connect", "/de/einrichten", "/quickstart.html", "/status", "/de/status", "/keyword-research", "/de/keyword-recherche", "/local-visibility", "/de/lokale-sichtbarkeit", "/content-planning", "/de/content-planung", "/content-planning-example", "/de/content-planung-beispiel", "/planner", "/de/planer", "/project-planner", "/de/projekt-planer"];
+    const paths = ["/", "/de/", "/agencies", "/de/agenturen", "/connect", "/de/einrichten", "/quickstart.html", "/status", "/de/status", "/keyword-research", "/de/keyword-recherche", "/local-visibility", "/de/lokale-sichtbarkeit", "/content-planning", "/de/content-planung", "/content-planning-example", "/de/content-planung-beispiel", "/planner", "/de/planer", "/project-planner", "/de/projekt-planer", "/giftcards", "/de/gutscheine", "/finance", "/de/finanzen"];
     if (!indexable) res.setHeader("X-Robots-Tag", "noindex, nofollow");
     res.setHeader("Cache-Control", "public, max-age=300");
     res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(path => `<url><loc>${escapeHtml(env.PUBLIC_BASE_URL + path)}</loc></url>`).join("")}</urlset>`);
@@ -164,7 +188,7 @@ export function createSiteRouter(deps: { env: Env; pipeline: Pipeline; network?:
 
   router.get("/openapi.json", (_req, res) => {
     res.setHeader("Cache-Control", "public, max-age=300");
-    res.json(buildOpenApi({ env, pipeline, network, freeSample: deps.freeSample }));
+    res.json(buildOpenApi({ env, pipeline, network, freeSample: deps.freeSample, giftcards: deps.commerce?.giftcards.enabled }));
   });
 
   // Status and trust page (EN/DE) plus its JSON. Aggregates only.

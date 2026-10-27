@@ -9,6 +9,7 @@ import { CostGuard } from "../src/lib/costGuard.js";
 import { Store } from "../src/lib/store.js";
 import { Pipeline } from "../src/services/pipeline.js";
 import { setLogLevel } from "../src/lib/log.js";
+import type { GiftCardProvider } from "../src/commerce/provider.js";
 
 setLogLevel("error");
 
@@ -37,6 +38,8 @@ export function buildTestApp(opts: {
   facilitator?: FacilitatorClient;
   disabled?: string[];
   services?: typeof SERVICES;
+  /** Gift card supplier for commerce tests (default: mock). */
+  giftcardProvider?: GiftCardProvider;
 }) {
   const env = loadEnv({ NODE_ENV: "test", DB_PATH: ":memory:", RATE_LIMIT_PER_MINUTE: "1000", ...opts.env });
   const store = new Store(":memory:");
@@ -47,6 +50,6 @@ export function buildTestApp(opts: {
   const payments = opts.facilitator
     ? createPayments({ mode: "testnet", payTo: PAY_TO, publicBaseUrl: "http://api.test", facilitator: opts.facilitator }, { store, pipeline, services })
     : undefined;
-  const app = createApp({ env, store, pipeline, payments });
+  const app = createApp({ env, store, pipeline, payments, commerceFacilitator: opts.facilitator, giftcardProvider: opts.giftcardProvider });
   return { app, store, pipeline, guard, env };
 }

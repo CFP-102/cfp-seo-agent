@@ -12,6 +12,8 @@ export interface OpenApiDeps {
   pipeline: Pipeline;
   /** CAIP-2 network of the payment gate, e.g. eip155:8453. Absent in sandbox development mode. */
   network?: string;
+  /** True when the gift card module is switched on (its paths are listed only then). */
+  giftcards?: boolean;
 }
 
 const camel = (id: string) => id.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
@@ -26,7 +28,7 @@ const errorResponse = (description: string) => ({
   content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
 });
 
-export function buildOpenApi({ env, pipeline, network, freeSample }: OpenApiDeps): Record<string, unknown> {
+export function buildOpenApi({ env, pipeline, network, freeSample, giftcards }: OpenApiDeps): Record<string, unknown> {
   const paid = Boolean(network);
   const proofs = env.OWNERSHIP_PROOFS.split(",").map((p) => p.trim()).filter(Boolean);
   const services = pipeline.services.filter((s) => pipeline.isEnabled(s));
@@ -225,6 +227,8 @@ export function buildOpenApi({ env, pipeline, network, freeSample }: OpenApiDeps
     };
   }
 
+  Object.assign(paths, commercePaths(paid, giftcards === true));
+
   return {
     openapi: "3.1.0",
     info: {
@@ -249,11 +253,13 @@ export function buildOpenApi({ env, pipeline, network, freeSample }: OpenApiDeps
     tags: [
       { name: "paid", description: "Paid endpoints (x402)" },
       { name: "free", description: "Free helper endpoints" },
+      { name: "commerce", description: "Agent Commerce: gift cards (when switched on) and the finance directory" },
     ],
     paths,
     components: {
       securitySchemes: {
         resultToken: { type: "http", scheme: "bearer", description: "The result_token returned with the original paid response." },
+        orderToken: { type: "http", scheme: "bearer", description: "The order_token returned with a gift card order." },
       },
       schemas: {
         Error: {
@@ -274,6 +280,107 @@ export function buildOpenApi({ env, pipeline, network, freeSample }: OpenApiDeps
           },
           required: ["request_id", "service", "data_source", "result"],
         },
+      },
+    },
+  };
+}
+
+const json = (schema: Record<string, unknown> = { type: "object" }) => ({ "application/json": { schema } });
+
+/** Agent Commerce paths. Gift cards are listed only when the module is on, so directories never index an offer that cannot be bought. */
+function commercePaths(paid: boolean, giftcards: boolean): Record<string, unknown> {
+  const finance = {
+    "/api/v1/commerce": {
+      get: { operationId: "commerceStatus", summary: "Status of the commerce modules (free)", tags: ["commerce", "free"], security: [], responses: { "200": { description: "Module status", content: json() } } },
+    },
+    "/api/v1/finance/partners": {
+      get: {
+        operationId: "financeDirectory",
+        summary: "Directory of x402 financial services (free, information only)",
+        description: "Independent third parties, listed for information. No partnership, no fees, no referral tracking; we never handle money for them.",
+        tags: ["commerce", "free"],
+        security: [],
+        responses: { "200": { description: "Entries with sources and check date", content: json() } },
+      },
+    },
+    "/api/v1/finance/offers": {
+      get: {
+        operationId: "financeOffers",
+        summary: "Products of the listed financial services (free)",
+        tags: ["commerce", "free"],
+        security: [],
+        parameters: [
+          { name: "category", in: "query", required: false, schema: { type: "string", maxLength: 40 } },
+          { name: "region", in: "query", required: false, schema: { type: "string", pattern: "^[A-Za-z]{2}$" }, example: "US" },
+        ],
+        responses: { "200": { description: "Offers", content: json() }, "400": errorResponse("Invalid filter") },
+      },
+    },
+  };
+  if (!giftcards) return finance;
+  const money = { type: "string", pattern: "^\\d+\\.\\d{2}$" };
+  return {
+    ...finance,
+    "/api/v1/giftcards/catalog": {
+      get: { operationId: "giftcardCatalog", summary: "Gift card catalog overview (free)", tags: ["commerce", "free"], security: [], responses: { "200": { description: "Brands, countries, currencies, categories", content: json() }, "503": errorResponse("Switched off or supplier unavailable") } },
+    },
+    "/api/v1/giftcards/products": {
+      get: {
+        operationId: "giftcardProducts",
+        summary: "Search gift card products (free)",
+        tags: ["commerce", "free"],
+        security: [],
+        parameters: ["brand", "country", "currency", "category"].map((name) => ({ name, in: "query", required: false, schema: { type: "string" } })),
+        responses: { "200": { description: "Products with allowed face values", content: json() }, "400": errorResponse("Invalid filter") },
+      },
+    },
+    "/api/v1/giftcards/quote": {
+      post: {
+        operationId: "giftcardQuote",
+        summary: "Binding price quote for one gift card (free)",
+        description: "Checks price and availability at the supplier. The quote is valid until expires_at; the order must pay exactly price.amount_usdc.",
+        tags: ["commerce", "free"],
+        security: [],
+        requestBody: { required: true, content: { "application/json": { schema: { type: "object", properties: { product_id: { type: "string" }, face_value: money }, required: ["product_id", "face_value"], additionalProperties: false }, examples: { default: { value: { product_id: "demo-books-de", face_value: "25.00" } } } } } },
+        responses: {
+          "200": { description: "quote_id, price, expires_at", content: json() },
+          "400": errorResponse("Invalid input"),
+          "404": errorResponse("Unknown product"),
+          "409": errorResponse("Out of stock"),
+          "422": errorResponse("Invalid face value or order too large"),
+          "503": errorResponse("Switched off, paused, daily limit or supplier unavailable"),
+        },
+      },
+    },
+    "/api/v1/giftcards/orders": {
+      post: {
+        operationId: "giftcardOrder",
+        summary: "Buy the gift card of a quote (x402, amount = quote)",
+        description: "Without payment: HTTP 402 with the exact quoted amount. With payment: settles first, then orders the card once and returns the code with order_id and order_token. Never pay twice: a repeated payment returns status only.",
+        tags: ["commerce", "paid"],
+        ...(paid ? { "x-payment-info": { price: { mode: "dynamic", currency: "USD" }, protocols: [{ x402: {} }] } } : {}),
+        requestBody: { required: true, content: { "application/json": { schema: { type: "object", properties: { quote_id: { type: "string", format: "uuid" } }, required: ["quote_id"], additionalProperties: false } } } },
+        responses: {
+          "200": { description: "Delivered: gift_card {code, pin, expires_at}, order_id, order_token", content: json() },
+          ...(paid ? { "402": { description: "Payment Required (amount of the quote)", headers: { "PAYMENT-REQUIRED": { description: "Base64-encoded x402 v2 PaymentRequired object", schema: { type: "string" } } } } } : {}),
+          "400": errorResponse("Invalid input or payment. Nothing was charged."),
+          "404": errorResponse("Unknown quote"),
+          "409": errorResponse("Quote or payment already used"),
+          "410": errorResponse("Quote expired"),
+          "429": errorResponse("Wallet limit or payment in progress"),
+          "502": errorResponse("Paid but not delivered: status refund_pending, keep order_token, do not pay again"),
+          "503": errorResponse("Switched off, paused or daily limit"),
+        },
+      },
+    },
+    "/api/v1/giftcards/orders/{id}": {
+      get: {
+        operationId: "giftcardOrderStatus",
+        summary: "Order status and code (order token)",
+        tags: ["commerce", "free"],
+        security: [{ orderToken: [] }],
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "string", format: "uuid" } }],
+        responses: { "200": { description: "Order; gift_card when delivered", content: json() }, "404": errorResponse("Unknown order or wrong token") },
       },
     },
   };

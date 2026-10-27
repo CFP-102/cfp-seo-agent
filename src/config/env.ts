@@ -76,6 +76,21 @@ const EnvSchema = z
     // Wallets excluded from admin insights (comma separated, e.g. own test wallets), so trends show real customers only.
     ADMIN_EXCLUDE_PAYERS: z.string().default(""),
 
+    // Read-only admin role (optional): may view the dashboard, may not change commerce settings.
+    ADMIN_VIEWER_USER: z.string().default("viewer"),
+    ADMIN_VIEWER_PASSWORD: z.string().default(""),
+
+    // Agent Gift Cards (docs/COMMERCE.md). "off" = endpoints answer 503. "mock" = fictional test supplier, never with real money.
+    GIFTCARDS_MODE: z.enum(["off", "mock"]).default("off"),
+    /** AES-256 key for gift card codes at rest, 64 hex characters (openssl rand -hex 32). Required unless GIFTCARDS_MODE=off. */
+    GIFTCARDS_ENCRYPTION_KEY: z.union([z.string().regex(/^[0-9a-fA-F]{64}$/, "must be 64 hex characters"), z.literal("")]).default(""),
+    GIFTCARDS_MAX_ORDER_USD: z.coerce.number().int().min(1).max(1000).default(100),
+    GIFTCARDS_DAILY_LIMIT_USD: z.coerce.number().int().min(1).max(100_000).default(500),
+    GIFTCARDS_PAYER_DAILY_ORDERS: z.coerce.number().int().min(1).max(100).default(5),
+    GIFTCARDS_QUOTE_TTL_SECONDS: z.coerce.number().int().min(60).max(600).default(300),
+    /** Facilitator / network fee per order that we pay, in USD (decimal string), added before rounding. */
+    GIFTCARDS_PAYMENT_FEE_USD: z.string().regex(/^(0|[1-9]\d{0,2})(\.\d{1,6})?$/, "decimal like 0.001, no leading zeros").default("0"),
+
     // Abuse protection
     RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(1).default(60),
   })
@@ -139,6 +154,19 @@ const EnvSchema = z
     }
     if ((env.NODE_ENV === "production" || env.PAYMENT_MODE === "mainnet") && !env.PUBLIC_BASE_URL.startsWith("https://")) {
       ctx.addIssue({ code: "custom", path: ["PUBLIC_BASE_URL"], message: "must be an https:// URL in production" });
+    }
+    // The mock supplier hands out worthless test codes: it must never take real money.
+    if (env.GIFTCARDS_MODE === "mock" && env.PAYMENT_MODE === "mainnet") {
+      ctx.addIssue({ code: "custom", path: ["GIFTCARDS_MODE"], message: "the mock gift card supplier is not allowed with mainnet payments" });
+    }
+    if (env.GIFTCARDS_MODE !== "off" && !env.GIFTCARDS_ENCRYPTION_KEY) {
+      ctx.addIssue({ code: "custom", path: ["GIFTCARDS_ENCRYPTION_KEY"], message: "required when gift cards are enabled (openssl rand -hex 32)" });
+    }
+    if (env.ADMIN_VIEWER_PASSWORD && env.ADMIN_VIEWER_PASSWORD === env.ADMIN_PASSWORD) {
+      ctx.addIssue({ code: "custom", path: ["ADMIN_VIEWER_PASSWORD"], message: "must differ from ADMIN_PASSWORD" });
+    }
+    if (env.NODE_ENV === "production" && env.ADMIN_VIEWER_PASSWORD && env.ADMIN_VIEWER_PASSWORD.length < 16) {
+      ctx.addIssue({ code: "custom", path: ["ADMIN_VIEWER_PASSWORD"], message: "use >= 16 chars in production" });
     }
     if (env.NODE_ENV === "production" && env.ADMIN_PASSWORD.length < 16) {
       ctx.addIssue({ code: "custom", path: ["ADMIN_PASSWORD"], message: "set a strong ADMIN_PASSWORD (>= 16 chars) in production" });

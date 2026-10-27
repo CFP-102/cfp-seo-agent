@@ -57,18 +57,30 @@ const guard = new CostGuard(store, {
   countSpend: env.DATAFORSEO_MODE === "live",
 });
 const pipeline = new Pipeline({ dfs, store, guard, services: SERVICES, disabledServices: disabled });
+const facilitator = env.PAYMENT_MODE === "off" ? undefined : createFacilitator(env);
 const payments =
   env.PAYMENT_MODE === "off"
     ? undefined
     : createPayments(
-        { mode: env.PAYMENT_MODE, payTo: env.PAY_TO_ADDRESS, publicBaseUrl: env.PUBLIC_BASE_URL, facilitator: createFacilitator(env) },
+        { mode: env.PAYMENT_MODE, payTo: env.PAY_TO_ADDRESS, publicBaseUrl: env.PUBLIC_BASE_URL, facilitator: facilitator! },
         { store, pipeline, services: SERVICES },
       );
 if (env.PAYMENT_MODE !== "off") {
   const reconcile = createReconciler(store, env.PAYMENT_MODE, createChainReader(env.PAYMENT_MODE));
   setInterval(() => { void reconcile(); }, 60_000).unref();
 }
-const app = createApp({ env, store, pipeline, payments });
+const app = createApp({ env, store, pipeline, payments, commerceFacilitator: facilitator });
+
+// Gift card orders cut off by a restart are flagged for a manual check, never re-bought; codes follow the retention period.
+const commerce = app.locals.commerce as import("./commerce/index.js").Commerce;
+const commerceRecovered = commerce.cstore.recoverAfterRestart();
+if (commerceRecovered.uncertain || commerceRecovered.undelivered) log.warn("recovered interrupted gift card orders", commerceRecovered);
+const purgeCommerce = () => {
+  const n = commerce.cstore.purge(env.RETENTION_DAYS);
+  if (n) log.info("retention: deleted gift card codes", { rows: n, retention_days: env.RETENTION_DAYS });
+};
+purgeCommerce();
+setInterval(purgeCommerce, 6 * 3600_000).unref();
 
 // E-mail alerts (budget, payments needing attention, daily summary). Off unless configured.
 const send = smtpSender(env);

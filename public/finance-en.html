@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Finance Gateway – {{NAME}}</title>
+<meta name="description" content="Directory of third-party financial services that AI agents can pay via x402. Information only: no fees, no referral tracking, no partnership.">
+<link rel="canonical" href="{{BASE_URL}}/finance"><link rel="alternate" hreflang="en" href="{{BASE_URL}}/finance"><link rel="alternate" hreflang="de" href="{{BASE_URL}}/de/finanzen">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css"><meta name="color-scheme" content="dark"></head>
+<body class="task-page"><header class="top"><div class="wrap bar"><a class="brand" href="/"><img src="/logo-white.png" alt="Chiemgau Films" width="62" height="30"><span class="brandname">{{NAME}}</span></a><div class="navgroup"><nav aria-label="Navigation"><a href="#directory">Directory</a><a href="#endpoints">Endpoints</a><a href="/giftcards">Gift cards</a></nav><a class="lang" href="/de/finanzen" hreflang="de">DE</a></div></div></header>
+<main>
+<section class="hero wrap"><p class="eyebrow">Agent Commerce · directory</p><h1>Agent Finance Gateway</h1>
+<p class="lead">A free directory of third-party financial services that AI agents can pay via x402, with the facts an agent needs to decide: products, prices, regions and where the information comes from.</p>
+<p class="note">Information only. The listed services are independent third parties. We have no partnership with them, take no fees or referral commissions, and never process, hold or forward money for them. Agents contact the provider directly; the provider's own terms apply.</p></section>
+
+<section id="directory" class="wrap"><h2>Listed services</h2>{{FINANCE_CARDS}}
+<p class="fine">Facts as published by the providers or public directories on the date shown. Check the provider's current terms and whether the service is available in your country before use.</p></section>
+
+<section id="endpoints" class="wrap"><h2>Endpoints (free, no payment)</h2>
+<pre><code>GET /api/v1/finance/partners          directory entries with sources and check date
+GET /api/v1/finance/offers            products · ?category= &amp;region=US</code></pre>
+<p class="fine">Both return JSON with a <code>disclaimer</code>. There is no referral or redirect endpoint: an agent uses the provider's own website or API. Machine-readable overview: <a href="/api/v1/commerce">/api/v1/commerce</a> · <a href="/openapi.json">OpenAPI</a>.</p></section>
+</main>
+<footer><div class="wrap foot"><a href="/">Home</a><a href="/giftcards">Agent Gift Cards</a><a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a></div></footer></body></html>

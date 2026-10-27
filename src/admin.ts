@@ -6,6 +6,9 @@ import { buildInsights } from "./adminInsights.js";
 import { liveSnapshots, type Live } from "./adminLive.js";
 import { FailureThrottle } from "./lib/rateLimit.js";
 import { today, type Store } from "./lib/store.js";
+import { esc, kpi, mono, panel, table, tag } from "./adminUi.js";
+import { createCommerceAdmin } from "./commerce/admin.js";
+import type { Commerce } from "./commerce/index.js";
 import type { Pipeline } from "./services/pipeline.js";
 
 /**
@@ -26,7 +29,6 @@ export function credentialsMatch(header: string | undefined, user: string, passw
   return userOk && passOk && i !== -1;
 }
 
-const esc = (v: unknown) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 const usd = (n: unknown) => Number(n ?? 0).toFixed(4);
 const MAINNET = "eip155:8453";
 
@@ -107,38 +109,6 @@ function chart(history: Stats["history"]): string {
     .join("");
   return `<svg class="chart" viewBox="0 0 ${w} ${h + 18}" role="img" aria-label="Revenue and cost per day, last 30 days"><line class="axis" x1="0" y1="${h}" x2="${w}" y2="${h}"/>${bars}<text class="axis-label" x="0" y="${h + 14}">${esc(history[0]?.day)}</text><text class="axis-label" x="${w}" y="${h + 14}" text-anchor="end">${esc(history.at(-1)?.day)} · max ${max.toFixed(2)}</text></svg>
   <p class="fine"><span class="key key-rev"></span> revenue (USDC, settled) <span class="key key-cost"></span> DataForSEO cost (USD) · real money only</p>`;
-}
-
-type CellObj = { t: string | number | null | undefined; c?: string; title?: string };
-type Cell = string | number | null | undefined | CellObj;
-const norm = (c: Cell): CellObj => (c !== null && typeof c === "object" ? c : { t: c });
-
-const looksNumeric = (v: unknown) => /^-?\$?\d[\d.,]*%?$/.test(String(v ?? ""));
-const short = (v: string | null | undefined) => (v && v.length > 18 ? `${v.slice(0, 8)}…${v.slice(-6)}` : v);
-/** Wallet address / hash / id cell: shortened, full value on hover and in search. */
-const mono = (v: string | null | undefined): Cell => ({ t: short(v) ?? "", c: "mono", title: v ?? "" });
-const tag = (v: string, c: string): Cell => (v ? { t: v, c: `tag ${c}` } : "");
-
-function table(head: string[], rows: Cell[][]): string {
-  if (!rows.length) return '<p class="empty">No data yet.</p>';
-  const cell = (c: Cell) => {
-    const o = norm(c);
-    const cls = [o.c ?? "", looksNumeric(o.t) ? "num" : ""].filter(Boolean).join(" ");
-    return `<td${cls ? ` class="${esc(cls)}"` : ""}${o.title ? ` title="${esc(o.title)}"` : ""}>${esc(o.t)}</td>`;
-  };
-  return `<div class="tablewrap"><table class="sortable"><thead><tr>${head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows
-    .map((r) => `<tr data-search="${esc(r.map((c) => { const o = norm(c); return `${o.t ?? ""} ${o.title ?? ""}`; }).join(" ").toLowerCase())}">${r.map(cell).join("")}</tr>`)
-    .join("")}</tbody></table></div>`;
-}
-
-/** Collapsible panel (native <details>, works without scripts). */
-function panel(title: string, body: string, opts: { open?: boolean; badge?: string; tone?: "bad" | "warn" | "" } = {}): string {
-  const badge = opts.badge ? `<span class="badge ${opts.tone ?? ""}">${esc(opts.badge)}</span>` : "";
-  return `<details class="panel"${opts.open === false ? "" : " open"}><summary><span class="chev"></span><span class="ptitle">${esc(title)}</span>${badge}</summary><div class="pbody">${body}</div></details>`;
-}
-
-function kpi(label: string, value: string, sub = "", tone = ""): string {
-  return `<div class="kpi ${tone}"><span class="klabel">${esc(label)}</span><span class="kvalue">${esc(value)}</span><span class="ksub">${esc(sub)}</span></div>`;
 }
 
 /** Budget meter as inline SVG (animated by CSS, no inline styles). */
@@ -325,7 +295,7 @@ function renderPage(env: Env, st: Stats, liveData: Live): string {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><title>Admin – ${esc(env.SITE_NAME)}</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/admin.css"><script src="/admin.js" defer></script></head>
 <body class="admin"><header class="top"><div class="wrap bar"><span class="brand"><img src="/logo-white.png" alt="Chiemgau Films" width="62" height="30"><span class="brandname">${esc(env.SITE_NAME)} · admin</span></span>
-<nav class="anchors" aria-label="Sections"><a href="#live">Live</a><a href="#money">Money</a><a href="#traffic">Traffic</a><a href="#operations">Operations</a></nav></div></header>
+<nav class="anchors" aria-label="Sections"><a href="#live">Live</a><a href="#money">Money</a><a href="#traffic">Traffic</a><a href="#operations">Operations</a><a href="/admin/commerce">Commerce</a></nav></div></header>
 <main class="wrap wide">
   ${livePanel(liveData)}
   <div class="toolbar">
@@ -340,7 +310,7 @@ function renderPage(env: Env, st: Stats, liveData: Live): string {
 </main></body></html>`;
 }
 
-export function createAdminRouter(deps: { env: Env; store: Store; pipeline: Pipeline; beforeRead?: () => void }): Router {
+export function createAdminRouter(deps: { env: Env; store: Store; pipeline: Pipeline; beforeRead?: () => void; commerce?: Commerce }): Router {
   const { env, store, pipeline } = deps;
   const live = liveSnapshots(env, store, pipeline);
   const fresh = () => deps.beforeRead?.();
@@ -357,7 +327,14 @@ export function createAdminRouter(deps: { env: Env; store: Store; pipeline: Pipe
       res.setHeader("Retry-After", "60");
       return void res.status(429).json({ error: "too_many_attempts" });
     }
-    if (credentialsMatch(req.get("authorization"), env.ADMIN_USER, env.ADMIN_PASSWORD)) return next();
+    // Two roles: the owner (ADMIN_*) may change commerce settings, the optional viewer (ADMIN_VIEWER_*) may only look.
+    const header = req.get("authorization");
+    const owner = credentialsMatch(header, env.ADMIN_USER, env.ADMIN_PASSWORD);
+    const viewer = !owner && Boolean(env.ADMIN_VIEWER_PASSWORD) && credentialsMatch(header, env.ADMIN_VIEWER_USER, env.ADMIN_VIEWER_PASSWORD);
+    if (owner || viewer) {
+      res.locals.adminRole = owner ? "owner" : "viewer";
+      return next();
+    }
     failures.fail(req.ip);
     res.setHeader("WWW-Authenticate", 'Basic realm="admin", charset="UTF-8"');
     res.status(401).json({ error: "unauthorized" });
@@ -392,5 +369,6 @@ export function createAdminRouter(deps: { env: Env; store: Store; pipeline: Pipe
   router.get("/stats.json", (_req, res) => {
     res.json(buildAdminStats(env, store, pipeline));
   });
+  if (deps.commerce) router.use("/commerce", createCommerceAdmin({ env, store, commerce: deps.commerce }));
   return router;
 }

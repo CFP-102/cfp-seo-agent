@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Gift Cards – {{NAME}}</title>
+<meta name="description" content="Gutschein-API für KI-Agenten mit x402-Zahlung in USDC: Katalog, verbindliches Angebot, eine bezahlte Bestellung, Code-Auslieferung. Derzeit in Vorbereitung.">
+<link rel="canonical" href="{{BASE_URL}}/de/gutscheine"><link rel="alternate" hreflang="en" href="{{BASE_URL}}/giftcards"><link rel="alternate" hreflang="de" href="{{BASE_URL}}/de/gutscheine">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css"><meta name="color-scheme" content="dark"></head>
+<body class="task-page"><header class="top"><div class="wrap bar"><a class="brand" href="/de/"><img src="/logo-white.png" alt="Chiemgau Films" width="62" height="30"><span class="brandname">{{NAME}}</span></a><div class="navgroup"><nav aria-label="Navigation"><a href="#ablauf">Ablauf</a><a href="#endpunkte">Endpunkte</a><a href="#preise">Preise</a><a href="/de/finanzen">Finanzen</a></nav><a class="lang" href="/giftcards" hreflang="en">EN</a></div></div></header>
+<main>
+<section class="hero wrap"><p class="eyebrow">Agent Commerce · x402 · USDC</p><h1>Agent Gift Cards</h1>
+<p class="lead">Eine Gutschein-API für KI-Agenten: Katalog durchsuchen, verbindliches Angebot holen, genau diesen Betrag per x402 bezahlen und den Code in der Antwort erhalten.</p>
+{{GIFTCARDS_STATUS}}{{MODE_NOTE}}
+<div class="cta"><a class="btn primary" href="#ablauf">So funktioniert es</a><a class="btn" href="/api/v1/commerce">Modulstatus (JSON)</a><a class="btn" href="/openapi.json">OpenAPI</a></div></section>
+
+<section id="funktionen" class="wrap"><h2>Was der Dienst macht</h2><ul>
+<li>Produktkatalog mit Suche nach Marke, Land, Währung und Kategorie.</li>
+<li>Live-Preis und Verfügbarkeit beim Lieferanten für jedes Angebot.</li>
+<li>Verbindliches Angebot mit Ablaufzeit (wenige Minuten). Nur der angebotene Betrag wird angenommen.</li>
+<li>Bezahlung per x402 (USDC). Bestellt wird erst, wenn die Zahlung abgewickelt ist.</li>
+<li>Code-Auslieferung in der Antwort; mit dem privaten Bestell-Token 30 Tage lang erneut abrufbar.</li>
+<li>Bestellstatus, Schutz vor Doppelbestellungen und ein Erstattungsablauf, falls ein bezahlter Gutschein nicht geliefert werden kann.</li></ul></section>
+
+<section id="ablauf" class="wrap"><h2>So nutzen KI-Agenten den Dienst</h2><ol class="steps">
+<li><code>GET /api/v1/giftcards/products?country=DE</code>: Produkt und Nennwert wählen (kostenlos).</li>
+<li><code>POST /api/v1/giftcards/quote</code> mit <code>{"product_id","face_value"}</code>: verbindlicher Preis in USDC mit Ablaufzeit (kostenlos).</li>
+<li>Den Preis der verantwortlichen Person zeigen und genau diesen einen Kauf ausdrücklich freigeben lassen.</li>
+<li><code>POST /api/v1/giftcards/orders</code> mit <code>{"quote_id"}</code>: Die erste Antwort ist HTTP 402 mit dem genauen Betrag; ein x402-Client bezahlt und wiederholt den Aufruf.</li>
+<li>Die Antwort enthält den Code, die Bestell-ID und ein privates <code>order_token</code>. Beides aufbewahren. <code>GET /api/v1/giftcards/orders/{id}</code> mit <code>Authorization: Bearer &lt;order_token&gt;</code> zeigt die Bestellung erneut.</li></ol>
+<p class="fine">Viele x402-Wallets lehnen Zahlungen über 1 USD standardmäßig ab. Das Ausgabelimit nur für diesen einen Kauf erhöhen und einem Agenten nie mehr Zahlungsvollmacht geben als für die freigegebene Bestellung.</p></section>
+
+<section id="x402" class="wrap"><h2>So funktioniert die x402-Zahlung</h2>
+<p>Die Bestellroute antwortet mit HTTP 402 und einem <code>PAYMENT-REQUIRED</code>-Header: Betrag (aus dem gespeicherten Angebot), Währung USDC, Netzwerk und Empfänger. Der Käufer unterschreibt eine USDC-Überweisungsfreigabe (EIP-3009) und sendet sie im <code>PAYMENT-SIGNATURE</code>-Header. Unser Server prüft Betrag, Empfänger und Signatur, wickelt die Zahlung zuerst on-chain ab und bestellt erst danach den Gutschein. Eine Zahlung über einen anderen Betrag wird vor der Abwicklung abgelehnt. Eine Wiederholung mit derselben Zahlung kauft nie einen zweiten Gutschein.</p></section>
+
+<section id="endpunkte" class="wrap"><h2>Endpunkte</h2>
+<pre><code>GET  /api/v1/giftcards/catalog        kostenlos · Marken, Länder, Währungen, Kategorien
+GET  /api/v1/giftcards/products       kostenlos · ?brand= &amp;country= &amp;currency= &amp;category=
+POST /api/v1/giftcards/quote          kostenlos · {"product_id","face_value"} -> quote_id, Preis, expires_at
+POST /api/v1/giftcards/orders         x402 · {"quote_id"} -> Code, order_id, order_token
+GET  /api/v1/giftcards/orders/{id}    Bestell-Token · Status und Code</code></pre>
+<p class="fine">Fehler im Format <code>{"error","message"}</code>: 400 ungültige Eingabe, 402 Zahlung nötig, 404 unbekannt, 409 Angebot oder Zahlung schon verwendet, 410 Angebot abgelaufen, 422 ungültiger Nennwert oder Bestellung zu groß, 429 Limit, 502 bezahlt aber nicht geliefert (Erstattungsablauf), 503 ausgeschaltet, pausiert oder Lieferant nicht erreichbar. Details: <a href="/openapi.json">OpenAPI</a>.</p></section>
+
+<section id="preise" class="wrap"><h2>Preise und Gebühren</h2>
+<p>Preis = unser Einkaufspreis beim Lieferanten (in USD umgerechnet, aufgerundet) plus eine Servicegebühr von <strong>{{GIFTCARDS_MARKUP}} %</strong>, aufgerundet auf volle Cent. Beispiel bei 3,5 %: Einkaufspreis 100,00 USD → 103,50 USDC. Das Angebot zeigt den genauen Betrag vor der Zahlung. Weitere Gebühren von uns gibt es nicht; die Netzwerkgebühren der Zahlung trägt der Zahlungsabwickler.</p></section>
+
+<section id="entwickler" class="wrap"><h2>Für Entwickler</h2>
+<pre><code>// Node.js mit @x402/fetch (Käuferseite)
+const pay = wrapFetchWithPayment(fetch, client); // Client mit erhöhtem Ausgabelimit
+const quote = await (await fetch(BASE + "/api/v1/giftcards/quote", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ product_id, face_value: "25.00" }) })).json();
+const order = await (await pay(BASE + "/api/v1/giftcards/orders", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ quote_id: quote.quote_id }) })).json();
+// order.order_id und order.order_token aufbewahren; bei unklarem Ausgang nie erneut bezahlen</code></pre>
+<p class="fine">Nur für Unternehmen (B2B). Zeigt eine Bestellung <code>refund_pending</code> oder <code>settlement_uncertain</code>, nicht erneut bezahlen: Wir liefern oder erstatten. <a href="/legal-de.html">Datenschutz und Bedingungen</a>.</p></section>
+</main>
+<footer><div class="wrap foot"><a href="/de/">Start</a><a href="/de/finanzen">Agent Finance Gateway</a><a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a></div></footer></body></html>
